@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập / Đăng ký - Quản lý nhà trọ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .auth-container {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+        }
+        .auth-form {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .auth-form h2 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: #2c3e50;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 0.75rem;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #2980b9;
+        }
+        .toggle-link {
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            cursor: pointer;
+            color: #3498db;
+        }
+        .error {
+            color: #c62828;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+        
+        /* Thông tin đăng nhập cuối */
+        .last-login-info {
+            background: #e8f5e9;
+            border: 1px solid #c8e6c9;
+            border-radius: 4px;
+            padding: 10px;
+            margin-top: 15px;
+            font-size: 0.85rem;
+            color: #2e7d32;
+        }
+        .last-login-info h4 {
+            margin: 0 0 5px 0;
+            font-size: 0.9rem;
+            color: #1b5e20;
+        }
+        .last-login-info p {
+            margin: 0;
+        }
+        
+        /* CSS cho thông báo cập nhật - ÁP DỤNG CHO CẢ PC VÀ MOBILE */
+        .update-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 320px;
+            max-width: 90%;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1000;
+            overflow: hidden;
+            animation: slideIn 0.3s ease-out;
+        }
+        .update-header {
+            background: #3498db;
+            color: white;
+            padding: 12px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .update-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+        }
+        .close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .update-content {
+            padding: 15px;
+        }
+        .update-content ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .update-content li {
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+        .update-content li:last-child {
+            margin-bottom: 0;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Responsive cho màn hình nhỏ (mobile) */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        
+            .form-row {
+                flex-direction: column;
+                gap: 10px;
+            }
+        
+            .btn {
+                width: 100%;
+                text-align: center;
+                margin-top: 10px;
+            }
+        
+            .container {
+                padding: 10px;
+            }
+        
+            h2 {
+                font-size: 1.2rem;
+                text-align: center;
+            }
+            
+            /* Điều chỉnh thông báo cho mobile */
+            .update-notification {
+                top: 10px;
+                right: 10px;
+                left: 10px;
+                width: auto;
+                max-width: none;
+            }
+        }
+    </style>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+</head>
+<body>
+    <!-- Thông báo cập nhật - ĐẶT NGOÀI auth-container để hiển thị độc lập -->
+    <div class="update-notification" id="updateNotification">
+        <div class="update-header">
+            <h3>Cập nhật mới</h3>
+            <button class="close-btn" id="closeUpdateBtn">&times;</button>
+        </div>
+        <div class="update-content">
+            <ul>
+                <li>Bản cập nhật này bổ sung giao diện sử dụng trên điện thoại</li>
+                <li>Thêm người ở chung vào danh sách người thuê trọ</li>
+                <li>Cải thiện hiệu suất và sửa lỗi hệ thống</li>
+                <li>Theo dõi thời gian đăng nhập cuối cùng của người dùng</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="auth-container">
+        <!-- Form Đăng nhập -->
+        <div class="auth-form" id="loginForm">
+            <h2>Đăng nhập hệ thống</h2>
+            <div class="form-group">
+                <label for="loginEmail">Email</label>
+                <input type="email" id="loginEmail" placeholder="Nhập email">
+            </div>
+            <div class="form-group">
+                <label for="loginPassword">Mật khẩu</label>
+                <input type="password" id="loginPassword" placeholder="Nhập mật khẩu">
+            </div>
+            <button id="loginBtn" class="btn">Đăng nhập</button>
+            <div id="loginError" class="error"></div>
+            
+            <!-- Hiển thị thông tin đăng nhập cuối -->
+            <div class="last-login-info" id="lastLoginInfo" style="display: none;">
+                <h4>📅 Lần đăng nhập cuối:</h4>
+                <p id="lastLoginTime">Đang tải...</p>
+            </div>
+            
+            <div class="toggle-link" onclick="showRegister()">Chưa có tài khoản? Đăng ký</div>
+        </div>
+
+        <!-- Form Đăng ký -->
+        <div class="auth-form" id="registerForm" style="display:none;">
+            <h2>Đăng ký tài khoản</h2>
+            <div class="form-group">
+                <label for="registerEmail">Email</label>
+                <input type="email" id="registerEmail" placeholder="Nhập email">
+            </div>
+            <div class="form-group">
+                <label for="registerPassword">Mật khẩu</label>
+                <input type="password" id="registerPassword" placeholder="Mật khẩu (6 chữ số)">
+            </div>
+            <button id="registerBtn" class="btn">Đăng ký</button>
+            <div id="registerError" class="error"></div>
+            <div class="toggle-link" onclick="showLogin()">Đã có tài khoản? Đăng nhập</div>
+        </div>
+    </div>
+
+    <script>
+        // Firebase config
+        const firebaseConfig = { 
+            apiKey: "AIzaSyAz38ll5L6nZOicZyQRFtKd0TuzohrLFws",
+            authDomain: "quan-ly-nha-tro-2a4bf.firebaseapp.com",
+            databaseURL: "https://quan-ly-nha-tro-2a4bf-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "quan-ly-nha-tro-2a4bf",
+            storageBucket: "quan-ly-nha-tro-2a4bf.firebasestorage.app",
+            messagingSenderId: "490747665921",
+            appId: "1:490747665921:web:48b0e2bad3a0f894c22a00"
+        };
+
+        // Khởi tạo Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const database = firebase.database();
+
+        // Chuyển đổi form
+        function showRegister() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'block';
+        }
+        function showLogin() {
+            document.getElementById('registerForm').style.display = 'none';
+            document.getElementById('loginForm').style.display = 'block';
+        }
+
+        // Đóng thông báo cập nhật
+        document.getElementById('closeUpdateBtn').addEventListener('click', function() {
+            document.getElementById('updateNotification').style.display = 'none';
+        });
+
+        // Kiểm tra và hiển thị thông tin đăng nhập cuối
+        function checkLastLogin() {
+            const email = document.getElementById('loginEmail').value;
+            if (!email) return;
+            
+            // Tạo key từ email (thay thế ký tự đặc biệt)
+            const userKey = email.replace(/[.#$[\]]/g, '_');
+            
+            database.ref('lastLogin/' + userKey).once('value')
+                .then((snapshot) => {
+                    if (snapshot.exists()) {
+                        const lastLoginData = snapshot.val();
+                        const lastLoginTime = new Date(lastLoginData.timestamp);
+                        const now = new Date();
+                        const diffTime = Math.abs(now - lastLoginTime);
+                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                        
+                        let timeText = '';
+                        if (diffDays === 1) {
+                            timeText = 'Hôm qua';
+                        } else if (diffDays < 7) {
+                            timeText = `${diffDays} ngày trước`;
+                        } else {
+                            timeText = lastLoginTime.toLocaleDateString('vi-VN');
+                        }
+                        
+                        document.getElementById('lastLoginTime').textContent = 
+                            `${timeText} lúc ${lastLoginTime.toLocaleTimeString('vi-VN', {hour: '2-digit', minute:'2-digit'})}`;
+                        document.getElementById('lastLoginInfo').style.display = 'block';
+                    } else {
+                        document.getElementById('lastLoginInfo').style.display = 'none';
+                    }
+                })
+                .catch((error) => {
+                    console.error('Lỗi khi lấy thông tin đăng nhập:', error);
+                });
+        }
+
+        // Lắng nghe sự kiện nhập email
+        document.getElementById('loginEmail').addEventListener('blur', checkLastLogin);
+
+        // Cập nhật thời gian đăng nhập cuối
+        function updateLastLogin(user) {
+            const userKey = user.email.replace(/[.#$[\]]/g, '_');
+            const loginData = {
+                email: user.email,
+                timestamp: firebase.database.ServerValue.TIMESTAMP,
+                displayTime: new Date().toLocaleString('vi-VN')
+            };
+            
+            database.ref('lastLogin/' + userKey).set(loginData)
+                .then(() => {
+                    console.log('Đã cập nhật thời gian đăng nhập cuối');
+                })
+                .catch((error) => {
+                    console.error('Lỗi khi cập nhật thời gian đăng nhập:', error);
+                });
+        }
+
+        // Đăng nhập
+        document.getElementById('loginBtn').addEventListener('click', () => {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            if (!email || !password) {
+                document.getElementById('loginError').textContent = 'Vui lòng nhập đầy đủ thông tin!';
+                return;
+            }
+
+            auth.signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    // Cập nhật thời gian đăng nhập cuối
+                    updateLastLogin(userCredential.user);
+                    window.location.href = 'dashboard.html';
+                })
+                .catch(() => {
+                    document.getElementById('loginError').textContent = 'Email hoặc mật khẩu không đúng!';
+                });
+        });
+
+        // Đăng ký
+        document.getElementById('registerBtn').addEventListener('click', () => {
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+
+            if (!email || !password) {
+                document.getElementById('registerError').textContent = 'Vui lòng nhập đầy đủ thông tin!';
+                return;
+            }
+
+            auth.createUserWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    // Cập nhật thời gian đăng nhập cuối cho user mới
+                    updateLastLogin(userCredential.user);
+                    alert('Đăng ký thành công! Vui lòng đăng nhập.');
+                    showLogin();
+                })
+                .catch((error) => {
+                    document.getElementById('registerError').textContent = 'Lỗi: ' + error.message;
+                });
+        });
+    </script>
+</body>
+</html>
