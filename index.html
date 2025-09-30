@@ -18,12 +18,12 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            padding: 20px; /* Thêm padding để tránh sát lề trên mobile */
         }
 
         .container {
             width: 100%;
             max-width: 400px;
-            padding: 20px;
         }
 
         .form-container {
@@ -52,6 +52,7 @@
 
         .form-group {
             margin-bottom: 20px;
+            position: relative; /* Thêm position relative cho .form-group */
         }
 
         .form-group label {
@@ -61,35 +62,43 @@
             font-weight: 500;
         }
 
-        /* Password input container styles */
-        .password-container {
-            position: relative;
-        }
-
-        .password-container input {
+        /* Tối ưu hóa cho tất cả các input */
+        input[type="email"], 
+        input[type="text"],
+        input[type="password"] {
             width: 100%;
-            padding: 12px 40px 12px 15px; /* Thêm padding-right cho biểu tượng */
+            padding: 12px 15px; /* Padding đều các bên */
             border: 1px solid #ddd;
             border-radius: 5px;
             font-size: 16px;
             transition: border 0.3s;
         }
 
-        .password-container input:focus {
+        input[type="email"]:focus, 
+        input[type="text"]:focus,
+        input[type="password"]:focus {
             border-color: #2575fc;
             outline: none;
         }
         
-        /* The eye icon */
+        /* Căn chỉnh lại cho input mật khẩu có biểu tượng con mắt */
+        .password-container {
+            position: relative;
+        }
+
+        .password-container input {
+            padding-right: 40px; /* Tạo khoảng trống cho biểu tượng */
+        }
+        
         .password-toggle {
             position: absolute;
             right: 15px;
-            top: 50%;
+            top: 50%; /* Căn giữa theo chiều dọc */
             transform: translateY(-50%);
             cursor: pointer;
             color: #666;
             font-size: 18px;
-            user-select: none; /* Ngăn chặn việc chọn văn bản */
+            user-select: none;
         }
 
         .btn {
@@ -153,249 +162,6 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="form-container" id="login-container">
-            <div class="logo">
-                <h1>Quản lý Hụi</h1>
-                <p>Đăng nhập vào tài khoản của bạn</p>
-            </div>
-            
-            <div id="message" class="message"></div>
-            
-            <form id="login-form">
-                <div class="form-group">
-                    <label for="login-email">Email</label>
-                    <input type="email" id="login-email" required>
-                </div>
-                <div class="form-group">
-                    <label for="login-password">Mật khẩu</label>
-                    <div class="password-container">
-                        <input type="password" id="login-password" required>
-                        <span class="password-toggle">👁️</span>
-                    </div>
-                </div>
-                <button type="submit" class="btn">Đăng nhập</button>
-            </form>
-            
-            <div class="toggle-form">
-                Chưa có tài khoản? <a id="show-register">Đăng ký ngay</a>
-            </div>
-        </div>
-        
-        <div class="form-container hidden" id="register-container">
-            <div class="logo">
-                <h1>Quản lý Hụi</h1>
-                <p>Tạo tài khoản mới</p>
-            </div>
-            
-            <div id="register-message" class="message"></div>
-            
-            <form id="register-form">
-                <div class="form-group">
-                    <label for="register-name">Họ và tên</label>
-                    <input type="text" id="register-name" required>
-                </div>
-                <div class="form-group">
-                    <label for="register-email">Email</label>
-                    <input type="email" id="register-email" required>
-                </div>
-                <div class="form-group">
-                    <label for="register-password">Mật khẩu</label>
-                    <div class="password-container">
-                        <input type="password" id="register-password" minlength="6" required>
-                        <span class="password-toggle">👁️</span>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="confirm-password">Xác nhận mật khẩu</label>
-                    <div class="password-container">
-                        <input type="password" id="confirm-password" minlength="6" required>
-                        <span class="password-toggle">👁️</span>
-                    </div>
-                </div>
-                <button type="submit" class="btn">Đăng ký</button>
-            </form>
-            
-            <div class="toggle-form">
-                Đã có tài khoản? <a id="show-login">Đăng nhập</a>
-            </div>
-        </div>
-    </div>
-
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
-    
-    <script>
-        // Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyCYV8na-Az2LAgpl6QM2Tiwr6Gm9yhXQZ0",
-            authDomain: "quan-ly-hui-8ad1c.firebaseapp.com",
-            databaseURL: "https://quan-ly-hui-8ad1c-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "quan-ly-hui-8ad1c",
-            storageBucket: "quan-ly-hui-8ad1c.firebasestorage.app",
-            messagingSenderId: "665511229865",
-            appId: "1:665511229865:web:fe44f814fff618e35e6cb8"
-        };
-
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const database = firebase.database();
-
-        // DOM Elements
-        const loginContainer = document.getElementById('login-container');
-        const registerContainer = document.getElementById('register-container');
-        const loginForm = document.getElementById('login-form');
-        const registerForm = document.getElementById('register-form');
-        const showRegister = document.getElementById('show-register');
-        const showLogin = document.getElementById('show-login');
-        const messageDiv = document.getElementById('message');
-        const registerMessageDiv = document.getElementById('register-message');
-
-        // Toggle password visibility
-        document.querySelectorAll('.password-toggle').forEach(toggle => {
-            toggle.addEventListener('click', () => {
-                const passwordInput = toggle.previousElementSibling;
-                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-                passwordInput.setAttribute('type', type);
-                
-                // Thay đổi biểu tượng
-                toggle.textContent = type === 'password' ? '👁️' : '🙈';
-            });
-        });
-
-        // Toggle between login and register forms
-        showRegister.addEventListener('click', () => {
-            loginContainer.classList.add('hidden');
-            registerContainer.classList.remove('hidden');
-            // Xóa thông báo cũ khi chuyển form
-            hideMessage();
-            hideRegisterMessage();
-        });
-
-        showLogin.addEventListener('click', () => {
-            registerContainer.classList.add('hidden');
-            loginContainer.classList.remove('hidden');
-            // Xóa thông báo cũ khi chuyển form
-            hideMessage();
-            hideRegisterMessage();
-        });
-
-        // Login function
-        loginForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
-            
-            auth.signInWithEmailAndPassword(email, password)
-                .then((userCredential) => {
-                    // Login successful
-                    const user = userCredential.user;
-                    showMessage('Đăng nhập thành công!', 'success');
-                    
-                    // Redirect to dashboard after a short delay
-                    setTimeout(() => {
-                        window.location.href = 'dashboard.html';
-                    }, 1000);
-                })
-                .catch((error) => {
-                    // Handle errors
-                    const errorCode = error.code;
-                    let errorMessage = 'Đã xảy ra lỗi khi đăng nhập.';
-                    
-                    if (errorCode === 'auth/user-not-found' || errorCode === 'auth/invalid-email') {
-                        errorMessage = 'Tài khoản không tồn tại hoặc email không hợp lệ.';
-                    } else if (errorCode === 'auth/wrong-password') {
-                        errorMessage = 'Mật khẩu không chính xác.';
-                    } else {
-                        errorMessage = 'Đã xảy ra lỗi không xác định.';
-                    }
-                    
-                    showMessage(errorMessage, 'error');
-                });
-        });
-
-        // Register function
-        registerForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            
-            const name = document.getElementById('register-name').value;
-            const email = document.getElementById('register-email').value;
-            const password = document.getElementById('register-password').value;
-            const confirmPassword = document.getElementById('confirm-password').value;
-            
-            // Validate passwords match
-            if (password !== confirmPassword) {
-                showRegisterMessage('Mật khẩu xác nhận không khớp.', 'error');
-                return;
-            }
-            
-            // Create user with Firebase Auth
-            auth.createUserWithEmailAndPassword(email, password)
-                .then((userCredential) => {
-                    // User created successfully
-                    const user = userCredential.user;
-                    
-                    // Save additional user data to Realtime Database
-                    return database.ref('users/' + user.uid).set({
-                        name: name,
-                        email: email,
-                        createdAt: new Date().toISOString()
-                    });
-                })
-                .then(() => {
-                    showRegisterMessage('Đăng ký thành công! Vui lòng đăng nhập.', 'success');
-                    
-                    // Clear form
-                    registerForm.reset();
-                    
-                    // Switch to login form after a short delay
-                    setTimeout(() => {
-                        registerContainer.classList.add('hidden');
-                        loginContainer.classList.remove('hidden');
-                    }, 1500);
-                })
-                .catch((error) => {
-                    // Handle errors
-                    const errorCode = error.code;
-                    let errorMessage = 'Đã xảy ra lỗi khi đăng ký.';
-                    
-                    if (errorCode === 'auth/email-already-in-use') {
-                        errorMessage = 'Email đã được sử dụng.';
-                    } else if (errorCode === 'auth/weak-password') {
-                        errorMessage = 'Mật khẩu quá yếu (tối thiểu 6 ký tự).';
-                    } else if (errorCode === 'auth/invalid-email') {
-                        errorMessage = 'Email không hợp lệ.';
-                    } else {
-                        errorMessage = 'Đã xảy ra lỗi không xác định.';
-                    }
-                    
-                    showRegisterMessage(errorMessage, 'error');
-                });
-        });
-
-        // Helper functions to show/hide messages
-        function showMessage(text, type) {
-            messageDiv.textContent = text;
-            messageDiv.className = `message ${type}`;
-            messageDiv.style.display = 'block';
-        }
-        
-        function hideMessage() {
-            messageDiv.style.display = 'none';
-        }
-
-        function showRegisterMessage(text, type) {
-            registerMessageDiv.textContent = text;
-            registerMessageDiv.className = `message ${type}`;
-            registerMessageDiv.style.display = 'block';
-        }
-
-        function hideRegisterMessage() {
-            registerMessageDiv.style.display = 'none';
-        }
-    </script>
+    ...
 </body>
 </html>
