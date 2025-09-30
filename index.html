@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kiểm phiếu - Đăng nhập</title>
+    <title>Quản lý Hụi - Đăng nhập/Đăng ký</title>
     <style>
         * {
             margin: 0;
@@ -61,18 +61,35 @@
             font-weight: 500;
         }
 
-        .form-group input {
+        /* Password input container styles */
+        .password-container {
+            position: relative;
+        }
+
+        .password-container input {
             width: 100%;
-            padding: 12px 15px;
+            padding: 12px 40px 12px 15px; /* Thêm padding-right cho biểu tượng */
             border: 1px solid #ddd;
             border-radius: 5px;
             font-size: 16px;
             transition: border 0.3s;
         }
 
-        .form-group input:focus {
+        .password-container input:focus {
             border-color: #2575fc;
             outline: none;
+        }
+        
+        /* The eye icon */
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #666;
+            font-size: 18px;
+            user-select: none; /* Ngăn chặn việc chọn văn bản */
         }
 
         .btn {
@@ -139,7 +156,7 @@
     <div class="container">
         <div class="form-container" id="login-container">
             <div class="logo">
-                <h1>Kiểm phiếu</h1>
+                <h1>Quản lý Hụi</h1>
                 <p>Đăng nhập vào tài khoản của bạn</p>
             </div>
             
@@ -152,7 +169,10 @@
                 </div>
                 <div class="form-group">
                     <label for="login-password">Mật khẩu</label>
-                    <input type="password" id="login-password" required>
+                    <div class="password-container">
+                        <input type="password" id="login-password" required>
+                        <span class="password-toggle">👁️</span>
+                    </div>
                 </div>
                 <button type="submit" class="btn">Đăng nhập</button>
             </form>
@@ -164,7 +184,7 @@
         
         <div class="form-container hidden" id="register-container">
             <div class="logo">
-                <h1>Kiểm phiếu</h1>
+                <h1>Quản lý Hụi</h1>
                 <p>Tạo tài khoản mới</p>
             </div>
             
@@ -181,11 +201,17 @@
                 </div>
                 <div class="form-group">
                     <label for="register-password">Mật khẩu</label>
-                    <input type="password" id="register-password" minlength="6" required>
+                    <div class="password-container">
+                        <input type="password" id="register-password" minlength="6" required>
+                        <span class="password-toggle">👁️</span>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="confirm-password">Xác nhận mật khẩu</label>
-                    <input type="password" id="confirm-password" minlength="6" required>
+                    <div class="password-container">
+                        <input type="password" id="confirm-password" minlength="6" required>
+                        <span class="password-toggle">👁️</span>
+                    </div>
                 </div>
                 <button type="submit" class="btn">Đăng ký</button>
             </form>
@@ -196,22 +222,22 @@
         </div>
     </div>
 
-    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
     
     <script>
         // Firebase configuration
-        const firebaseConfig = { 
-  apiKey : "AIzaSyAt-OooTscmthbJXNcvy80RgPDA9T46-0w" , 
-  authDomain : "kiemphieu-45823.firebaseapp.com" , 
-  databaseURL : "https://kiemphieu-45823-default-rtdb.asia-southeast1.firebasedatabase.app" , 
-  projectId : "kiemphieu-45823" , 
-  storageBucket : "kiemphieu-45823.firebasestorage.app" , 
-  messagingSenderId : "908329514571" , 
-  appId : "1:908329514571:web:16b43df5b795e4de06bfce" 
-};
+        const firebaseConfig = {
+            apiKey: "AIzaSyCYV8na-Az2LAgpl6QM2Tiwr6Gm9yhXQZ0",
+            authDomain: "quan-ly-hui-8ad1c.firebaseapp.com",
+            databaseURL: "https://quan-ly-hui-8ad1c-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "quan-ly-hui-8ad1c",
+            storageBucket: "quan-ly-hui-8ad1c.firebasestorage.app",
+            messagingSenderId: "665511229865",
+            appId: "1:665511229865:web:fe44f814fff618e35e6cb8"
+        };
+
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
@@ -227,97 +253,34 @@
         const messageDiv = document.getElementById('message');
         const registerMessageDiv = document.getElementById('register-message');
 
+        // Toggle password visibility
+        document.querySelectorAll('.password-toggle').forEach(toggle => {
+            toggle.addEventListener('click', () => {
+                const passwordInput = toggle.previousElementSibling;
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                
+                // Thay đổi biểu tượng
+                toggle.textContent = type === 'password' ? '👁️' : '🙈';
+            });
+        });
+
         // Toggle between login and register forms
         showRegister.addEventListener('click', () => {
             loginContainer.classList.add('hidden');
             registerContainer.classList.remove('hidden');
+            // Xóa thông báo cũ khi chuyển form
+            hideMessage();
+            hideRegisterMessage();
         });
 
         showLogin.addEventListener('click', () => {
             registerContainer.classList.add('hidden');
             loginContainer.classList.remove('hidden');
+            // Xóa thông báo cũ khi chuyển form
+            hideMessage();
+            hideRegisterMessage();
         });
-
-        // Login function
-        Gemini
-
-2.5 Flash
-
-Trò chuyện với Gemini
-
-index
-HTML
-
-Lưu không được kiểm tra và chỉnh rules để lưu trữ mỗi user dữ liệu riêng
-
-
-
-
-
-Phân tích
-Được rồi. Để đảm bảo mỗi người dùng có thể lưu trữ dữ liệu riêng tư của họ một cách an toàn và ngăn người khác truy cập, bạn cần điều chỉnh các quy tắc bảo mật (security rules) của Firebase Realtime Database.
-
-1. Mở Security Rules
-Đầu tiên, bạn cần truy cập vào bảng điều khiển Firebase (Firebase Console) của dự án.
-
-Mở dự án Firebase của bạn.
-
-Từ menu bên trái, chọn Realtime Database.
-
-Chọn tab Rules.
-
-2. Thiết lập quy tắc cho dữ liệu người dùng
-Khi ở trong tab Rules, bạn sẽ thấy các quy tắc hiện tại của mình. Dựa trên cấu trúc code của bạn, dữ liệu người dùng được lưu trữ trong một node có tên là users/ và sau đó là ID người dùng (uid).
-Bạn nên thay thế các quy tắc mặc định bằng các quy tắc sau:
-
-JSON
-
-{
-  "rules": {
-    "users": {
-      "$uid": {
-        ".read": "auth != null && auth.uid == $uid",
-        ".write": "auth != null && auth.uid == $uid"
-      }
-    }
-  }
-}
-Sau đó, nhấp vào "Publish" để lưu các thay đổi.
-
-3. Giải thích các quy tắc
-"users": Quy tắc này áp dụng cho node chính users/ trong cơ sở dữ liệu của bạn.
-
-"$uid": Đây là một biến wildcard. Nó đại diện cho bất kỳ chuỗi con nào nằm ngay dưới node users/. Trong trường hợp này, nó sẽ khớp với ID duy nhất của người dùng (UID).
-
-".read": "auth != null && auth.uid == $uid":
-
-auth != null: Kiểm tra xem người dùng có được xác thực hay không (đã đăng nhập). Nếu chưa đăng nhập, auth sẽ là null.
-
-auth.uid == $uid: Kiểm tra xem UID của người dùng đã đăng nhập có khớp với UID trong đường dẫn dữ liệu mà họ đang cố đọc hay không. Điều này đảm bảo rằng chỉ người dùng đó mới có thể đọc dữ liệu trong thư mục UID của họ.
-
-".write": "auth != null && auth.uid == $uid":
-
-Tương tự như quy tắc đọc, quy tắc này đảm bảo rằng chỉ người dùng đã đăng nhập mới có thể ghi (tạo, cập nhật, xóa) dữ liệu trong thư mục UID của họ.
-
-Những quy tắc này tạo ra một hệ thống bảo mật mạnh mẽ và chặt chẽ cho cơ sở dữ liệu của bạn, cho phép mỗi người dùng chỉ có thể truy cập và chỉnh sửa dữ liệu của riêng họ, ngăn chặn hoàn toàn việc người dùng khác có thể xem hoặc thay đổi thông tin cá nhân của người khác.
-
-
-index
-HTML
-
-
-Nếu chưa đăng ký tài khoản thì báo chưa đăng ký tài khoản, nhập sai tên đăng nhập báo sai, nhập sai pass bái sai
-
-
-
-
-
-Phân tích
-Trong đoạn mã JavaScript của bạn, bạn đã xử lý các trường hợp lỗi đăng nhập và đăng ký. Tuy nhiên, để đáp ứng yêu cầu cụ thể của bạn, bạn cần điều chỉnh cách xử lý lỗi trong hàm loginForm.addEventListener.
-
-Đây là cách bạn có thể sửa đổi hàm này để hiển thị thông báo chính xác cho từng loại lỗi:
-
-JavaScript
 
         // Login function
         loginForm.addEventListener('submit', (e) => {
@@ -346,10 +309,13 @@ JavaScript
                         errorMessage = 'Tài khoản không tồn tại hoặc email không hợp lệ.';
                     } else if (errorCode === 'auth/wrong-password') {
                         errorMessage = 'Mật khẩu không chính xác.';
+                    } else {
+                        errorMessage = 'Đã xảy ra lỗi không xác định.';
                     }
                     
                     showMessage(errorMessage, 'error');
                 });
+        });
 
         // Register function
         registerForm.addEventListener('submit', (e) => {
@@ -380,7 +346,7 @@ JavaScript
                     });
                 })
                 .then(() => {
-                    showRegisterMessage('Đăng ký thành công!', 'success');
+                    showRegisterMessage('Đăng ký thành công! Vui lòng đăng nhập.', 'success');
                     
                     // Clear form
                     registerForm.reset();
@@ -402,23 +368,33 @@ JavaScript
                         errorMessage = 'Mật khẩu quá yếu (tối thiểu 6 ký tự).';
                     } else if (errorCode === 'auth/invalid-email') {
                         errorMessage = 'Email không hợp lệ.';
+                    } else {
+                        errorMessage = 'Đã xảy ra lỗi không xác định.';
                     }
                     
                     showRegisterMessage(errorMessage, 'error');
                 });
         });
 
-        // Helper functions to show messages
+        // Helper functions to show/hide messages
         function showMessage(text, type) {
             messageDiv.textContent = text;
             messageDiv.className = `message ${type}`;
             messageDiv.style.display = 'block';
+        }
+        
+        function hideMessage() {
+            messageDiv.style.display = 'none';
         }
 
         function showRegisterMessage(text, type) {
             registerMessageDiv.textContent = text;
             registerMessageDiv.className = `message ${type}`;
             registerMessageDiv.style.display = 'block';
+        }
+
+        function hideRegisterMessage() {
+            registerMessageDiv.style.display = 'none';
         }
     </script>
 </body>
