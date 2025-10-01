@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thông tin - Quản lý Phiếu bầu</title>
+  <style>
+    * {margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;}
+    body {background-color: #f5f7fa; color: #333;}
+    .container {display: flex; min-height: 100vh;}
+    .sidebar {width: 250px; background: linear-gradient(135deg, #1e3c72, #2a5298); color: white; padding: 20px 0; box-shadow: 2px 0 10px rgba(0,0,0,0.1);}
+    .logo {text-align: center; padding: 20px 0; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px;}
+    .logo h1 {font-size: 24px; font-weight: 600;}
+    .nav-links {list-style: none; padding: 0 15px;}
+    .nav-links li {margin-bottom: 10px;}
+    .nav-links a {display: flex; align-items: center; padding: 12px 15px; color: white; text-decoration: none; border-radius: 8px; transition: all 0.3s ease;}
+    .nav-links a:hover, .nav-links a.active {background-color: rgba(255,255,255,0.1);}
+    .nav-links i {margin-right: 10px; font-size: 18px;}
+    .logout {margin-top: 30px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;}
+    .main-content {flex: 1; padding: 30px;}
+    .header {display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;}
+    .header h2 {font-size: 28px; color: #2a5298;}
+    .user-info {display: flex; align-items: center; background: white; padding: 10px 20px; border-radius: 50px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);}
+    .user-info img {width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;}
+    .tabs {display: flex; margin-bottom: 20px; border-bottom: 1px solid #ddd;}
+    .tab {padding: 12px 24px; cursor: pointer; background: #f5f7fa; border: 1px solid #ddd; border-bottom: none; border-radius: 8px 8px 0 0; margin-right: 5px; transition: all 0.3s ease;}
+    .tab.active {background: white; border-color: #2a5298; color: #2a5298; font-weight: 600;}
+    .tab-content {display: none; background: white; padding: 25px; border-radius: 0 8px 8px 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.05);}
+    .tab-content.active {display: block;}
+    .form-group {margin-bottom: 20px;}
+    .form-group label {display: block; margin-bottom: 8px; font-weight: 600; color: #2a5298;}
+    .form-control {width: 100%; padding: 10px 15px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px;}
+    .form-control:focus {border-color: #2a5298; outline: none;}
+    .form-row {display: grid; grid-template-columns: 1fr 1fr; gap: 20px;}
+    .readonly-field {background-color: #f8f9fa; color: #666;}
+    table {width: 100%; border-collapse: collapse; margin-top: 15px;}
+    table th, table td {padding: 12px 15px; text-align: left; border-bottom: 1px solid #eee;}
+    table th {background-color: #f8f9fa; color: #2a5298; font-weight: 600;}
+    .btn {padding: 10px 20px; background: #2a5298; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px;}
+    .btn:hover {background: #1e3c72;}
+    .btn-danger {background: #dc3545;}
+    .btn-danger:hover {background: #c82333;}
+    .btn-outline {background: transparent; border: 1px solid #2a5298; color: #2a5298;}
+    .btn-outline:hover {background: #2a5298; color: white;}
+    .loading {text-align: center; padding: 20px; color: #666;}
+    .debug-info {background: #fff3cd; border: 1px solid #ffeaa7; padding: 10px; margin: 10px 0; border-radius: 5px; font-size: 12px;}
+    @media (max-width: 768px) {
+      .form-row {grid-template-columns: 1fr;}
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="sidebar">
+    <div class="logo"><h1>HỆ THỐNG BẦU CỬ</h1></div>
+    <ul class="nav-links">
+      <li><a href="thongtin.html" class="active"><i>ℹ️</i> Thông tin</a></li>
+      <li><a href="#" data-target="kiemphieu"><i>✅</i> Kiểm phiếu</a></li>
+      <li><a href="#" data-target="tonghop"><i>📈</i> Tổng hợp</a></li>
+      <li><a href="#" data-target="bienban"><i>📝</i> Biên bản</a></li>
+      <li class="logout"><a href="#" id="logout"><i>🚪</i> Đăng xuất</a></li>
+    </ul>
+  </div>
+  <div class="main-content">
+    <div class="header">
+      <h2>Quản lý Thông tin</h2>
+      <div class="user-info">
+        <img src="https://ui-avatars.com/api/?name=Admin&background=2a5298&color=fff" alt="User">
+        <span id="userName">Đang tải...</span>
+      </div>
+    </div> 
+    
+    <!-- Loading indicator -->
+    <div id="loading" class="loading">Đang tải dữ liệu...</div>
+    
+    <!-- Debug info -->
+    <div id="debugInfo" class="debug-info" style="display: none;">
+      <strong>Thông tin Debug:</strong>
+      <div id="debugContent"></div>
+    </div>
+    
+    <!-- Nội dung chính (ẩn ban đầu) -->
+    <div id="mainContent" style="display: none;">
+      <!-- Tabs -->
+      <div class="tabs">
+        <div class="tab active" data-tab="donvi">Thông tin đơn vị</div>
+        <div class="tab" data-tab="ungcu">Người ứng cử</div>
+        <div class="tab" data-tab="kiemphieu">Người kiểm phiếu</div>
+        <div class="tab" data-tab="chungkien">Người chứng kiến</div>
+      </div>
+      
+      <!-- Nội dung các tab -->
+      <div id="donvi" class="tab-content active">
+        <h3 style="margin-bottom: 20px; color: #2a5298;">Thông tin đơn vị bầu cử</h3>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="tinhThanh">Tỉnh, Thành phố</label>
+            <input type="text" id="tinhThanh" class="form-control" placeholder="Nhập tỉnh, thành phố">
+          </div>
+          <div class="form-group">
+            <label for="phuongXa">Phường, xã</label>
+            <input type="text" id="phuongXa" class="form-control" placeholder="Nhập phường, xã">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="khoa">Khóa</label>
+            <input type="text" id="khoa" class="form-control" placeholder="Nhập khóa">
+          </div>
+          <div class="form-group">
+            <label for="donViBauCu">Đơn vị bầu cử số</label>
+            <input type="text" id="donViBauCu" class="form-control" placeholder="Nhập đơn vị bầu cử">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="gomCo">Gồm có</label>
+          <textarea id="gomCo" class="form-control" placeholder="Mô tả các thành phần gồm có" rows="3"></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="khuVucBoPhieu">Khu vực bỏ phiếu số</label>
+            <input type="text" id="khuVucBoPhieu" class="form-control" placeholder="Nhập khu vực bỏ phiếu">
+          </div>
+          <div class="form-group">
+            <label for="nhiemKy">Nhiệm kỳ</label>
+            <input type="text" id="nhiemKy" class="form-control" placeholder="Nhập nhiệm kỳ">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="bauCuCap">Bầu cử HĐND cấp</label>
+          <select id="bauCuCap" class="form-control">
+            <option value="">-- Chọn cấp bầu cử --</option>
+            <option value="quoc_hoi">Quốc hội</option>
+            <option value="thanh_pho">Thành Phố</option>
+            <option value="phuong">Phường</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="soNguoiUngCu">Số người ứng cử</label>
+            <input type="number" id="soNguoiUngCu" class="form-control" placeholder="Nhập số người ứng cử" min="0">
+          </div>
+          <div class="form-group">
+            <label for="soNguoiDuocBau">Số người được bầu</label>
+            <input type="number" id="soNguoiDuocBau" class="form-control" placeholder="Nhập số người được bầu" min="0">
+          </div>
+          <div class="form-group">
+            <label for="soDu">Số dư</label>
+            <input type="number" id="soDu" class="form-control readonly-field" readonly>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="emailKiemPhieu">Địa chỉ Gmail người kiểm phiếu</label>
+          <input type="email" id="emailKiemPhieu" class="form-control" placeholder="Nhập địa chỉ Gmail">
+        </div>
+
+        <div class="form-group">
+          <button id="btnLuuDonVi" class="btn">Lưu thông tin đơn vị</button>
+          <button id="btnTestFirebase" class="btn-outline" style="margin-left: 10px;">Test Firebase</button>
+        </div>
+      </div>
+
+      <div id="ungcu" class="tab-content">
+        <h3 style="margin-bottom: 20px; color: #2a5298;">Quản lý người ứng cử</h3>
+        <div class="form-group">
+          <label>Họ tên ứng cử</label>
+          <input id="hoTenUngCu" class="form-control" placeholder="Nhập họ tên người ứng cử">
+        </div>
+        <button id="btnThemUngCu" class="btn">Thêm ứng cử</button>
+        <table id="tableUngCu"><thead><tr><th>Họ tên</th><th>Thao tác</th></tr></thead><tbody></tbody></table>
+      </div>
+
+      <div id="kiemphieu" class="tab-content">
+        <h3 style="margin-bottom: 20px; color: #2a5298;">Quản lý người kiểm phiếu</h3>
+        <div class="form-group">
+          <label>Họ tên</label>
+          <input id="hoTenKiemPhieu" class="form-control" placeholder="Nhập họ tên người kiểm phiếu">
+        </div>
+        <div class="form-group">
+          <label>Chức vụ</label>
+          <input id="chucVuKiemPhieu" class="form-control" placeholder="Nhập chức vụ">
+        </div>
+        <button id="btnThemKiemPhieu" class="btn">Thêm kiểm phiếu</button>
+        <table id="tableKiemPhieu"><thead><tr><th>Họ tên</th><th>Chức vụ</th><th>Thao tác</th></tr></thead><tbody></tbody></table>
+      </div>
+
+      <div id="chungkien" class="tab-content">
+        <h3 style="margin-bottom: 20px; color: #2a5298;">Quản lý người chứng kiến</h3>
+        <div class="form-group">
+          <label>Họ tên</label>
+          <input id="hoTenChungKien" class="form-control" placeholder="Nhập họ tên người chứng kiến">
+        </div>
+        <div class="form-group">
+          <label>Địa chỉ</label>
+          <input id="diaChiChungKien" class="form-control" placeholder="Nhập địa chỉ">
+        </div>
+        <button id="btnThemChungKien" class="btn">Thêm chứng kiến</button>
+        <table id="tableChungKien"><thead><tr><th>Họ tên</th><th>Địa chỉ</th><th>Thao tác</th></tr></thead><tbody></tbody></table>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+<script>
+// Firebase config
+const firebaseConfig = { 
+  apiKey: "AIzaSyAt-OooTscmthbJXNcvy80RgPDA9T46-0w", 
+  authDomain: "kiemphieu-45823.firebaseapp.com", 
+  databaseURL: "https://kiemphieu-45823-default-rtdb.asia-southeast1.firebasedatabase.app", 
+  projectId: "kiemphieu-45823", 
+  storageBucket: "kiemphieu-45823.firebasestorage.app", 
+  messagingSenderId: "908329514571", 
+  appId: "1:908329514571:web:16b43df5b795e4de06bfce" 
+};
+
+// Debug function
+function debug(message) {
+  console.log('DEBUG:', message);
+  const debugDiv = document.getElementById('debugInfo');
+  const debugContent = document.getElementById('debugContent');
+  if (debugDiv && debugContent) {
+    debugDiv.style.display = 'block';
+    debugContent.innerHTML += '<div>' + new Date().toLocaleTimeString() + ': ' + message + '</div>';
+  }
+}
+
+// Initialize Firebase
+try {
+  firebase.initializeApp(firebaseConfig);
+  debug('Firebase initialized successfully');
+} catch (error) {
+  debug('Firebase initialization error: ' + error.message);
+}
+
+const db = firebase.database();
+const auth = firebase.auth();
+
+let currentUser = null;
+
+// Simple user path function
+function getUserPath(path = '') {
+  if (!currentUser || !currentUser.uid) {
+    throw new Error('User not authenticated');
+  }
+  return `users/${currentUser.uid}${path ? '/' + path : ''}`;
+}
+
+// Test Firebase connection
+async function testFirebase() {
+  try {
+    debug('Testing Firebase connection...');
+    const testRef = db.ref('test');
+    await testRef.set({
+      timestamp: new Date().toISOString(),
+      message: 'Test connection'
+    });
+    debug('Firebase write test: SUCCESS');
+    
+    const snapshot = await testRef.once('value');
+    debug('Firebase read test: SUCCESS - ' + JSON.stringify(snapshot.val()));
+    
+    return true;
+  } catch (error) {
+    debug('Firebase test FAILED: ' + error.message);
+    return false;
+  }
+}
+
+// Calculate remaining seats
+function tinhSoDu() {
+  const soUngCu = parseInt(document.getElementById('soNguoiUngCu').value) || 0;
+  const soDuocBau = parseInt(document.getElementById('soNguoiDuocBau').value) || 0;
+  const soDu = soUngCu - soDuocBau;
+  document.getElementById('soDu').value = soDu >= 0 ? soDu : 0;
+}
+
+// Add navigation for sidebar
+function initNavigation() {
+  const navLinks = document.querySelectorAll('.nav-links a[data-target]');
+  navLinks.forEach(link => {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      const targetTab = this.getAttribute('data-target');
+      
+      // Switch to target tab
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      
+      const targetTabElement = document.querySelector(`.tab[data-tab="${targetTab}"]`);
+      const targetContentElement = document.getElementById(targetTab);
+      
+      if (targetTabElement && targetContentElement) {
+        targetTabElement.classList.add('active');
+        targetContentElement.classList.add('active');
+        
+        // Reload data for the tab if needed
+        if (targetTab === 'kiemphieu') {
+          loadKiemPhieu();
+        } else if (targetTab === 'chungkien') {
+          loadChungKien();
+        }
+      }
+    });
+  });
+}
+
+// Load unit data
+async function loadDonVi() {
+  try {
+    const userPath = getUserPath('donVi');
+    debug('Loading donVi from: ' + userPath);
+    
+    const snapshot = await db.ref(userPath).once('value');
+    
+    if (snapshot.exists()) {
+      const data = snapshot.val();
+      debug('DonVi data found: ' + JSON.stringify(data));
+      
+      // Fill form fields
+      document.getElementById('tinhThanh').value = data.tinhThanh || '';
+      document.getElementById('phuongXa').value = data.phuongXa || '';
+      document.getElementById('khoa').value = data.khoa || '';
+      document.getElementById('donViBauCu').value = data.donViBauCu || '';
+      document.getElementById('gomCo').value = data.gomCo || '';
+      document.getElementById('khuVucBoPhieu').value = data.khuVucBoPhieu || '';
+      document.getElementById('nhiemKy').value = data.nhiemKy || '';
+      document.getElementById('bauCuCap').value = data.bauCuCap || '';
+      document.getElementById('soNguoiUngCu').value = data.soNguoiUngCu || '';
+      document.getElementById('soNguoiDuocBau').value = data.soNguoiDuocBau || '';
+      document.getElementById('emailKiemPhieu').value = data.emailKiemPhieu || '';
+      
+      tinhSoDu();
+      debug('DonVi data loaded successfully');
+    } else {
+      debug('No donVi data found');
+    }
+  } catch (error) {
+    debug('Error loading donVi: ' + error.message);
+  }
+}
+
+// Save unit data
+async function saveDonVi() {
+  try {
+    const userPath = getUserPath('donVi');
+    const data = {
+      tinhThanh: document.getElementById('tinhThanh').value.trim(),
+      phuongXa: document.getElementById('phuongXa').value.trim(),
+      khoa: document.getElementById('khoa').value.trim(),
+      donViBauCu: document.getElementById('donViBauCu').value.trim(),
+      gomCo: document.getElementById('gomCo').value.trim(),
+      khuVucBoPhieu: document.getElementById('khuVucBoPhieu').value.trim(),
+      nhiemKy: document.getElementById('nhiemKy').value.trim(),
+      bauCuCap: document.getElementById('bauCuCap').value,
+      soNguoiUngCu: parseInt(document.getElementById('soNguoiUngCu').value) || 0,
+      soNguoiDuocBau: parseInt(document.getElementById('soNguoiDuocBau').value) || 0,
+      soDu: parseInt(document.getElementById('soDu').value) || 0,
+      emailKiemPhieu: document.getElementById('emailKiemPhieu').value.trim(),
+      lastUpdated: new Date().toISOString()
+    };
+    
+    debug('Saving donVi to: ' + userPath);
+    await db.ref(userPath).set(data);
+    debug('DonVi saved successfully');
+    alert('Đã lưu thông tin đơn vị!');
+  } catch (error) {
+    debug('Error saving donVi: ' + error.message);
+    alert('Lỗi khi lưu: ' + error.message);
+  }
+}
+
+// Load candidates
+async function loadUngCu() {
+  try {
+    const userPath = getUserPath('ungCu');
+    const tableBody = document.querySelector('#tableUngCu tbody');
+    tableBody.innerHTML = '';
+    
+    debug('Loading ungCu from: ' + userPath);
+    const snapshot = await db.ref(userPath).once('value');
+    
+    if (snapshot.exists()) {
+      snapshot.forEach(child => {
+        const data = child.val();
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${data.hoTen}</td>
+          <td>
+            <button class="btn-outline" onclick="editUngCu('${child.key}')">Sửa</button>
+            <button class="btn-danger" onclick="deleteUngCu('${child.key}')">Xóa</button>
+          </td>
+        `;
+        tableBody.appendChild(row);
+      });
+      debug('UngCu loaded: ' + snapshot.numChildren() + ' items');
+    } else {
+      tableBody.innerHTML = '<tr><td colspan="2" style="text-align: center; color: #666;">Chưa có dữ liệu</td></tr>';
+      debug('No ungCu data found');
+    }
+  } catch (error) {
+    debug('Error loading ungCu: ' + error.message);
+    document.querySelector('#tableUngCu tbody').innerHTML = '<tr><td colspan="2" style="text-align: center; color: red;">Lỗi tải dữ liệu</td></tr>';
+  }
+}
+
+
+// Add candidate
+async function addUngCu() {
+  const name = document.getElementById('hoTenUngCu').value.trim();
+  if (!name) return alert('Vui lòng nhập tên!');
+  
+  try {
+    const userPath = getUserPath('ungCu');
+    await db.ref(userPath).push({
+      hoTen: name,
+      createdAt: new Date().toISOString()
+    });
+    
+    document.getElementById('hoTenUngCu').value = '';
+    loadUngCu();
+    debug('UngCu added: ' + name);
+  } catch (error) {
+    debug('Error adding ungCu: ' + error.message);
+    alert('Lỗi khi thêm: ' + error.message);
+  }
+}
+
+// Edit candidate
+async function editUngCu(id) {
+  try {
+    const userPath = getUserPath('ungCu/' + id);
+    const snapshot = await db.ref(userPath).once('value');
+    const data = snapshot.val();
+    
+    const newName = prompt('Sửa tên ứng cử:', data.hoTen);
+    if (newName && newName !== data.hoTen) {
+      await db.ref(userPath).update({
+        hoTen: newName,
+        updatedAt: new Date().toISOString()
+      });
+      loadUngCu();
+    }
+  } catch (error) {
+    debug('Error editing ungCu: ' + error.message);
+    alert('Lỗi: ' + error.message);
+  }
+}
+
+// Delete candidate
+async function deleteUngCu(id) {
+  if (confirm('Bạn có chắc muốn xóa người ứng cử này?')) {
+    try {
+      const userPath = getUserPath('ungCu/' + id);
+      await db.ref(userPath).remove();
+      loadUngCu();
+    } catch (error) {
+      debug('Error deleting ungCu: ' + error.message);
+      alert('Lỗi: ' + error.message);
+    }
+  }
+}
+
+// Similar functions for kiemPhieu and chungKien (truncated for brevity)
+// [Các hàm loadKiemPhieu, addKiemPhieu, editKiemPhieu, deleteKiemPhieu...]
+// [Các hàm loadChungKien, addChungKien, editChungKien, deleteChungKien...]
+
+// Load vote counters
+async function loadKiemPhieu() {
+  try {
+    const userPath = getUserPath('kiemPhieu');
+    const tableBody = document.querySelector('#tableKiemPhieu tbody');
+    tableBody.innerHTML = '';
+    
+    debug('Loading kiemPhieu from: ' + userPath);
+    const snapshot = await db.ref(userPath).once('value');
+    
+    if (snapshot.exists()) {
+      snapshot.forEach(child => {
+        const data = child.val();
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${data.hoTen}</td>
+          <td>${data.chucVu}</td>
+          <td>
+            <button class="btn-outline" onclick="editKiemPhieu('${child.key}')">Sửa</button>
+            <button class="btn-danger" onclick="deleteKiemPhieu('${child.key}')">Xóa</button>
+          </td>
+        `;
+        tableBody.appendChild(row);
+      });
+      debug('KiemPhieu loaded: ' + snapshot.numChildren() + ' items');
+    } else {
+      tableBody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: #666;">Chưa có dữ liệu</td></tr>';
+      debug('No kiemPhieu data found');
+    }
+  } catch (error) {
+    debug('Error loading kiemPhieu: ' + error.message);
+    document.querySelector('#tableKiemPhieu tbody').innerHTML = '<tr><td colspan="3" style="text-align: center; color: red;">Lỗi tải dữ liệu</td></tr>';
+  }
+}
+
+// Add vote counter
+async function addKiemPhieu() {
+  const name = document.getElementById('hoTenKiemPhieu').value.trim();
+  const position = document.getElementById('chucVuKiemPhieu').value.trim();
+  if (!name || !position) return alert('Vui lòng nhập đầy đủ thông tin!');
+  
+  try {
+    const userPath = getUserPath('kiemPhieu');
+    await db.ref(userPath).push({
+      hoTen: name,
+      chucVu: position,
+      createdAt: new Date().toISOString()
+    });
+    
+    document.getElementById('hoTenKiemPhieu').value = '';
+    document.getElementById('chucVuKiemPhieu').value = '';
+    loadKiemPhieu();
+    debug('KiemPhieu added: ' + name);
+  } catch (error) {
+    debug('Error adding kiemPhieu: ' + error.message);
+    alert('Lỗi khi thêm: ' + error.message);
+  }
+}
+
+// Edit vote counter
+async function editKiemPhieu(id) {
+  try {
+    const userPath = getUserPath('kiemPhieu/' + id);
+    const snapshot = await db.ref(userPath).once('value');
+    const data = snapshot.val();
+    
+    const newName = prompt('Sửa tên kiểm phiếu:', data.hoTen);
+    const newPosition = prompt('Sửa chức vụ:', data.chucVu);
+    
+    if (newName && newPosition) {
+      await db.ref(userPath).update({
+        hoTen: newName,
+        chucVu: newPosition,
+        updatedAt: new Date().toISOString()
+      });
+      loadKiemPhieu();
+    }
+  } catch (error) {
+    debug('Error editing kiemPhieu: ' + error.message);
+    alert('Lỗi: ' + error.message);
+  }
+}
+
+// Delete vote counter
+async function deleteKiemPhieu(id) {
+  if (confirm('Bạn có chắc muốn xóa người kiểm phiếu này?')) {
+    try {
+      const userPath = getUserPath('kiemPhieu/' + id);
+      await db.ref(userPath).remove();
+      loadKiemPhieu();
+    } catch (error) {
+      debug('Error deleting kiemPhieu: ' + error.message);
+      alert('Lỗi: ' + error.message);
+    }
+  }
+}
+
+// Load witnesses
+async function loadChungKien() {
+  try {
+    const userPath = getUserPath('chungKien');
+    const tableBody = document.querySelector('#tableChungKien tbody');
+    tableBody.innerHTML = '';
+    
+    debug('Loading chungKien from: ' + userPath);
+    const snapshot = await db.ref(userPath).once('value');
+    
+    if (snapshot.exists()) {
+      snapshot.forEach(child => {
+        const data = child.val();
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${data.hoTen}</td>
+          <td>${data.diaChi}</td>
+          <td>
+            <button class="btn-outline" onclick="editChungKien('${child.key}')">Sửa</button>
+            <button class="btn-danger" onclick="deleteChungKien('${child.key}')">Xóa</button>
+          </td>
+        `;
+        tableBody.appendChild(row);
+      });
+      debug('ChungKien loaded: ' + snapshot.numChildren() + ' items');
+    } else {
+      tableBody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: #666;">Chưa có dữ liệu</td></tr>';
+      debug('No chungKien data found');
+    }
+  } catch (error) {
+    debug('Error loading chungKien: ' + error.message);
+    document.querySelector('#tableChungKien tbody').innerHTML = '<tr><td colspan="3" style="text-align: center; color: red;">Lỗi tải dữ liệu</td></tr>';
+  }
+}
+
+// Add witness
+async function addChungKien() {
+  const name = document.getElementById('hoTenChungKien').value.trim();
+  const address = document.getElementById('diaChiChungKien').value.trim();
+  if (!name || !address) return alert('Vui lòng nhập đầy đủ thông tin!');
+  
+  try {
+    const userPath = getUserPath('chungKien');
+    await db.ref(userPath).push({
+      hoTen: name,
+      diaChi: address,
+      createdAt: new Date().toISOString()
+    });
+    
+    document.getElementById('hoTenChungKien').value = '';
+    document.getElementById('diaChiChungKien').value = '';
+    loadChungKien();
+    debug('ChungKien added: ' + name);
+  } catch (error) {
+    debug('Error adding chungKien: ' + error.message);
+    alert('Lỗi khi thêm: ' + error.message);
+  }
+}
+
+// Edit witness
+async function editChungKien(id) {
+  try {
+    const userPath = getUserPath('chungKien/' + id);
+    const snapshot = await db.ref(userPath).once('value');
+    const data = snapshot.val();
+    
+    const newName = prompt('Sửa tên chứng kiến:', data.hoTen);
+    const newAddress = prompt('Sửa địa chỉ:', data.diaChi);
+    
+    if (newName && newAddress) {
+      await db.ref(userPath).update({
+        hoTen: newName,
+        diaChi: newAddress,
+        updatedAt: new Date().toISOString()
+      });
+      loadChungKien();
+    }
+  } catch (error) {
+    debug('Error editing chungKien: ' + error.message);
+    alert('Lỗi: ' + error.message);
+  }
+}
+
+// Delete witness
+async function deleteChungKien(id) {
+  if (confirm('Bạn có chắc muốn xóa người chứng kiến này?')) {
+    try {
+      const userPath = getUserPath('chungKien/' + id);
+      await db.ref(userPath).remove();
+      loadChungKien();
+    } catch (error) {
+      debug('Error deleting chungKien: ' + error.message);
+      alert('Lỗi: ' + error.message);
+    }
+  }
+}
+
+// Initialize tabs
+function initTabs() {
+  const tabs = document.querySelectorAll('.tab');
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      
+      tab.classList.add('active');
+      document.getElementById(tab.dataset.tab).classList.add('active');
+    });
+  });
+}
+
+// Initialize event listeners
+function initEventListeners() {
+  // Unit tab
+  document.getElementById('btnLuuDonVi').addEventListener('click', saveDonVi);
+  document.getElementById('btnTestFirebase').addEventListener('click', testFirebase);
+  document.getElementById('soNguoiUngCu').addEventListener('input', tinhSoDu);
+  document.getElementById('soNguoiDuocBau').addEventListener('input', tinhSoDu);
+  
+  // Candidate tab
+  document.getElementById('btnThemUngCu').addEventListener('click', addUngCu);
+
+  // Vote counters tab
+  document.getElementById('btnThemKiemPhieu').addEventListener('click', addKiemPhieu);
+  
+  // Witnesses tab
+  document.getElementById('btnThemChungKien').addEventListener('click', addChungKien);
+  
+  // Add similar listeners for other tabs...
+}
+
+// Load all data
+function loadAllData() {
+  debug('Loading all data...');
+  loadDonVi();
+  loadUngCu();
+  loadKiemPhieu();
+  loadChungKien();
+}
+
+// Main initialization
+function initApp() {
+  auth.onAuthStateChanged(async (user) => {
+    const loadingElement = document.getElementById('loading');
+    const mainContentElement = document.getElementById('mainContent');
+    
+    if (user) {
+      currentUser = user;
+      document.getElementById('userName').textContent = user.email || 'Quản trị viên';
+      debug('User authenticated: ' + user.email + ' (UID: ' + user.uid + ')');
+      
+      // Test Firebase first
+      const firebaseWorking = await testFirebase();
+      
+      if (firebaseWorking) {
+        loadingElement.style.display = 'none';
+        mainContentElement.style.display = 'block';
+        
+        initTabs();
+        initNavigation(); // Thêm dòng này
+        initEventListeners();
+        loadAllData();
+        
+        debug('Application initialized successfully');
+      } else {
+        loadingElement.innerHTML = 'Lỗi kết nối Firebase. Vui lòng thử lại.';
+      }
+    } else {
+      debug('User not authenticated, redirecting...');
+      loadingElement.innerHTML = 'Chưa đăng nhập, đang chuyển hướng...';
+      setTimeout(() => {
+        window.location.href = 'index.html';
+      }, 2000);
+    }
+  });
+}
+
+// Logout
+document.getElementById('logout').addEventListener('click', function(e) {
+  e.preventDefault();
+  if (confirm('Bạn có chắc muốn đăng xuất?')) {
+    auth.signOut().then(() => {
+      alert('Đã đăng xuất!');
+      window.location.href = 'index.html';
+    }).catch(error => {
+      debug('Logout error: ' + error.message);
+    });
+  }
+});
+
+// Start application
+window.addEventListener('load', function() {
+  debug('Page loaded, initializing app...');
+  initApp();
+});
+</script>
+</body>
+</html>
