@@ -43,7 +43,6 @@
     .btn-outline {background: transparent; border: 1px solid #2a5298; color: #2a5298;}
     .btn-outline:hover {background: #2a5298; color: white;}
     .loading {text-align: center; padding: 20px; color: #666;}
-    .debug-info {background: #fff3cd; border: 1px solid #ffeaa7; padding: 10px; margin: 10px 0; border-radius: 5px; font-size: 12px;}
     @media (max-width: 768px) {
       .form-row {grid-template-columns: 1fr;}
     }
@@ -72,12 +71,6 @@
     
     <!-- Loading indicator -->
     <div id="loading" class="loading">Đang tải dữ liệu...</div>
-    
-    <!-- Debug info -->
-    <div id="debugInfo" class="debug-info" style="display: none;">
-      <strong>Thông tin Debug:</strong>
-      <div id="debugContent"></div>
-    </div>
     
     <!-- Nội dung chính (ẩn ban đầu) -->
     <div id="mainContent" style="display: none;">
@@ -163,7 +156,6 @@
 
         <div class="form-group">
           <button id="btnLuuDonVi" class="btn">Lưu thông tin đơn vị</button>
-          <button id="btnTestFirebase" class="btn-outline" style="margin-left: 10px;">Test Firebase</button>
         </div>
       </div>
 
@@ -222,24 +214,8 @@ const firebaseConfig = {
   appId: "1:908329514571:web:16b43df5b795e4de06bfce" 
 };
 
-// Debug function
-function debug(message) {
-  console.log('DEBUG:', message);
-  const debugDiv = document.getElementById('debugInfo');
-  const debugContent = document.getElementById('debugContent');
-  if (debugDiv && debugContent) {
-    debugDiv.style.display = 'block';
-    debugContent.innerHTML += '<div>' + new Date().toLocaleTimeString() + ': ' + message + '</div>';
-  }
-}
-
 // Initialize Firebase
-try {
-  firebase.initializeApp(firebaseConfig);
-  debug('Firebase initialized successfully');
-} catch (error) {
-  debug('Firebase initialization error: ' + error.message);
-}
+firebase.initializeApp(firebaseConfig);
 
 const db = firebase.database();
 const auth = firebase.auth();
@@ -252,27 +228,6 @@ function getUserPath(path = '') {
     throw new Error('User not authenticated');
   }
   return `users/${currentUser.uid}${path ? '/' + path : ''}`;
-}
-
-// Test Firebase connection
-async function testFirebase() {
-  try {
-    debug('Testing Firebase connection...');
-    const testRef = db.ref('test');
-    await testRef.set({
-      timestamp: new Date().toISOString(),
-      message: 'Test connection'
-    });
-    debug('Firebase write test: SUCCESS');
-    
-    const snapshot = await testRef.once('value');
-    debug('Firebase read test: SUCCESS - ' + JSON.stringify(snapshot.val()));
-    
-    return true;
-  } catch (error) {
-    debug('Firebase test FAILED: ' + error.message);
-    return false;
-  }
 }
 
 // Calculate remaining seats
@@ -317,13 +272,11 @@ function initNavigation() {
 async function loadDonVi() {
   try {
     const userPath = getUserPath('donVi');
-    debug('Loading donVi from: ' + userPath);
     
     const snapshot = await db.ref(userPath).once('value');
     
     if (snapshot.exists()) {
       const data = snapshot.val();
-      debug('DonVi data found: ' + JSON.stringify(data));
       
       // Fill form fields
       document.getElementById('tinhThanh').value = data.tinhThanh || '';
@@ -339,12 +292,10 @@ async function loadDonVi() {
       document.getElementById('emailKiemPhieu').value = data.emailKiemPhieu || '';
       
       tinhSoDu();
-      debug('DonVi data loaded successfully');
-    } else {
-      debug('No donVi data found');
     }
   } catch (error) {
-    debug('Error loading donVi: ' + error.message);
+    console.error('Error loading donVi:', error);
+    alert('Lỗi khi tải thông tin đơn vị: ' + error.message);
   }
 }
 
@@ -368,12 +319,10 @@ async function saveDonVi() {
       lastUpdated: new Date().toISOString()
     };
     
-    debug('Saving donVi to: ' + userPath);
     await db.ref(userPath).set(data);
-    debug('DonVi saved successfully');
     alert('Đã lưu thông tin đơn vị!');
   } catch (error) {
-    debug('Error saving donVi: ' + error.message);
+    console.error('Error saving donVi:', error);
     alert('Lỗi khi lưu: ' + error.message);
   }
 }
@@ -385,7 +334,6 @@ async function loadUngCu() {
     const tableBody = document.querySelector('#tableUngCu tbody');
     tableBody.innerHTML = '';
     
-    debug('Loading ungCu from: ' + userPath);
     const snapshot = await db.ref(userPath).once('value');
     
     if (snapshot.exists()) {
@@ -401,17 +349,14 @@ async function loadUngCu() {
         `;
         tableBody.appendChild(row);
       });
-      debug('UngCu loaded: ' + snapshot.numChildren() + ' items');
     } else {
       tableBody.innerHTML = '<tr><td colspan="2" style="text-align: center; color: #666;">Chưa có dữ liệu</td></tr>';
-      debug('No ungCu data found');
     }
   } catch (error) {
-    debug('Error loading ungCu: ' + error.message);
+    console.error('Error loading ungCu:', error);
     document.querySelector('#tableUngCu tbody').innerHTML = '<tr><td colspan="2" style="text-align: center; color: red;">Lỗi tải dữ liệu</td></tr>';
   }
 }
-
 
 // Add candidate
 async function addUngCu() {
@@ -427,9 +372,8 @@ async function addUngCu() {
     
     document.getElementById('hoTenUngCu').value = '';
     loadUngCu();
-    debug('UngCu added: ' + name);
   } catch (error) {
-    debug('Error adding ungCu: ' + error.message);
+    console.error('Error adding ungCu:', error);
     alert('Lỗi khi thêm: ' + error.message);
   }
 }
@@ -450,7 +394,7 @@ async function editUngCu(id) {
       loadUngCu();
     }
   } catch (error) {
-    debug('Error editing ungCu: ' + error.message);
+    console.error('Error editing ungCu:', error);
     alert('Lỗi: ' + error.message);
   }
 }
@@ -463,15 +407,11 @@ async function deleteUngCu(id) {
       await db.ref(userPath).remove();
       loadUngCu();
     } catch (error) {
-      debug('Error deleting ungCu: ' + error.message);
+      console.error('Error deleting ungCu:', error);
       alert('Lỗi: ' + error.message);
     }
   }
 }
-
-// Similar functions for kiemPhieu and chungKien (truncated for brevity)
-// [Các hàm loadKiemPhieu, addKiemPhieu, editKiemPhieu, deleteKiemPhieu...]
-// [Các hàm loadChungKien, addChungKien, editChungKien, deleteChungKien...]
 
 // Load vote counters
 async function loadKiemPhieu() {
@@ -480,7 +420,6 @@ async function loadKiemPhieu() {
     const tableBody = document.querySelector('#tableKiemPhieu tbody');
     tableBody.innerHTML = '';
     
-    debug('Loading kiemPhieu from: ' + userPath);
     const snapshot = await db.ref(userPath).once('value');
     
     if (snapshot.exists()) {
@@ -497,13 +436,11 @@ async function loadKiemPhieu() {
         `;
         tableBody.appendChild(row);
       });
-      debug('KiemPhieu loaded: ' + snapshot.numChildren() + ' items');
     } else {
       tableBody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: #666;">Chưa có dữ liệu</td></tr>';
-      debug('No kiemPhieu data found');
     }
   } catch (error) {
-    debug('Error loading kiemPhieu: ' + error.message);
+    console.error('Error loading kiemPhieu:', error);
     document.querySelector('#tableKiemPhieu tbody').innerHTML = '<tr><td colspan="3" style="text-align: center; color: red;">Lỗi tải dữ liệu</td></tr>';
   }
 }
@@ -525,9 +462,8 @@ async function addKiemPhieu() {
     document.getElementById('hoTenKiemPhieu').value = '';
     document.getElementById('chucVuKiemPhieu').value = '';
     loadKiemPhieu();
-    debug('KiemPhieu added: ' + name);
   } catch (error) {
-    debug('Error adding kiemPhieu: ' + error.message);
+    console.error('Error adding kiemPhieu:', error);
     alert('Lỗi khi thêm: ' + error.message);
   }
 }
@@ -551,7 +487,7 @@ async function editKiemPhieu(id) {
       loadKiemPhieu();
     }
   } catch (error) {
-    debug('Error editing kiemPhieu: ' + error.message);
+    console.error('Error editing kiemPhieu:', error);
     alert('Lỗi: ' + error.message);
   }
 }
@@ -564,7 +500,7 @@ async function deleteKiemPhieu(id) {
       await db.ref(userPath).remove();
       loadKiemPhieu();
     } catch (error) {
-      debug('Error deleting kiemPhieu: ' + error.message);
+      console.error('Error deleting kiemPhieu:', error);
       alert('Lỗi: ' + error.message);
     }
   }
@@ -577,7 +513,6 @@ async function loadChungKien() {
     const tableBody = document.querySelector('#tableChungKien tbody');
     tableBody.innerHTML = '';
     
-    debug('Loading chungKien from: ' + userPath);
     const snapshot = await db.ref(userPath).once('value');
     
     if (snapshot.exists()) {
@@ -594,13 +529,11 @@ async function loadChungKien() {
         `;
         tableBody.appendChild(row);
       });
-      debug('ChungKien loaded: ' + snapshot.numChildren() + ' items');
     } else {
       tableBody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: #666;">Chưa có dữ liệu</td></tr>';
-      debug('No chungKien data found');
     }
   } catch (error) {
-    debug('Error loading chungKien: ' + error.message);
+    console.error('Error loading chungKien:', error);
     document.querySelector('#tableChungKien tbody').innerHTML = '<tr><td colspan="3" style="text-align: center; color: red;">Lỗi tải dữ liệu</td></tr>';
   }
 }
@@ -622,9 +555,8 @@ async function addChungKien() {
     document.getElementById('hoTenChungKien').value = '';
     document.getElementById('diaChiChungKien').value = '';
     loadChungKien();
-    debug('ChungKien added: ' + name);
   } catch (error) {
-    debug('Error adding chungKien: ' + error.message);
+    console.error('Error adding chungKien:', error);
     alert('Lỗi khi thêm: ' + error.message);
   }
 }
@@ -648,7 +580,7 @@ async function editChungKien(id) {
       loadChungKien();
     }
   } catch (error) {
-    debug('Error editing chungKien: ' + error.message);
+    console.error('Error editing chungKien:', error);
     alert('Lỗi: ' + error.message);
   }
 }
@@ -661,7 +593,7 @@ async function deleteChungKien(id) {
       await db.ref(userPath).remove();
       loadChungKien();
     } catch (error) {
-      debug('Error deleting chungKien: ' + error.message);
+      console.error('Error deleting chungKien:', error);
       alert('Lỗi: ' + error.message);
     }
   }
@@ -685,7 +617,6 @@ function initTabs() {
 function initEventListeners() {
   // Unit tab
   document.getElementById('btnLuuDonVi').addEventListener('click', saveDonVi);
-  document.getElementById('btnTestFirebase').addEventListener('click', testFirebase);
   document.getElementById('soNguoiUngCu').addEventListener('input', tinhSoDu);
   document.getElementById('soNguoiDuocBau').addEventListener('input', tinhSoDu);
   
@@ -697,13 +628,10 @@ function initEventListeners() {
   
   // Witnesses tab
   document.getElementById('btnThemChungKien').addEventListener('click', addChungKien);
-  
-  // Add similar listeners for other tabs...
 }
 
 // Load all data
 function loadAllData() {
-  debug('Loading all data...');
   loadDonVi();
   loadUngCu();
   loadKiemPhieu();
@@ -719,26 +647,15 @@ function initApp() {
     if (user) {
       currentUser = user;
       document.getElementById('userName').textContent = user.email || 'Quản trị viên';
-      debug('User authenticated: ' + user.email + ' (UID: ' + user.uid + ')');
       
-      // Test Firebase first
-      const firebaseWorking = await testFirebase();
+      loadingElement.style.display = 'none';
+      mainContentElement.style.display = 'block';
       
-      if (firebaseWorking) {
-        loadingElement.style.display = 'none';
-        mainContentElement.style.display = 'block';
-        
-        initTabs();
-        initNavigation(); // Thêm dòng này
-        initEventListeners();
-        loadAllData();
-        
-        debug('Application initialized successfully');
-      } else {
-        loadingElement.innerHTML = 'Lỗi kết nối Firebase. Vui lòng thử lại.';
-      }
+      initTabs();
+      initNavigation();
+      initEventListeners();
+      loadAllData();
     } else {
-      debug('User not authenticated, redirecting...');
       loadingElement.innerHTML = 'Chưa đăng nhập, đang chuyển hướng...';
       setTimeout(() => {
         window.location.href = 'index.html';
@@ -755,14 +672,13 @@ document.getElementById('logout').addEventListener('click', function(e) {
       alert('Đã đăng xuất!');
       window.location.href = 'index.html';
     }).catch(error => {
-      debug('Logout error: ' + error.message);
+      console.error('Logout error:', error);
     });
   }
 });
 
 // Start application
 window.addEventListener('load', function() {
-  debug('Page loaded, initializing app...');
   initApp();
 });
 </script>
