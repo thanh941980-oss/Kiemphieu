@@ -118,6 +118,81 @@
             margin-right: 8px;
         }
 
+        /* Candidate Selection */
+        .candidate-selection {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+        }
+
+        .candidate-selection h3 {
+            font-size: 16px;
+            color: #2a5298;
+            margin-bottom: 15px;
+        }
+
+        .candidates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .candidate-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .candidate-item:hover {
+            border-color: #2a5298;
+            background-color: #f8f9fa;
+        }
+
+        .candidate-item.selected {
+            border-color: #28a745;
+            background-color: #e8f5e8;
+        }
+
+        .candidate-checkbox {
+            margin-right: 10px;
+            width: 16px;
+            height: 16px;
+        }
+
+        .candidate-info {
+            flex: 1;
+        }
+
+        .candidate-stt {
+            font-weight: 600;
+            color: #2a5298;
+            margin-right: 8px;
+        }
+
+        .candidate-name {
+            color: #333;
+        }
+
+        .selection-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .current-phieu {
+            font-weight: 600;
+            color: #2a5298;
+        }
+
         /* Stats Grid */
         .stats-grid {
             display: grid;
@@ -173,18 +248,6 @@
             font-size: 12px;
         }
 
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: 600;
-            color: #2a5298;
-            font-size: 13px;
-        }
-
         .form-control {
             width: 100%;
             padding: 8px 12px;
@@ -197,12 +260,6 @@
         .form-control:focus {
             border-color: #2a5298;
             outline: none;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
         }
 
         .btn {
@@ -226,6 +283,15 @@
 
         .btn-success:hover {
             background: #218838;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .btn-warning:hover {
+            background: #e0a800;
         }
 
         .loading {
@@ -323,9 +389,13 @@
                 grid-template-columns: 1fr;
             }
             
-            .form-row {
+            .candidates-grid {
                 grid-template-columns: 1fr;
-                gap: 12px;
+            }
+            
+            .selection-controls {
+                flex-direction: column;
+                align-items: stretch;
             }
         }
 
@@ -356,14 +426,8 @@
                 padding: 15px;
             }
             
-            .form-control {
-                padding: 6px 10px;
-                font-size: 12px;
-            }
-            
-            .btn {
-                padding: 6px 10px;
-                font-size: 12px;
+            .candidate-selection {
+                padding: 15px;
             }
         }
     </style>
@@ -399,6 +463,19 @@
 
             <!-- Nội dung chính (ẩn ban đầu) -->
             <div id="mainContent" style="display: none;">
+                <!-- Chọn ứng cử viên -->
+                <div class="candidate-selection">
+                    <h3>CHỌN ỨNG CỬ VIÊN CHO PHIẾU <span class="current-phieu" id="currentPhieu">1</span></h3>
+                    <div class="candidates-grid" id="candidatesGrid">
+                        <!-- Danh sách ứng cử viên sẽ được load ở đây -->
+                    </div>
+                    <div class="selection-controls">
+                        <button id="btnKiemPhieu" class="btn btn-success">Kiểm phiếu này</button>
+                        <button id="btnResetSelection" class="btn btn-warning">Bỏ chọn tất cả</button>
+                        <span>Số đã chọn: <strong id="selectedCount">0</strong></span>
+                    </div>
+                </div>
+
                 <!-- Thống kê 3 cột -->
                 <div class="stats-grid">
                     <!-- Cột 1: Thông tin cử tri -->
@@ -427,7 +504,7 @@
                         </div>
                         <div class="stat-row">
                             <span class="stat-label">Số phiếu thu vào</span>
-                            <input type="number" id="soPhieuThuVao" class="form-control" style="width: 80px; padding: 4px 8px; text-align: right;" value="0" min="0">
+                            <span class="stat-value" id="soPhieuThuVao">0</span>
                         </div>
                         <div class="stat-row">
                             <span class="stat-label">Đạt %</span>
@@ -461,12 +538,19 @@
                 <!-- Kết quả ứng viên -->
                 <div class="candidate-results">
                     <h3>KẾT QUẢ ỨNG VIÊN</h3>
-                    <div id="candidateList">
-                        <!-- Danh sách ứng viên sẽ được load từ Firebase -->
-                        <div style="text-align: center; color: #666; padding: 20px;">
-                            Đang tải danh sách ứng viên...
-                        </div>
-                    </div>
+                    <table id="resultsTable">
+                        <thead>
+                            <tr>
+                                <th>STT</th>
+                                <th>Họ tên ứng viên</th>
+                                <th>Số phiếu</th>
+                                <th>Tỷ lệ %</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Kết quả sẽ được cập nhật ở đây -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -494,6 +578,9 @@
         const auth = firebase.auth();
 
         let currentUser = null;
+        let currentPhieu = 1;
+        let candidates = [];
+        let candidateResults = {};
 
         // Simple user path function
         function getUserPath(path = '') {
@@ -513,8 +600,7 @@
         function updatePercentages() {
             const tongSoCuTri = parseInt(document.getElementById('tongSoCuTri').value) || 0;
             const thamGiaBoPhieu = parseInt(document.getElementById('thamGiaBoPhieu').value) || 0;
-            const soPhieuPhatRa = parseInt(document.getElementById('soPhieuPhatRa').value) || 0;
-            const soPhieuThuVao = parseInt(document.getElementById('soPhieuThuVao').value) || 0;
+            const soPhieuThuVao = parseInt(document.getElementById('soPhieuThuVao').textContent) || 0;
 
             // Cập nhật phần trăm tham gia
             const phanTramThamGia = calculatePercent(thamGiaBoPhieu, tongSoCuTri);
@@ -523,6 +609,119 @@
             // Cập nhật phần trăm phiếu
             const phanTramPhieu = calculatePercent(soPhieuThuVao, tongSoCuTri);
             document.getElementById('phanTramPhieu').textContent = phanTramPhieu + '%';
+        }
+
+        // Load danh sách ứng cử viên
+        async function loadCandidates() {
+            try {
+                const userPath = getUserPath('ungCu');
+                const snapshot = await db.ref(userPath).once('value');
+                
+                if (snapshot.exists()) {
+                    candidates = [];
+                    snapshot.forEach((child, index) => {
+                        candidates.push({
+                            id: child.key,
+                            stt: index + 1,
+                            name: child.val().hoTen,
+                            votes: 0
+                        });
+                    });
+                    
+                    renderCandidatesGrid();
+                    updateResultsTable();
+                }
+            } catch (error) {
+                console.error('Error loading candidates:', error);
+            }
+        }
+
+        // Render grid chọn ứng cử viên
+        function renderCandidatesGrid() {
+            const grid = document.getElementById('candidatesGrid');
+            grid.innerHTML = '';
+            
+            candidates.forEach(candidate => {
+                const candidateItem = document.createElement('div');
+                candidateItem.className = 'candidate-item';
+                candidateItem.innerHTML = `
+                    <input type="checkbox" class="candidate-checkbox" data-id="${candidate.id}">
+                    <div class="candidate-info">
+                        <span class="candidate-stt">${candidate.stt}.</span>
+                        <span class="candidate-name">${candidate.name}</span>
+                    </div>
+                `;
+                grid.appendChild(candidateItem);
+            });
+
+            // Thêm event listeners cho checkbox
+            document.querySelectorAll('.candidate-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', updateSelectedCount);
+            });
+        }
+
+        // Cập nhật số lượng đã chọn
+        function updateSelectedCount() {
+            const selectedCount = document.querySelectorAll('.candidate-checkbox:checked').length;
+            document.getElementById('selectedCount').textContent = selectedCount;
+        }
+
+        // Kiểm phiếu
+        function kiemPhieu() {
+            const selectedCheckboxes = document.querySelectorAll('.candidate-checkbox:checked');
+            const selectedIds = Array.from(selectedCheckboxes).map(cb => cb.getAttribute('data-id'));
+            
+            if (selectedIds.length === 0) {
+                alert('Vui lòng chọn ít nhất một ứng cử viên!');
+                return;
+            }
+
+            // Tăng số phiếu cho những người KHÔNG được chọn
+            candidates.forEach(candidate => {
+                if (!selectedIds.includes(candidate.id)) {
+                    candidate.votes += 1;
+                }
+            });
+
+            // Tăng số phiếu thu vào
+            const currentSoPhieuThuVao = parseInt(document.getElementById('soPhieuThuVao').textContent) || 0;
+            document.getElementById('soPhieuThuVao').textContent = currentSoPhieuThuVao + 1;
+
+            // Chuyển đến phiếu tiếp theo
+            currentPhieu++;
+            document.getElementById('currentPhieu').textContent = currentPhieu;
+
+            // Reset selection
+            document.querySelectorAll('.candidate-checkbox').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            updateSelectedCount();
+
+            // Cập nhật kết quả
+            updateResultsTable();
+            updatePercentages();
+
+            alert(`Đã kiểm phiếu ${currentPhieu - 1}! Chuyển đến phiếu ${currentPhieu}`);
+        }
+
+        // Cập nhật bảng kết quả
+        function updateResultsTable() {
+            const tbody = document.querySelector('#resultsTable tbody');
+            const soPhieuThuVao = parseInt(document.getElementById('soPhieuThuVao').textContent) || 0;
+            
+            tbody.innerHTML = '';
+            
+            candidates.forEach(candidate => {
+                const percent = calculatePercent(candidate.votes, soPhieuThuVao);
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${candidate.stt}</td>
+                    <td>${candidate.name}</td>
+                    <td>${candidate.votes}</td>
+                    <td>${percent}%</td>
+                `;
+                tbody.appendChild(row);
+            });
         }
 
         // Load thông tin từ trang thông tin
@@ -553,82 +752,31 @@
                     document.getElementById('tongSoCuTri').value = data.tongSoCuTri || 0;
                     document.getElementById('thamGiaBoPhieu').value = data.thamGiaBoPhieu || 0;
                     document.getElementById('soPhieuPhatRa').value = data.soPhieuPhatRa || 0;
-                    document.getElementById('soPhieuThuVao').value = data.soPhieuThuVao || 0;
+                    
+                    if (data.soPhieuThuVao) {
+                        document.getElementById('soPhieuThuVao').textContent = data.soPhieuThuVao;
+                        currentPhieu = data.soPhieuThuVao + 1;
+                        document.getElementById('currentPhieu').textContent = currentPhieu;
+                    }
                     
                     updatePercentages();
+                }
+
+                // Load kết quả ứng viên
+                const resultsSnapshot = await db.ref(getUserPath('candidateResults')).once('value');
+                if (resultsSnapshot.exists()) {
+                    candidateResults = resultsSnapshot.val();
+                    // Cập nhật votes cho candidates từ kết quả đã lưu
+                    candidates.forEach(candidate => {
+                        if (candidateResults[candidate.id]) {
+                            candidate.votes = candidateResults[candidate.id].votes || 0;
+                        }
+                    });
+                    updateResultsTable();
                 }
             } catch (error) {
                 console.error('Error loading kiem phieu:', error);
             }
-        }
-
-        // Load danh sách ứng viên
-        async function loadCandidates() {
-            try {
-                const userPath = getUserPath('ungCu');
-                const snapshot = await db.ref(userPath).once('value');
-                const candidateList = document.getElementById('candidateList');
-                
-                if (snapshot.exists() && snapshot.numChildren() > 0) {
-                    let html = `
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Họ tên ứng viên</th>
-                                    <th>Số phiếu</th>
-                                    <th>Tỷ lệ %</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                    `;
-                    
-                    snapshot.forEach(child => {
-                        const data = child.val();
-                        html += `
-                            <tr>
-                                <td>${data.hoTen}</td>
-                                <td>
-                                    <input type="number" class="form-control so-phieu-candidate" 
-                                           data-id="${child.key}" 
-                                           style="width: 80px; padding: 4px 8px; text-align: right;" 
-                                           value="0" min="0">
-                                </td>
-                                <td class="candidate-percent">0%</td>
-                            </tr>
-                        `;
-                    });
-                    
-                    html += `
-                            </tbody>
-                        </table>
-                    `;
-                    
-                    candidateList.innerHTML = html;
-                    
-                    // Thêm event listeners cho các input phiếu
-                    document.querySelectorAll('.so-phieu-candidate').forEach(input => {
-                        input.addEventListener('input', updateCandidatePercentages);
-                    });
-                } else {
-                    candidateList.innerHTML = '<div style="text-align: center; color: #666; padding: 20px;">Chưa có dữ liệu ứng viên. Vui lòng thêm ứng viên trong trang Thông tin.</div>';
-                }
-            } catch (error) {
-                console.error('Error loading candidates:', error);
-                document.getElementById('candidateList').innerHTML = '<div style="text-align: center; color: red; padding: 20px;">Lỗi tải danh sách ứng viên</div>';
-            }
-        }
-
-        // Cập nhật phần trăm cho ứng viên
-        function updateCandidatePercentages() {
-            const soPhieuThuVao = parseInt(document.getElementById('soPhieuThuVao').value) || 0;
-            const candidateInputs = document.querySelectorAll('.so-phieu-candidate');
-            
-            candidateInputs.forEach(input => {
-                const soPhieu = parseInt(input.value) || 0;
-                const percentCell = input.closest('tr').querySelector('.candidate-percent');
-                const percent = calculatePercent(soPhieu, soPhieuThuVao);
-                percentCell.textContent = percent + '%';
-            });
         }
 
         // Lưu thông tin kiểm phiếu
@@ -639,24 +787,23 @@
                     tongSoCuTri: parseInt(document.getElementById('tongSoCuTri').value) || 0,
                     thamGiaBoPhieu: parseInt(document.getElementById('thamGiaBoPhieu').value) || 0,
                     soPhieuPhatRa: parseInt(document.getElementById('soPhieuPhatRa').value) || 0,
-                    soPhieuThuVao: parseInt(document.getElementById('soPhieuThuVao').value) || 0,
-                    phanTramThamGia: document.getElementById('phanTramThamGia').textContent,
-                    phanTramPhieu: document.getElementById('phanTramPhieu').textContent,
+                    soPhieuThuVao: parseInt(document.getElementById('soPhieuThuVao').textContent) || 0,
+                    currentPhieu: currentPhieu,
                     lastUpdated: new Date().toISOString()
                 };
                 
                 // Lưu kết quả ứng viên
-                const candidateResults = {};
-                document.querySelectorAll('.so-phieu-candidate').forEach(input => {
-                    const candidateId = input.getAttribute('data-id');
-                    candidateResults[candidateId] = {
-                        soPhieu: parseInt(input.value) || 0,
-                        phanTram: input.closest('tr').querySelector('.candidate-percent').textContent
+                const resultsToSave = {};
+                candidates.forEach(candidate => {
+                    resultsToSave[candidate.id] = {
+                        stt: candidate.stt,
+                        name: candidate.name,
+                        votes: candidate.votes
                     };
                 });
                 
                 await db.ref(userPath).set(data);
-                await db.ref(getUserPath('candidateResults')).set(candidateResults);
+                await db.ref(getUserPath('candidateResults')).set(resultsToSave);
                 
                 alert('Đã lưu thông tin kiểm phiếu!');
             } catch (error) {
@@ -667,13 +814,19 @@
 
         // Initialize event listeners
         function initEventListeners() {
+            document.getElementById('btnKiemPhieu').addEventListener('click', kiemPhieu);
             document.getElementById('btnLuuKiemPhieu').addEventListener('click', saveKiemPhieu);
+            document.getElementById('btnResetSelection').addEventListener('click', () => {
+                document.querySelectorAll('.candidate-checkbox').forEach(checkbox => {
+                    checkbox.checked = false;
+                });
+                updateSelectedCount();
+            });
             
             // Auto update percentages
             document.getElementById('tongSoCuTri').addEventListener('input', updatePercentages);
             document.getElementById('thamGiaBoPhieu').addEventListener('input', updatePercentages);
             document.getElementById('soPhieuPhatRa').addEventListener('input', updatePercentages);
-            document.getElementById('soPhieuThuVao').addEventListener('input', updatePercentages);
         }
 
         // Main initialization
@@ -691,8 +844,8 @@
                     
                     initEventListeners();
                     await loadThongTin();
-                    await loadKiemPhieu();
                     await loadCandidates();
+                    await loadKiemPhieu();
                 } else {
                     loadingElement.innerHTML = 'Chưa đăng nhập, đang chuyển hướng...';
                     setTimeout(() => {
