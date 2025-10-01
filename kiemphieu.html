@@ -598,22 +598,38 @@
 
         // Cập nhật phần trăm tự động
         function updatePercentages() {
-            const tongSoCuTri = parseInt(document.getElementById('tongSoCuTri').value) || 0;
-            const thamGiaBoPhieu = parseInt(document.getElementById('thamGiaBoPhieu').value) || 0;
-            const soPhieuPhatRa = parseInt(document.getElementById('soPhieuPhatRa').value) || 0;
-            const soPhieuThuVao = parseInt(document.getElementById('soPhieuThuVao').textContent) || 0;
+            try {
+                const tongSoCuTri = parseInt(document.getElementById('tongSoCuTri').value) || 0;
+                const thamGiaBoPhieu = parseInt(document.getElementById('thamGiaBoPhieu').value) || 0;
+                const soPhieuPhatRa = parseInt(document.getElementById('soPhieuPhatRa').value) || 0;
+                const soPhieuThuVao = parseInt(document.getElementById('soPhieuThuVao').textContent) || 0;
 
-            console.log('Calculating percentages:', {tongSoCuTri, thamGiaBoPhieu, soPhieuPhatRa, soPhieuThuVao});
+                console.log('Dữ liệu đầu vào:', {
+                    tongSoCuTri, 
+                    thamGiaBoPhieu, 
+                    soPhieuPhatRa, 
+                    soPhieuThuVao
+                });
 
-            // Cập nhật phần trăm tham gia: (Tham gia bỏ phiếu / Tổng số cử tri) * 100
-            const phanTramThamGia = calculatePercent(thamGiaBoPhieu, tongSoCuTri);
-            document.getElementById('phanTramThamGia').textContent = phanTramThamGia + '%';
-            console.log('Phần trăm tham gia:', phanTramThamGia);
+                // Cập nhật phần trăm tham gia: (Tham gia bỏ phiếu / Tổng số cử tri) * 100
+                let phanTramThamGia = 0;
+                if (tongSoCuTri > 0) {
+                    phanTramThamGia = (thamGiaBoPhieu / tongSoCuTri) * 100;
+                }
+                document.getElementById('phanTramThamGia').textContent = phanTramThamGia.toFixed(1) + '%';
+                console.log('Phần trăm tham gia:', phanTramThamGia.toFixed(1) + '%');
 
-            // Cập nhật phần trăm phiếu: (Số phiếu thu vào / Số phiếu phát ra) * 100
-            const phanTramPhieu = calculatePercent(soPhieuThuVao, soPhieuPhatRa);
-            document.getElementById('phanTramPhieu').textContent = phanTramPhieu + '%';
-            console.log('Phần trăm phiếu:', phanTramPhieu);
+                // Cập nhật phần trăm phiếu: (Số phiếu thu vào / Số phiếu phát ra) * 100
+                let phanTramPhieu = 0;
+                if (soPhieuPhatRa > 0) {
+                    phanTramPhieu = (soPhieuThuVao / soPhieuPhatRa) * 100;
+                }
+                document.getElementById('phanTramPhieu').textContent = phanTramPhieu.toFixed(1) + '%';
+                console.log('Phần trăm phiếu:', phanTramPhieu.toFixed(1) + '%');
+
+            } catch (error) {
+                console.error('Lỗi trong updatePercentages:', error);
+            }
         }
 
         // Load danh sách ứng cử viên
@@ -838,14 +854,18 @@
             });
             
             // Auto update percentages
-            document.getElementById('tongSoCuTri').addEventListener('input', updatePercentages);
-            document.getElementById('thamGiaBoPhieu').addEventListener('input', updatePercentages);
-            document.getElementById('soPhieuPhatRa').addEventListener('input', updatePercentages);
+            // Auto update percentages - THÊM TẤT CẢ CÁC SỰ KIỆN
+            const inputsToWatch = ['tongSoCuTri', 'thamGiaBoPhieu', 'soPhieuPhatRa'];
 
             // Cũng cập nhật khi có sự kiện change
-            document.getElementById('tongSoCuTri').addEventListener('change', updatePercentages);
-            document.getElementById('thamGiaBoPhieu').addEventListener('change', updatePercentages);
-            document.getElementById('soPhieuPhatRa').addEventListener('change', updatePercentages);
+            inputsToWatch.forEach(inputId => {
+                const input = document.getElementById(inputId);
+                if (input) {
+                    input.addEventListener('input', updatePercentages);
+                    input.addEventListener('change', updatePercentages);
+                    input.addEventListener('blur', updatePercentages);
+                }
+            });
         }
 
         // Main initialization
@@ -908,6 +928,7 @@
         // Start application
         window.addEventListener('load', function() {
             initApp();
+            window.addEventListener('load', updatePercentages);
         });
     </script>
 </body>
