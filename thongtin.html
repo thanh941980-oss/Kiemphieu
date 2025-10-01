@@ -6,44 +6,58 @@
   <title>Thông tin - Quản lý Phiếu bầu</title>
   <style>
     * {margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;}
-    body {background-color: #f5f7fa; color: #333;}
+    body {background-color: #f5f7fa; color: #333; font-size: 13px;}
     .container {display: flex; min-height: 100vh;}
-    .sidebar {width: 250px; background: linear-gradient(135deg, #1e3c72, #2a5298); color: white; padding: 20px 0; box-shadow: 2px 0 10px rgba(0,0,0,0.1);}
-    .logo {text-align: center; padding: 20px 0; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px;}
-    .logo h1 {font-size: 24px; font-weight: 600;}
-    .nav-links {list-style: none; padding: 0 15px;}
-    .nav-links li {margin-bottom: 10px;}
-    .nav-links a {display: flex; align-items: center; padding: 12px 15px; color: white; text-decoration: none; border-radius: 8px; transition: all 0.3s ease;}
+    .sidebar {width: 220px; background: linear-gradient(135deg, #1e3c72, #2a5298); color: white; padding: 15px 0; box-shadow: 2px 0 10px rgba(0,0,0,0.1);}
+    .logo {text-align: center; padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 15px;}
+    .logo h1 {font-size: 18px; font-weight: 600;}
+    .nav-links {list-style: none; padding: 0 10px;}
+    .nav-links li {margin-bottom: 8px;}
+    .nav-links a {display: flex; align-items: center; padding: 10px 12px; color: white; text-decoration: none; border-radius: 6px; transition: all 0.3s ease; font-size: 13px;}
     .nav-links a:hover, .nav-links a.active {background-color: rgba(255,255,255,0.1);}
-    .nav-links i {margin-right: 10px; font-size: 18px;}
-    .logout {margin-top: 30px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;}
-    .main-content {flex: 1; padding: 30px;}
-    .header {display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;}
-    .header h2 {font-size: 28px; color: #2a5298;}
-    .user-info {display: flex; align-items: center; background: white; padding: 10px 20px; border-radius: 50px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);}
-    .user-info img {width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;}
-    .tabs {display: flex; margin-bottom: 20px; border-bottom: 1px solid #ddd;}
-    .tab {padding: 12px 24px; cursor: pointer; background: #f5f7fa; border: 1px solid #ddd; border-bottom: none; border-radius: 8px 8px 0 0; margin-right: 5px; transition: all 0.3s ease;}
+    .nav-links i {margin-right: 8px; font-size: 16px;}
+    .logout {margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;}
+    .main-content {flex: 1; padding: 20px;}
+    .header {display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;}
+    .header h2 {font-size: 20px; color: #2a5298;}
+    .user-info {display: flex; align-items: center; background: white; padding: 8px 16px; border-radius: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);}
+    .user-info img {width: 32px; height: 32px; border-radius: 50%; margin-right: 8px;}
+    .tabs {display: flex; margin-bottom: 15px; border-bottom: 1px solid #ddd;}
+    .tab {padding: 10px 16px; cursor: pointer; background: #f5f7fa; border: 1px solid #ddd; border-bottom: none; border-radius: 6px 6px 0 0; margin-right: 5px; transition: all 0.3s ease; font-size: 13px;}
     .tab.active {background: white; border-color: #2a5298; color: #2a5298; font-weight: 600;}
-    .tab-content {display: none; background: white; padding: 25px; border-radius: 0 8px 8px 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.05);}
+    .tab-content {display: none; background: white; padding: 20px; border-radius: 0 6px 6px 6px; box-shadow: 0 3px 10px rgba(0,0,0,0.05);}
     .tab-content.active {display: block;}
-    .form-group {margin-bottom: 20px;}
-    .form-group label {display: block; margin-bottom: 8px; font-weight: 600; color: #2a5298;}
-    .form-control {width: 100%; padding: 10px 15px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px;}
+    .form-group {margin-bottom: 15px;}
+    .form-group label {display: block; margin-bottom: 6px; font-weight: 600; color: #2a5298; font-size: 13px;}
+    .form-control {width: 100%; padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px;}
     .form-control:focus {border-color: #2a5298; outline: none;}
-    .form-row {display: grid; grid-template-columns: 1fr 1fr; gap: 20px;}
+    .form-row {display: grid; grid-template-columns: 1fr 1fr; gap: 15px;}
     .readonly-field {background-color: #f8f9fa; color: #666;}
-    table {width: 100%; border-collapse: collapse; margin-top: 15px;}
-    table th, table td {padding: 12px 15px; text-align: left; border-bottom: 1px solid #eee;}
-    table th {background-color: #f8f9fa; color: #2a5298; font-weight: 600;}
-    .btn {padding: 10px 20px; background: #2a5298; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px;}
+    table {width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 13px;}
+    table th, table td {padding: 10px 12px; text-align: left; border-bottom: 1px solid #eee;}
+    table th {background-color: #f8f9fa; color: #2a5298; font-weight: 600; font-size: 13px;}
+    .btn {padding: 8px 16px; background: #2a5298; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 13px;}
     .btn:hover {background: #1e3c72;}
     .btn-danger {background: #dc3545;}
     .btn-danger:hover {background: #c82333;}
-    .btn-outline {background: transparent; border: 1px solid #2a5298; color: #2a5298;}
+    .btn-outline {background: transparent; border: 1px solid #2a5298; color: #2a5298; padding: 7px 15px;}
     .btn-outline:hover {background: #2a5298; color: white;}
-    .loading {text-align: center; padding: 20px; color: #666;}
+    .loading {text-align: center; padding: 20px; color: #666; font-size: 13px;}
+    
+    /* Section styling giống hình */
+    .section-title {font-size: 16px; color: #2a5298; margin-bottom: 15px; font-weight: 600;}
+    .info-section {margin-bottom: 25px;}
+    .info-section:last-child {margin-bottom: 0;}
+    
     @media (max-width: 768px) {
+      .container {flex-direction: column;}
+      .sidebar {width: 100%; height: auto; padding: 10px 0;}
+      .nav-links {display: flex; overflow-x: auto; padding: 0 10px;}
+      .nav-links li {margin-bottom: 0; margin-right: 8px; flex-shrink: 0;}
+      .nav-links a {padding: 8px 12px; font-size: 12px;}
+      .main-content {padding: 15px;}
+      .header {flex-direction: column; align-items: flex-start; gap: 10px;}
+      .user-info {align-self: flex-end;}
       .form-row {grid-template-columns: 1fr;}
     }
   </style>
@@ -54,9 +68,9 @@
     <div class="logo"><h1>HỆ THỐNG BẦU CỬ</h1></div>
     <ul class="nav-links">
       <li><a href="thongtin.html" class="active"><i>ℹ️</i> Thông tin</a></li>
-      <li><a href="#" data-target="kiemphieu"><i>✅</i> Kiểm phiếu</a></li>
-      <li><a href="#" data-target="tonghop"><i>📈</i> Tổng hợp</a></li>
-      <li><a href="#" data-target="bienban"><i>📝</i> Biên bản</a></li>
+      <li><a href="kiemphieu.html"><i>✅</i> Kiểm phiếu</a></li>
+      <li><a href="#"><i>📈</i> Tổng hợp</a></li>
+      <li><a href="#"><i>📝</i> Biên bản</a></li>
       <li class="logout"><a href="#" id="logout"><i>🚪</i> Đăng xuất</a></li>
     </ul>
   </div>
@@ -84,117 +98,125 @@
       
       <!-- Nội dung các tab -->
       <div id="donvi" class="tab-content active">
-        <h3 style="margin-bottom: 20px; color: #2a5298;">Thông tin đơn vị bầu cử</h3>
-        
-        <div class="form-row">
-          <div class="form-group">
-            <label for="tinhThanh">Tỉnh, Thành phố</label>
-            <input type="text" id="tinhThanh" class="form-control" placeholder="Nhập tỉnh, thành phố">
+        <div class="info-section">
+          <h3 class="section-title">Thông tin đơn vị bầu cử</h3>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="tinhThanh">Tỉnh, Thành phố</label>
+              <input type="text" id="tinhThanh" class="form-control" placeholder="Nhập tỉnh, thành phố" value="Cần Thơ">
+            </div>
+            <div class="form-group">
+              <label for="phuongXa">Phường, xã</label>
+              <input type="text" id="phuongXa" class="form-control" placeholder="Nhập phường, xã" value="Ninh Kiều">
+            </div>
           </div>
-          <div class="form-group">
-            <label for="phuongXa">Phường, xã</label>
-            <input type="text" id="phuongXa" class="form-control" placeholder="Nhập phường, xã">
-          </div>
-        </div>
 
-        <div class="form-row">
-          <div class="form-group">
-            <label for="khoa">Khóa</label>
-            <input type="text" id="khoa" class="form-control" placeholder="Nhập khóa">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="khoa">Khóa</label>
+              <input type="text" id="khoa" class="form-control" placeholder="Nhập khóa" value="X">
+            </div>
+            <div class="form-group">
+              <label for="donViBauCu">Đơn vị bầu cử số</label>
+              <input type="text" id="donViBauCu" class="form-control" placeholder="Nhập đơn vị bầu cử" value="10">
+            </div>
           </div>
-          <div class="form-group">
-            <label for="donViBauCu">Đơn vị bầu cử số</label>
-            <input type="text" id="donViBauCu" class="form-control" placeholder="Nhập đơn vị bầu cử">
-          </div>
-        </div>
 
-        <div class="form-group">
-          <label for="gomCo">Gồm có</label>
-          <textarea id="gomCo" class="form-control" placeholder="Mô tả các thành phần gồm có" rows="3"></textarea>
-        </div>
-
-        <div class="form-row">
           <div class="form-group">
-            <label for="khuVucBoPhieu">Khu vực bỏ phiếu số</label>
-            <input type="text" id="khuVucBoPhieu" class="form-control" placeholder="Nhập khu vực bỏ phiếu">
+            <label for="gomCo">Gồm có</label>
+            <textarea id="gomCo" class="form-control" placeholder="Mô tả các thành phần gồm có" rows="3">Mô tả các thành phần gồm có</textarea>
           </div>
-          <div class="form-group">
-            <label for="nhiemKy">Nhiệm kỳ</label>
-            <input type="text" id="nhiemKy" class="form-control" placeholder="Nhập nhiệm kỳ">
-          </div>
-        </div>
 
-        <div class="form-group">
-          <label for="bauCuCap">Bầu cử HĐND cấp</label>
-          <select id="bauCuCap" class="form-control">
-            <option value="">-- Chọn cấp bầu cử --</option>
-            <option value="quoc_hoi">Quốc hội</option>
-            <option value="thanh_pho">Thành Phố</option>
-            <option value="phuong">Phường</option>
-          </select>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label for="soNguoiUngCu">Số người ứng cử</label>
-            <input type="number" id="soNguoiUngCu" class="form-control" placeholder="Nhập số người ứng cử" min="0">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="khuVucBoPhieu">Khu vực bỏ phiếu số</label>
+              <input type="text" id="khuVucBoPhieu" class="form-control" placeholder="Nhập khu vực bỏ phiếu">
+            </div>
+            <div class="form-group">
+              <label for="nhiemKy">Nhiệm kỳ</label>
+              <input type="text" id="nhiemKy" class="form-control" placeholder="Nhập nhiệm kỳ">
+            </div>
           </div>
-          <div class="form-group">
-            <label for="soNguoiDuocBau">Số người được bầu</label>
-            <input type="number" id="soNguoiDuocBau" class="form-control" placeholder="Nhập số người được bầu" min="0">
-          </div>
-          <div class="form-group">
-            <label for="soDu">Số dư</label>
-            <input type="number" id="soDu" class="form-control readonly-field" readonly>
-          </div>
-        </div>
 
-        <div class="form-group">
-          <label for="emailKiemPhieu">Địa chỉ Gmail người kiểm phiếu</label>
-          <input type="email" id="emailKiemPhieu" class="form-control" placeholder="Nhập địa chỉ Gmail">
-        </div>
+          <div class="form-group">
+            <label for="bauCuCap">Bầu cử HĐND cấp</label>
+            <select id="bauCuCap" class="form-control">
+              <option value="">-- Chọn cấp bầu cử --</option>
+              <option value="quoc_hoi">Quốc hội</option>
+              <option value="thanh_pho">Thành Phố</option>
+              <option value="phuong">Phường</option>
+            </select>
+          </div>
 
-        <div class="form-group">
-          <button id="btnLuuDonVi" class="btn">Lưu thông tin đơn vị</button>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="soNguoiUngCu">Số người ứng cử</label>
+              <input type="number" id="soNguoiUngCu" class="form-control" placeholder="Nhập số người ứng cử" min="0">
+            </div>
+            <div class="form-group">
+              <label for="soNguoiDuocBau">Số người được bầu</label>
+              <input type="number" id="soNguoiDuocBau" class="form-control" placeholder="Nhập số người được bầu" min="0">
+            </div>
+            <div class="form-group">
+              <label for="soDu">Số dư</label>
+              <input type="number" id="soDu" class="form-control readonly-field" readonly>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="emailKiemPhieu">Địa chỉ Gmail người kiểm phiếu</label>
+            <input type="email" id="emailKiemPhieu" class="form-control" placeholder="Nhập địa chỉ Gmail">
+          </div>
+
+          <div class="form-group">
+            <button id="btnLuuDonVi" class="btn">Lưu thông tin đơn vị</button>
+          </div>
         </div>
       </div>
 
       <div id="ungcu" class="tab-content">
-        <h3 style="margin-bottom: 20px; color: #2a5298;">Quản lý người ứng cử</h3>
-        <div class="form-group">
-          <label>Họ tên ứng cử</label>
-          <input id="hoTenUngCu" class="form-control" placeholder="Nhập họ tên người ứng cử">
+        <div class="info-section">
+          <h3 class="section-title">Quản lý người ứng cử</h3>
+          <div class="form-group">
+            <label>Họ tên ứng cử</label>
+            <input id="hoTenUngCu" class="form-control" placeholder="Nhập họ tên người ứng cử">
+          </div>
+          <button id="btnThemUngCu" class="btn">Thêm ứng cử</button>
+          <table id="tableUngCu"><thead><tr><th>Họ tên</th><th>Thao tác</th></tr></thead><tbody></tbody></table>
         </div>
-        <button id="btnThemUngCu" class="btn">Thêm ứng cử</button>
-        <table id="tableUngCu"><thead><tr><th>Họ tên</th><th>Thao tác</th></tr></thead><tbody></tbody></table>
       </div>
 
       <div id="kiemphieu" class="tab-content">
-        <h3 style="margin-bottom: 20px; color: #2a5298;">Quản lý người kiểm phiếu</h3>
-        <div class="form-group">
-          <label>Họ tên</label>
-          <input id="hoTenKiemPhieu" class="form-control" placeholder="Nhập họ tên người kiểm phiếu">
+        <div class="info-section">
+          <h3 class="section-title">Quản lý người kiểm phiếu</h3>
+          <div class="form-group">
+            <label>Họ tên</label>
+            <input id="hoTenKiemPhieu" class="form-control" placeholder="Nhập họ tên người kiểm phiếu">
+          </div>
+          <div class="form-group">
+            <label>Chức vụ</label>
+            <input id="chucVuKiemPhieu" class="form-control" placeholder="Nhập chức vụ">
+          </div>
+          <button id="btnThemKiemPhieu" class="btn">Thêm kiểm phiếu</button>
+          <table id="tableKiemPhieu"><thead><tr><th>Họ tên</th><th>Chức vụ</th><th>Thao tác</th></tr></thead><tbody></tbody></table>
         </div>
-        <div class="form-group">
-          <label>Chức vụ</label>
-          <input id="chucVuKiemPhieu" class="form-control" placeholder="Nhập chức vụ">
-        </div>
-        <button id="btnThemKiemPhieu" class="btn">Thêm kiểm phiếu</button>
-        <table id="tableKiemPhieu"><thead><tr><th>Họ tên</th><th>Chức vụ</th><th>Thao tác</th></tr></thead><tbody></tbody></table>
       </div>
 
       <div id="chungkien" class="tab-content">
-        <h3 style="margin-bottom: 20px; color: #2a5298;">Quản lý người chứng kiến</h3>
-        <div class="form-group">
-          <label>Họ tên</label>
-          <input id="hoTenChungKien" class="form-control" placeholder="Nhập họ tên người chứng kiến">
+        <div class="info-section">
+          <h3 class="section-title">Quản lý người chứng kiến</h3>
+          <div class="form-group">
+            <label>Họ tên</label>
+            <input id="hoTenChungKien" class="form-control" placeholder="Nhập họ tên người chứng kiến">
+          </div>
+          <div class="form-group">
+            <label>Địa chỉ</label>
+            <input id="diaChiChungKien" class="form-control" placeholder="Nhập địa chỉ">
+          </div>
+          <button id="btnThemChungKien" class="btn">Thêm chứng kiến</button>
+          <table id="tableChungKien"><thead><tr><th>Họ tên</th><th>Địa chỉ</th><th>Thao tác</th></tr></thead><tbody></tbody></table>
         </div>
-        <div class="form-group">
-          <label>Địa chỉ</label>
-          <input id="diaChiChungKien" class="form-control" placeholder="Nhập địa chỉ">
-        </div>
-        <button id="btnThemChungKien" class="btn">Thêm chứng kiến</button>
-        <table id="tableChungKien"><thead><tr><th>Họ tên</th><th>Địa chỉ</th><th>Thao tác</th></tr></thead><tbody></tbody></table>
       </div>
     </div>
   </div>
@@ -238,32 +260,16 @@ function tinhSoDu() {
   document.getElementById('soDu').value = soDu >= 0 ? soDu : 0;
 }
 
-// Add navigation for sidebar
-function initNavigation() {
-  const navLinks = document.querySelectorAll('.nav-links a[data-target]');
-  navLinks.forEach(link => {
-    link.addEventListener('click', function(e) {
-      e.preventDefault();
-      const targetTab = this.getAttribute('data-target');
-      
-      // Switch to target tab
+// Initialize tabs
+function initTabs() {
+  const tabs = document.querySelectorAll('.tab');
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
       document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
       document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
       
-      const targetTabElement = document.querySelector(`.tab[data-tab="${targetTab}"]`);
-      const targetContentElement = document.getElementById(targetTab);
-      
-      if (targetTabElement && targetContentElement) {
-        targetTabElement.classList.add('active');
-        targetContentElement.classList.add('active');
-        
-        // Reload data for the tab if needed
-        if (targetTab === 'kiemphieu') {
-          loadKiemPhieu();
-        } else if (targetTab === 'chungkien') {
-          loadChungKien();
-        }
-      }
+      tab.classList.add('active');
+      document.getElementById(tab.dataset.tab).classList.add('active');
     });
   });
 }
@@ -599,20 +605,6 @@ async function deleteChungKien(id) {
   }
 }
 
-// Initialize tabs
-function initTabs() {
-  const tabs = document.querySelectorAll('.tab');
-  tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-      
-      tab.classList.add('active');
-      document.getElementById(tab.dataset.tab).classList.add('active');
-    });
-  });
-}
-
 // Initialize event listeners
 function initEventListeners() {
   // Unit tab
@@ -652,7 +644,6 @@ function initApp() {
       mainContentElement.style.display = 'block';
       
       initTabs();
-      initNavigation();
       initEventListeners();
       loadAllData();
     } else {
