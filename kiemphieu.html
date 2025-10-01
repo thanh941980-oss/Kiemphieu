@@ -600,15 +600,20 @@
         function updatePercentages() {
             const tongSoCuTri = parseInt(document.getElementById('tongSoCuTri').value) || 0;
             const thamGiaBoPhieu = parseInt(document.getElementById('thamGiaBoPhieu').value) || 0;
+            const soPhieuPhatRa = parseInt(document.getElementById('soPhieuPhatRa').value) || 0;
             const soPhieuThuVao = parseInt(document.getElementById('soPhieuThuVao').textContent) || 0;
 
-            // Cập nhật phần trăm tham gia
+            console.log('Calculating percentages:', {tongSoCuTri, thamGiaBoPhieu, soPhieuPhatRa, soPhieuThuVao});
+
+            // Cập nhật phần trăm tham gia: (Tham gia bỏ phiếu / Tổng số cử tri) * 100
             const phanTramThamGia = calculatePercent(thamGiaBoPhieu, tongSoCuTri);
             document.getElementById('phanTramThamGia').textContent = phanTramThamGia + '%';
+            console.log('Phần trăm tham gia:', phanTramThamGia);
 
-            // Cập nhật phần trăm phiếu
-            const phanTramPhieu = calculatePercent(soPhieuThuVao, tongSoCuTri);
+            // Cập nhật phần trăm phiếu: (Số phiếu thu vào / Số phiếu phát ra) * 100
+            const phanTramPhieu = calculatePercent(soPhieuThuVao, soPhieuPhatRa);
             document.getElementById('phanTramPhieu').textContent = phanTramPhieu + '%';
+            console.log('Phần trăm phiếu:', phanTramPhieu);
         }
 
         // Load danh sách ứng cử viên
@@ -698,9 +703,9 @@
             });
             updateSelectedCount();
 
-            // Cập nhật kết quả
+           // Cập nhật kết quả - THÊM DÒNG NÀY
             updateResultsTable();
-            updatePercentages();
+            updatePercentages(); // THÊM DÒNG NÀY ĐỂ CẬP NHẬT PHẦN TRĂM
 
             alert(`Đã kiểm phiếu ${currentPhieu - 1}! Chuyển đến phiếu ${currentPhieu}`);
         }
@@ -775,6 +780,7 @@
                         }
                     });
                     updateResultsTable();
+                    updatePercentages(); // THÊM DÒNG NÀY
                 }
             } catch (error) {
                 console.error('Error loading kiem phieu:', error);
@@ -835,6 +841,11 @@
             document.getElementById('tongSoCuTri').addEventListener('input', updatePercentages);
             document.getElementById('thamGiaBoPhieu').addEventListener('input', updatePercentages);
             document.getElementById('soPhieuPhatRa').addEventListener('input', updatePercentages);
+
+            // Cũng cập nhật khi có sự kiện change
+            document.getElementById('tongSoCuTri').addEventListener('change', updatePercentages);
+            document.getElementById('thamGiaBoPhieu').addEventListener('change', updatePercentages);
+            document.getElementById('soPhieuPhatRa').addEventListener('change', updatePercentages);
         }
 
         // Main initialization
