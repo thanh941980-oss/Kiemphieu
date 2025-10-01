@@ -270,6 +270,18 @@ function initTabs() {
       
       tab.classList.add('active');
       document.getElementById(tab.dataset.tab).classList.add('active');
+      // Load dữ liệu khi chuyển tab
+      switch(tabId) {
+        case 'ungcu':
+          loadUngCu();
+          break;
+        case 'kiemphieu':
+          loadKiemPhieu();
+          break;
+        case 'chungkien':
+          loadChungKien();
+          break;
+      }
     });
   });
 }
