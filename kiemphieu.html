@@ -620,10 +620,11 @@
                 if (snapshot.exists()) {
                     candidates = [];
                     snapshot.forEach((child, index) => {
+                        // Đảm bảo stt là số
                         candidates.push({
                             id: child.key,
-                            stt: index + 1,
-                            name: child.val().hoTen,
+                            stt: parseInt(index + 1), // Chuyển đổi rõ ràng thành số
+                            name: child.val().hoTen || '',
                             votes: 0
                         });
                     });
@@ -755,7 +756,7 @@
                     
                     if (data.soPhieuThuVao) {
                         document.getElementById('soPhieuThuVao').textContent = data.soPhieuThuVao;
-                        currentPhieu = data.soPhieuThuVao + 1;
+                        currentPhieu = parseInt(data.soPhieuThuVao) + 1 || 1;
                         document.getElementById('currentPhieu').textContent = currentPhieu;
                     }
                     
@@ -769,7 +770,8 @@
                     // Cập nhật votes cho candidates từ kết quả đã lưu
                     candidates.forEach(candidate => {
                         if (candidateResults[candidate.id]) {
-                            candidate.votes = candidateResults[candidate.id].votes || 0;
+                            // Đảm bảo votes là số
+                            candidate.votes = parseInt(candidateResults[candidate.id].votes) || 0;
                         }
                     });
                     updateResultsTable();
@@ -779,6 +781,7 @@
             }
         }
 
+        // Lưu thông tin kiểm phiếu
         // Lưu thông tin kiểm phiếu
         async function saveKiemPhieu() {
             try {
@@ -792,13 +795,18 @@
                     lastUpdated: new Date().toISOString()
                 };
                 
-                // Lưu kết quả ứng viên
+                // Lưu kết quả ứng viên - SỬA LỖI Ở ĐÂY
                 const resultsToSave = {};
                 candidates.forEach(candidate => {
+                    // Đảm bảo stt là số nguyên
+                    const stt = parseInt(candidate.stt);
+                    // Đảm bảo votes là số nguyên
+                    const votes = parseInt(candidate.votes) || 0;
+                    
                     resultsToSave[candidate.id] = {
-                        stt: candidate.stt,
-                        name: candidate.name,
-                        votes: candidate.votes
+                        stt: isNaN(stt) ? 0 : stt, // Nếu NaN thì gán 0
+                        name: candidate.name || '',
+                        votes: votes
                     };
                 });
                 
