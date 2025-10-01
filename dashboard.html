@@ -15,6 +15,8 @@
         body {
             background-color: #f5f7fa;
             color: #333;
+            font-size: 13px;
+            line-height: 1.4;
         }
 
         .container {
@@ -24,42 +26,43 @@
 
         /* Sidebar */
         .sidebar {
-            width: 250px;
+            width: 220px;
             background: linear-gradient(135deg, #1e3c72, #2a5298);
             color: white;
-            padding: 20px 0;
+            padding: 15px 0;
             box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
         }
 
         .logo {
             text-align: center;
-            padding: 20px 0;
+            padding: 15px 0;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         .logo h1 {
-            font-size: 24px;
+            font-size: 18px;
             font-weight: 600;
         }
 
         .nav-links {
             list-style: none;
-            padding: 0 15px;
+            padding: 0 10px;
         }
 
         .nav-links li {
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         .nav-links a {
             display: flex;
             align-items: center;
-            padding: 12px 15px;
+            padding: 10px 12px;
             color: white;
             text-decoration: none;
-            border-radius: 8px;
+            border-radius: 6px;
             transition: all 0.3s ease;
+            font-size: 13px;
         }
 
         .nav-links a:hover, .nav-links a.active {
@@ -67,31 +70,34 @@
         }
 
         .nav-links i {
-            margin-right: 10px;
-            font-size: 18px;
+            margin-right: 8px;
+            font-size: 16px;
         }
 
         .logout {
-            margin-top: 30px;
+            margin-top: 20px;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
-            padding-top: 20px;
+            padding-top: 15px;
         }
 
         /* Main Content */
         .main-content {
             flex: 1;
-            padding: 30px;
+            padding: 20px;
+            min-width: 0;
         }
 
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
         }
 
         .header h2 {
-            font-size: 28px;
+            font-size: 20px;
             color: #2a5298;
         }
 
@@ -99,34 +105,38 @@
             display: flex;
             align-items: center;
             background: white;
-            padding: 10px 20px;
-            border-radius: 50px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            padding: 8px 16px;
+            border-radius: 25px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            font-size: 13px;
         }
 
         .user-info img {
-            width: 40px;
-            height: 40px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
-            margin-right: 10px;
+            margin-right: 8px;
         }
 
         /* Tabs */
         .tabs {
             display: flex;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             border-bottom: 1px solid #ddd;
+            flex-wrap: wrap;
+            gap: 5px;
         }
 
         .tab {
-            padding: 12px 24px;
+            padding: 10px 16px;
             cursor: pointer;
             background: #f5f7fa;
             border: 1px solid #ddd;
             border-bottom: none;
-            border-radius: 8px 8px 0 0;
-            margin-right: 5px;
+            border-radius: 6px 6px 0 0;
             transition: all 0.3s ease;
+            font-size: 13px;
+            white-space: nowrap;
         }
 
         .tab.active {
@@ -139,9 +149,9 @@
         .tab-content {
             display: none;
             background: white;
-            padding: 25px;
-            border-radius: 0 8px 8px 8px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            border-radius: 0 6px 6px 6px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
         }
 
         .tab-content.active {
@@ -149,22 +159,24 @@
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             font-weight: 600;
             color: #2a5298;
+            font-size: 13px;
         }
 
         .form-control {
             width: 100%;
-            padding: 10px 15px;
+            padding: 8px 12px;
             border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 16px;
+            border-radius: 4px;
+            font-size: 13px;
+            transition: border-color 0.3s ease;
         }
 
         .form-control:focus {
@@ -174,8 +186,8 @@
 
         .form-row {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
         }
 
         .readonly-field {
@@ -186,11 +198,12 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 15px;
+            margin-top: 12px;
+            font-size: 13px;
         }
 
         table th, table td {
-            padding: 12px 15px;
+            padding: 10px 12px;
             text-align: left;
             border-bottom: 1px solid #eee;
         }
@@ -199,16 +212,18 @@
             background-color: #f8f9fa;
             color: #2a5298;
             font-weight: 600;
+            font-size: 13px;
         }
 
         .btn {
-            padding: 10px 20px;
+            padding: 8px 16px;
             background: #2a5298;
             color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 4px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 13px;
+            transition: background 0.3s ease;
         }
 
         .btn:hover {
@@ -227,6 +242,7 @@
             background: transparent;
             border: 1px solid #2a5298;
             color: #2a5298;
+            padding: 7px 15px;
         }
 
         .btn-outline:hover {
@@ -238,12 +254,150 @@
             text-align: center;
             padding: 20px;
             color: #666;
+            font-size: 13px;
         }
 
+        /* Compact form styles */
+        .compact-form .form-group {
+            margin-bottom: 12px;
+        }
+
+        .compact-form .form-control {
+            padding: 7px 10px;
+        }
+
+        /* Responsive */
         @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                padding: 10px 0;
+            }
+            
+            .nav-links {
+                display: flex;
+                overflow-x: auto;
+                padding: 0 10px;
+            }
+            
+            .nav-links li {
+                margin-bottom: 0;
+                margin-right: 8px;
+                flex-shrink: 0;
+            }
+            
+            .nav-links a {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+            
+            .main-content {
+                padding: 15px;
+            }
+            
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .user-info {
+                align-self: flex-end;
+            }
+            
+            .tabs {
+                overflow-x: auto;
+                flex-wrap: nowrap;
+            }
+            
+            .tab {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+            
+            .tab-content {
+                padding: 15px;
+            }
+            
             .form-row {
                 grid-template-columns: 1fr;
+                gap: 12px;
             }
+            
+            table {
+                font-size: 12px;
+            }
+            
+            table th, table td {
+                padding: 8px 10px;
+            }
+            
+            .btn {
+                padding: 7px 12px;
+                font-size: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                font-size: 12px;
+            }
+            
+            .main-content {
+                padding: 10px;
+            }
+            
+            .header h2 {
+                font-size: 18px;
+            }
+            
+            .user-info {
+                padding: 6px 12px;
+                font-size: 12px;
+            }
+            
+            .user-info img {
+                width: 28px;
+                height: 28px;
+            }
+            
+            .tab-content {
+                padding: 12px;
+            }
+            
+            .form-control {
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+            
+            .btn {
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
         }
     </style>
 </head>
@@ -287,8 +441,8 @@
                 </div>
 
                 <!-- Nội dung các tab -->
-                <div id="donvi" class="tab-content active">
-                    <h3 style="margin-bottom: 20px; color: #2a5298;">Thông tin đơn vị bầu cử</h3>
+                <div id="donvi" class="tab-content active compact-form">
+                    <h3 style="margin-bottom: 15px; color: #2a5298; font-size: 16px;">Thông tin đơn vị bầu cử</h3>
                     
                     <div class="form-row">
                         <div class="form-group">
@@ -314,7 +468,7 @@
 
                     <div class="form-group">
                         <label for="gomCo">Gồm có</label>
-                        <textarea id="gomCo" class="form-control" placeholder="Mô tả các thành phần gồm có" rows="3"></textarea>
+                        <textarea id="gomCo" class="form-control" placeholder="Mô tả các thành phần gồm có" rows="2"></textarea>
                     </div>
 
                     <div class="form-row">
@@ -363,8 +517,8 @@
                     </div>
                 </div>
 
-                <div id="ungcu" class="tab-content">
-                    <h3 style="margin-bottom: 20px; color: #2a5298;">Quản lý người ứng cử</h3>
+                <div id="ungcu" class="tab-content compact-form">
+                    <h3 style="margin-bottom: 15px; color: #2a5298; font-size: 16px;">Quản lý người ứng cử</h3>
                     <div class="form-group">
                         <label>Họ tên ứng cử</label>
                         <input id="hoTenUngCu" class="form-control" placeholder="Nhập họ tên người ứng cử">
@@ -373,8 +527,8 @@
                     <table id="tableUngCu"><thead><tr><th>Họ tên</th><th>Thao tác</th></tr></thead><tbody></tbody></table>
                 </div>
 
-                <div id="nguoikiemphieu" class="tab-content">
-                    <h3 style="margin-bottom: 20px; color: #2a5298;">Quản lý người kiểm phiếu</h3>
+                <div id="nguoikiemphieu" class="tab-content compact-form">
+                    <h3 style="margin-bottom: 15px; color: #2a5298; font-size: 16px;">Quản lý người kiểm phiếu</h3>
                     <div class="form-group">
                         <label>Họ tên</label>
                         <input id="hoTenKiemPhieu" class="form-control" placeholder="Nhập họ tên người kiểm phiếu">
@@ -387,8 +541,8 @@
                     <table id="tableKiemPhieu"><thead><tr><th>Họ tên</th><th>Chức vụ</th><th>Thao tác</th></tr></thead><tbody></tbody></table>
                 </div>
 
-                <div id="chungkien" class="tab-content">
-                    <h3 style="margin-bottom: 20px; color: #2a5298;">Quản lý người chứng kiến</h3>
+                <div id="chungkien" class="tab-content compact-form">
+                    <h3 style="margin-bottom: 15px; color: #2a5298; font-size: 16px;">Quản lý người chứng kiến</h3>
                     <div class="form-group">
                         <label>Họ tên</label>
                         <input id="hoTenChungKien" class="form-control" placeholder="Nhập họ tên người chứng kiến">
