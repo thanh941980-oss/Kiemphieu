@@ -19,18 +19,20 @@
             line-height: 1.4;
         }
 
+        /* Container và Layout */
         .container {
             display: flex;
             min-height: 100vh;
         }
 
-        /* Sidebar */
+        /* Sidebar - Desktop */
         .sidebar {
             width: 220px;
             background: linear-gradient(135deg, #1e3c72, #2a5298);
             color: white;
             padding: 15px 0;
             box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
         }
 
         .logo {
@@ -80,11 +82,92 @@
             padding-top: 15px;
         }
 
+        /* Mobile Header */
+        .mobile-header {
+            display: none;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            padding: 15px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .mobile-header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .menu-toggle {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        /* Mobile Sidebar */
+        .mobile-sidebar {
+            position: fixed;
+            top: 0;
+            left: -280px;
+            width: 280px;
+            height: 100vh;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            padding: 20px 0;
+            z-index: 1001;
+            transition: left 0.3s ease;
+            overflow-y: auto;
+        }
+
+        .mobile-sidebar.active {
+            left: 0;
+        }
+
+        .mobile-sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 15px;
+        }
+
+        .close-menu {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
         /* Main Content */
         .main-content {
             flex: 1;
             padding: 20px;
             min-width: 0;
+            transition: margin-left 0.3s ease;
         }
 
         .header {
@@ -133,6 +216,8 @@
             display: flex;
             justify-content: space-between;
             margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
         }
 
         .bien-ban-title {
@@ -157,6 +242,7 @@
             width: 100%;
             border-collapse: collapse;
             margin: 15px 0;
+            font-size: 13px;
         }
 
         .bien-ban-table th, .bien-ban-table td {
@@ -173,11 +259,14 @@
             display: flex;
             justify-content: space-between;
             margin-top: 50px;
+            flex-wrap: wrap;
+            gap: 20px;
         }
 
         .signature-block {
             text-align: center;
             width: 30%;
+            min-width: 150px;
         }
 
         .signature-line {
@@ -186,6 +275,7 @@
             padding-top: 5px;
         }
 
+        /* Buttons */
         .btn {
             padding: 8px 16px;
             background: #2a5298;
@@ -196,10 +286,19 @@
             font-size: 13px;
             transition: background 0.3s ease;
             margin-right: 10px;
+            margin-bottom: 10px;
         }
 
         .btn:hover {
             background: #1e3c72;
+        }
+
+        .btn-success {
+            background: #28a745;
+        }
+
+        .btn-success:hover {
+            background: #218838;
         }
 
         .loading {
@@ -209,22 +308,241 @@
             font-size: 13px;
         }
 
+        /* Action Buttons Container */
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        /* Print Styles */
         @media print {
-            .sidebar, .header, .btn {
-                display: none;
+            .sidebar, .header, .btn, .mobile-header, .mobile-sidebar, .action-buttons {
+                display: none !important;
             }
             
             .bien-ban {
                 box-shadow: none;
                 padding: 0;
                 margin: 0;
+                max-width: none;
             }
+            
+            body {
+                background: white;
+                font-size: 12px;
+            }
+        }
+
+        /* Responsive Design */
+        /* Tablet */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 200px;
+            }
+            
+            .bien-ban {
+                padding: 20px;
+            }
+            
+            .bien-ban-table {
+                font-size: 12px;
+            }
+        }
+
+        /* Mobile */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            /* Ẩn sidebar desktop trên mobile */
+            .sidebar {
+                display: none;
+            }
+            
+            /* Hiển thị mobile header */
+            .mobile-header {
+                display: block;
+            }
+            
+            /* Điều chỉnh main content cho mobile */
+            .main-content {
+                padding: 80px 15px 20px 15px;
+                margin-left: 0 !important;
+            }
+            
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .user-info {
+                align-self: stretch;
+                justify-content: center;
+            }
+            
+            /* Điều chỉnh biên bản cho mobile */
+            .bien-ban {
+                padding: 15px;
+                margin-top: 10px;
+            }
+            
+            .bien-ban-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .bien-ban-title {
+                font-size: 14px;
+                margin: 15px 0;
+            }
+            
+            .bien-ban-table {
+                font-size: 11px;
+            }
+            
+            .bien-ban-table th, 
+            .bien-ban-table td {
+                padding: 6px 8px;
+            }
+            
+            .bien-ban-signature {
+                flex-direction: column;
+                align-items: center;
+                margin-top: 30px;
+            }
+            
+            .signature-block {
+                width: 100%;
+                margin-bottom: 20px;
+            }
+            
+            .signature-line {
+                margin-top: 30px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 200px;
+                margin-right: 0;
+            }
+        }
+
+        /* Small Mobile */
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 70px 10px 15px 10px;
+            }
+            
+            .header h2 {
+                font-size: 18px;
+            }
+            
+            .user-info {
+                padding: 6px 12px;
+                font-size: 12px;
+            }
+            
+            .user-info img {
+                width: 28px;
+                height: 28px;
+            }
+            
+            .bien-ban {
+                padding: 10px;
+            }
+            
+            .bien-ban-table {
+                font-size: 10px;
+            }
+            
+            .bien-ban-table th, 
+            .bien-ban-table td {
+                padding: 4px 6px;
+            }
+            
+            .bien-ban-title {
+                font-size: 12px;
+            }
+        }
+
+        /* Very Small Mobile */
+        @media (max-width: 360px) {
+            .mobile-sidebar {
+                width: 100%;
+                left: -100%;
+            }
+            
+            .bien-ban-table {
+                font-size: 9px;
+            }
+            
+            .bien-ban-table th, 
+            .bien-ban-table td {
+                padding: 3px 4px;
+            }
+        }
+
+        /* Utility Classes */
+        .text-center {
+            text-align: center;
+        }
+        
+        .mb-10 {
+            margin-bottom: 10px;
+        }
+        
+        .mb-20 {
+            margin-bottom: 20px;
         }
     </style>
 </head>
 <body>
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+        <div class="mobile-header-content">
+            <button class="menu-toggle">☰</button>
+            <div class="logo">
+                <h1>HỆ THỐNG BẦU CỬ</h1>
+            </div>
+            <div class="user-info">
+                <img src="https://ui-avatars.com/api/?name=Admin&background=2a5298&color=fff" alt="User">
+                <span id="mobileUserName">Admin</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Sidebar -->
+    <div class="mobile-sidebar">
+        <div class="mobile-sidebar-header">
+            <div class="logo">
+                <h1>HỆ THỐNG BẦU CỬ</h1>
+            </div>
+            <button class="close-menu">✕</button>
+        </div>
+        <ul class="nav-links">
+            <li><a href="thongtin.html"><i>ℹ️</i> Thông tin</a></li>
+            <li><a href="kiemphieu.html"><i>✅</i> Kiểm phiếu</a></li>
+            <li><a href="#" data-target="tonghop"><i>📈</i> Tổng hợp</a></li>
+            <li><a href="#" class="active" data-target="bienban"><i>📝</i> Biên bản</a></li>
+            <li class="logout"><a href="#" id="mobileLogout"><i>🚪</i> Đăng xuất</a></li>
+        </ul>
+    </div>
+
+    <!-- Overlay -->
+    <div class="overlay"></div>
+
     <div class="container">
-        <!-- Sidebar -->
+        <!-- Sidebar Desktop -->
         <div class="sidebar">
             <div class="logo">
                 <h1>HỆ THỐNG BẦU CỬ</h1>
@@ -260,7 +578,7 @@
                             <p>Tỉnh/Thành phố: <span id="tinhThanhBb"></span></p>
                             <p>Xã/Phường/Thị trấn: <span id="phuongXaBb"></span></p>
                         </div>
-                        <div style="text-align: right;">
+                        <div class="text-center">
                             <p><strong>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</strong></p>
                             <p><strong>Độc lập - Tự do - Hạnh phúc</strong></p>
                         </div>
@@ -279,7 +597,7 @@
                         <p>Đơn vị bầu cử đại biểu Hội đồng nhân dân <span id="capBauCuBb2"></span> số: <span id="donViBauCuBb"></span></p>
                         <p>Gồm có: <span id="gomCoBb"></span></p>
                         
-                        <p>Hồi <span id="gioBatDau"></span> giờ <span id="phutBatDau"></span> phút, ngày <span id="ngayBatDau"></span> tháng <span id="thangBatDau"></span> năm <span id="namBatDau"></span>, Tổ bầu cử gồm có:</p>
+                        <p class="mb-10">Hồi <span id="gioBatDau"></span> giờ <span id="phutBatDau"></span> phút, ngày <span id="ngayBatDau"></span> tháng <span id="thangBatDau"></span> năm <span id="namBatDau"></span>, Tổ bầu cử gồm có:</p>
                         
                         <div id="danhSachKiemPhieuBb">
                             <!-- Danh sách người kiểm phiếu sẽ được điền ở đây -->
@@ -288,9 +606,9 @@
 
                     <!-- Thông tin kiểm phiếu -->
                     <div class="bien-ban-section">
-                        <p>Đúng <span id="gioKetThuc"></span> giờ <span id="phutKetThuc"></span> phút ngày <span id="ngayKetThuc"></span> tháng <span id="thangKetThuc"></span> năm <span id="namKetThuc"></span>, Tổ trưởng Tổ bầu cử tuyên bố kết thúc cuộc bầu cử và tiến hành kiểm phiếu ngay tại phòng bầu cử.</p>
+                        <p class="mb-10">Đúng <span id="gioKetThuc"></span> giờ <span id="phutKetThuc"></span> phút ngày <span id="ngayKetThuc"></span> tháng <span id="thangKetThuc"></span> năm <span id="namKetThuc"></span>, Tổ trưởng Tổ bầu cử tuyên bố kết thúc cuộc bầu cử và tiến hành kiểm phiếu ngay tại phòng bầu cử.</p>
                         
-                        <p>Trước khi mở hòm phiếu, Tổ trưởng Tổ bầu cử đã mời hai cử tri biết chữ, không phải là người ứng cử chứng kiến việc kiểm phiếu gồm:</p>
+                        <p class="mb-10">Trước khi mở hòm phiếu, Tổ trưởng Tổ bầu cử đã mời hai cử tri biết chữ, không phải là người ứng cử chứng kiến việc kiểm phiếu gồm:</p>
                         
                         <div id="danhSachChungKienBb">
                             <!-- Danh sách người chứng kiến sẽ được điền ở đây -->
@@ -375,9 +693,9 @@
                 </div>
 
                 <!-- Nút hành động -->
-                <div style="text-align: center; margin-top: 20px;">
+                <div class="action-buttons">
                     <button id="btnInBienBan" class="btn">In biên bản</button>
-                    <button id="btnTaiXuong" class="btn">Tải xuống PDF</button>
+                    <button id="btnTaiXuong" class="btn btn-success">Tải xuống PDF</button>
                 </div>
             </div>
         </div>
@@ -405,6 +723,35 @@
         const auth = firebase.auth();
 
         let currentUser = null;
+
+        // Mobile menu functionality
+        function initMobileMenu() {
+            const menuToggle = document.querySelector('.menu-toggle');
+            const closeMenu = document.querySelector('.close-menu');
+            const mobileSidebar = document.querySelector('.mobile-sidebar');
+            const overlay = document.querySelector('.overlay');
+
+            function openMenu() {
+                mobileSidebar.classList.add('active');
+                overlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeMenuFunc() {
+                mobileSidebar.classList.remove('active');
+                overlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+
+            menuToggle.addEventListener('click', openMenu);
+            closeMenu.addEventListener('click', closeMenuFunc);
+            overlay.addEventListener('click', closeMenuFunc);
+
+            // Close menu when clicking on nav links
+            document.querySelectorAll('.mobile-sidebar .nav-links a').forEach(link => {
+                link.addEventListener('click', closeMenuFunc);
+            });
+        }
 
         // Simple user path function
         function getUserPath(path = '') {
@@ -473,7 +820,7 @@
                     danhSachKiemPhieuSnapshot.forEach(child => {
                         const data = child.val();
                         const div = document.createElement('div');
-                        div.innerHTML = `<p>${stt}. Ông/Bà: ${data.hoTen} - ${data.chucVu}</p>`;
+                        div.innerHTML = `<p class="mb-10">${stt}. Ông/Bà: ${data.hoTen} - ${data.chucVu}</p>`;
                         danhSachKiemPhieuDiv.appendChild(div);
                         stt++;
                     });
@@ -489,7 +836,7 @@
                     danhSachChungKienSnapshot.forEach(child => {
                         const data = child.val();
                         const div = document.createElement('div');
-                        div.innerHTML = `<p>${stt}. Ông/Bà: ${data.hoTen} - Nơi ở hiện nay: ${data.diaChi}</p>`;
+                        div.innerHTML = `<p class="mb-10">${stt}. Ông/Bà: ${data.hoTen} - Nơi ở hiện nay: ${data.diaChi}</p>`;
                         danhSachChungKienDiv.appendChild(div);
                         stt++;
                     });
@@ -558,6 +905,7 @@
                 if (user) {
                     currentUser = user;
                     document.getElementById('userName').textContent = user.email || 'Quản trị viên';
+                    document.getElementById('mobileUserName').textContent = user.email || 'Admin';
                     
                     loadingElement.style.display = 'none';
                     mainContentElement.style.display = 'block';
@@ -573,38 +921,57 @@
         }
 
         // Navigation
-        document.querySelectorAll('.nav-links a[data-target]').forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                
-                document.querySelectorAll('.nav-links a').forEach(item => {
-                    item.classList.remove('active');
+        function initNavigation() {
+            document.querySelectorAll('.nav-links a[data-target]').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    document.querySelectorAll('.nav-links a').forEach(item => {
+                        item.classList.remove('active');
+                    });
+                    
+                    this.classList.add('active');
+                    
+                    const targetPage = this.getAttribute('data-target') + '.html';
+                    if (targetPage !== 'bienban.html') {
+                        window.location.href = targetPage;
+                    }
                 });
-                
-                this.classList.add('active');
-                
-                const targetPage = this.getAttribute('data-target') + '.html';
-                if (targetPage !== 'bienban.html') {
-                    window.location.href = targetPage;
-                }
             });
-        });
+        }
 
         // Logout
-        document.getElementById('logout').addEventListener('click', function(e) {
-            e.preventDefault();
-            if (confirm('Bạn có chắc muốn đăng xuất?')) {
-                auth.signOut().then(() => {
-                    alert('Đã đăng xuất!');
-                    window.location.href = 'index.html';
-                }).catch(error => {
-                    console.error('Logout error:', error);
-                });
-            }
-        });
+        function initLogout() {
+            document.getElementById('logout').addEventListener('click', function(e) {
+                e.preventDefault();
+                if (confirm('Bạn có chắc muốn đăng xuất?')) {
+                    auth.signOut().then(() => {
+                        alert('Đã đăng xuất!');
+                        window.location.href = 'index.html';
+                    }).catch(error => {
+                        console.error('Logout error:', error);
+                    });
+                }
+            });
+
+            document.getElementById('mobileLogout').addEventListener('click', function(e) {
+                e.preventDefault();
+                if (confirm('Bạn có chắc muốn đăng xuất?')) {
+                    auth.signOut().then(() => {
+                        alert('Đã đăng xuất!');
+                        window.location.href = 'index.html';
+                    }).catch(error => {
+                        console.error('Logout error:', error);
+                    });
+                }
+            });
+        }
 
         // Start application
         window.addEventListener('load', function() {
+            initMobileMenu();
+            initNavigation();
+            initLogout();
             initApp();
         });
     </script>
