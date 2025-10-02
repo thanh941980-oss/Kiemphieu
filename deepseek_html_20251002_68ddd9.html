@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biên bản kết quả kiểm phiếu</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Times New Roman', serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: #000;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 220px;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            padding: 15px 0;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            text-align: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 15px;
+        }
+
+        .logo h1 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 0 10px;
+        }
+
+        .nav-links li {
+            margin-bottom: 8px;
+        }
+
+        .nav-links a {
+            display: flex;
+            align-items: center;
+            padding: 10px 12px;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            font-size: 13px;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-links i {
+            margin-right: 8px;
+            font-size: 16px;
+        }
+
+        .logout {
+            margin-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 15px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            min-width: 0;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header h2 {
+            font-size: 20px;
+            color: #2a5298;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            background: white;
+            padding: 8px 16px;
+            border-radius: 25px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            font-size: 13px;
+        }
+
+        .user-info img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        /* Biên bản */
+        .bien-ban {
+            background: white;
+            padding: 30px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .bien-ban-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+
+        .bien-ban-title {
+            text-align: center;
+            font-weight: bold;
+            font-size: 16px;
+            margin: 20px 0;
+            text-transform: uppercase;
+        }
+
+        .bien-ban-section {
+            margin-bottom: 20px;
+        }
+
+        .bien-ban-section h3 {
+            font-size: 14px;
+            margin-bottom: 10px;
+            text-decoration: underline;
+        }
+
+        .bien-ban-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+
+        .bien-ban-table th, .bien-ban-table td {
+            border: 1px solid #000;
+            padding: 8px 10px;
+            text-align: left;
+        }
+
+        .bien-ban-table th {
+            background-color: #f0f0f0;
+        }
+
+        .bien-ban-signature {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 50px;
+        }
+
+        .signature-block {
+            text-align: center;
+            width: 30%;
+        }
+
+        .signature-line {
+            margin-top: 50px;
+            border-top: 1px solid #000;
+            padding-top: 5px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            background: #2a5298;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: background 0.3s ease;
+            margin-right: 10px;
+        }
+
+        .btn:hover {
+            background: #1e3c72;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 13px;
+        }
+
+        @media print {
+            .sidebar, .header, .btn {
+                display: none;
+            }
+            
+            .bien-ban {
+                box-shadow: none;
+                padding: 0;
+                margin: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo">
+                <h1>HỆ THỐNG BẦU CỬ</h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="thongtin.html"><i>ℹ️</i> Thông tin</a></li>
+                <li><a href="kiemphieu.html"><i>✅</i> Kiểm phiếu</a></li>
+                <li><a href="#" data-target="tonghop"><i>📈</i> Tổng hợp</a></li>
+                <li><a href="#" class="active" data-target="bienban"><i>📝</i> Biên bản</a></li>
+                <li class="logout"><a href="#" id="logout"><i>🚪</i> Đăng xuất</a></li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <h2>Biên bản kết quả kiểm phiếu</h2>
+                <div class="user-info">
+                    <img src="https://ui-avatars.com/api/?name=Admin&background=2a5298&color=fff" alt="User">
+                    <span id="userName">Quản trị viên</span>
+                </div>
+            </div>
+
+            <!-- Loading indicator -->
+            <div id="loading" class="loading">Đang tải dữ liệu...</div>
+
+            <!-- Nội dung biên bản (ẩn ban đầu) -->
+            <div id="mainContent" style="display: none;">
+                <div class="bien-ban">
+                    <!-- Header biên bản -->
+                    <div class="bien-ban-header">
+                        <div>
+                            <p>Tỉnh/Thành phố: <span id="tinhThanhBb"></span></p>
+                            <p>Xã/Phường/Thị trấn: <span id="phuongXaBb"></span></p>
+                        </div>
+                        <div style="text-align: right;">
+                            <p><strong>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</strong></p>
+                            <p><strong>Độc lập - Tự do - Hạnh phúc</strong></p>
+                        </div>
+                    </div>
+
+                    <!-- Tiêu đề biên bản -->
+                    <div class="bien-ban-title">
+                        BIÊN BẢN KẾT QUẢ KIỂM PHIẾU<br>
+                        BẦU CỬ ĐẠI BIỂU HỘI ĐỒNG NHÂN DÂN <span id="capBauCuBb"></span><br>
+                        KHÓA <span id="khoaBb"></span> - NHIỆM KỲ <span id="nhiemKyBb"></span>
+                    </div>
+
+                    <!-- Thông tin tổ bầu cử -->
+                    <div class="bien-ban-section">
+                        <p>Khu vực bỏ phiếu số: <span id="khuVucBoPhieuBb"></span> - Xã/Phường/Thị trấn: <span id="phuongXaBb2"></span></p>
+                        <p>Đơn vị bầu cử đại biểu Hội đồng nhân dân <span id="capBauCuBb2"></span> số: <span id="donViBauCuBb"></span></p>
+                        <p>Gồm có: <span id="gomCoBb"></span></p>
+                        
+                        <p>Hồi <span id="gioBatDau"></span> giờ <span id="phutBatDau"></span> phút, ngày <span id="ngayBatDau"></span> tháng <span id="thangBatDau"></span> năm <span id="namBatDau"></span>, Tổ bầu cử gồm có:</p>
+                        
+                        <div id="danhSachKiemPhieuBb">
+                            <!-- Danh sách người kiểm phiếu sẽ được điền ở đây -->
+                        </div>
+                    </div>
+
+                    <!-- Thông tin kiểm phiếu -->
+                    <div class="bien-ban-section">
+                        <p>Đúng <span id="gioKetThuc"></span> giờ <span id="phutKetThuc"></span> phút ngày <span id="ngayKetThuc"></span> tháng <span id="thangKetThuc"></span> năm <span id="namKetThuc"></span>, Tổ trưởng Tổ bầu cử tuyên bố kết thúc cuộc bầu cử và tiến hành kiểm phiếu ngay tại phòng bầu cử.</p>
+                        
+                        <p>Trước khi mở hòm phiếu, Tổ trưởng Tổ bầu cử đã mời hai cử tri biết chữ, không phải là người ứng cử chứng kiến việc kiểm phiếu gồm:</p>
+                        
+                        <div id="danhSachChungKienBb">
+                            <!-- Danh sách người chứng kiến sẽ được điền ở đây -->
+                        </div>
+                    </div>
+
+                    <!-- Kết quả bầu cử -->
+                    <div class="bien-ban-section">
+                        <h3>KẾT QUẢ CUỘC BẦU CỬ NHƯ SAU:</h3>
+                        
+                        <table class="bien-ban-table">
+                            <tr>
+                                <td>Số đại biểu Hội đồng nhân dân ấn định cho đơn vị bầu cử</td>
+                                <td id="soNguoiDuocBauBb"></td>
+                            </tr>
+                            <tr>
+                                <td>Số người ứng cử</td>
+                                <td id="soNguoiUngCuBb"></td>
+                            </tr>
+                            <tr>
+                                <td>Tổng số cử tri của khu vực bỏ phiếu</td>
+                                <td id="tongSoCuTriBb"></td>
+                            </tr>
+                            <tr>
+                                <td>Số cử tri đã tham gia bỏ phiếu</td>
+                                <td id="thamGiaBoPhieuBb"></td>
+                            </tr>
+                            <tr>
+                                <td>Tỷ lệ cử tri đã tham gia bầu phiếu so với tổng số cử tri</td>
+                                <td id="phanTramThamGiaBb"></td>
+                            </tr>
+                            <tr>
+                                <td>Số phiếu phát ra</td>
+                                <td id="soPhieuPhatRaBb"></td>
+                            </tr>
+                            <tr>
+                                <td>Số phiếu thu vào</td>
+                                <td id="soPhieuThuVaoBb"></td>
+                            </tr>
+                            <tr>
+                                <td>Số phiếu hợp lệ</td>
+                                <td id="soPhieuHopLeBb"></td>
+                            </tr>
+                            <tr>
+                                <td>Số phiếu không hợp lệ</td>
+                                <td id="soPhieuKhongHopLeBb"></td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <!-- Kết quả ứng viên -->
+                    <div class="bien-ban-section">
+                        <h3>SỐ PHIẾU BẦU CHO MỖI NGƯỜI ỨNG CỬ:</h3>
+                        
+                        <table class="bien-ban-table" id="ketQuaUngVienBb">
+                            <!-- Kết quả ứng viên sẽ được điền ở đây -->
+                        </table>
+                    </div>
+
+                    <!-- Chữ ký -->
+                    <div class="bien-ban-signature">
+                        <div class="signature-block">
+                            <p><strong>CỬ TRI THỨ NHẤT CHỨNG KIẾN</strong></p>
+                            <div class="signature-line"></div>
+                            <p>(Ký, ghi rõ họ tên)</p>
+                        </div>
+                        
+                        <div class="signature-block">
+                            <p><strong>TM. TỔ BẦU CỬ</strong></p>
+                            <p><strong>TỔ TRƯỞNG</strong></p>
+                            <div class="signature-line"></div>
+                            <p>(Ký tên và đóng dấu)</p>
+                        </div>
+                        
+                        <div class="signature-block">
+                            <p><strong>THƯ KÝ</strong></p>
+                            <p><strong>TỔ BẦU CỬ</strong></p>
+                            <div class="signature-line"></div>
+                            <p>(Ký, ghi rõ họ tên)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nút hành động -->
+                <div style="text-align: center; margin-top: 20px;">
+                    <button id="btnInBienBan" class="btn">In biên bản</button>
+                    <button id="btnTaiXuong" class="btn">Tải xuống PDF</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+    <script>
+        // Firebase config
+        const firebaseConfig = { 
+            apiKey: "AIzaSyAt-OooTscmthbJXNcvy80RgPDA9T46-0w", 
+            authDomain: "kiemphieu-45823.firebaseapp.com", 
+            databaseURL: "https://kiemphieu-45823-default-rtdb.asia-southeast1.firebasedatabase.app", 
+            projectId: "kiemphieu-45823", 
+            storageBucket: "kiemphieu-45823.firebasestorage.app", 
+            messagingSenderId: "908329514571", 
+            appId: "1:908329514571:web:16b43df5b795e4de06bfce" 
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+
+        const db = firebase.database();
+        const auth = firebase.auth();
+
+        let currentUser = null;
+
+        // Simple user path function
+        function getUserPath(path = '') {
+            if (!currentUser || !currentUser.uid) {
+                throw new Error('User not authenticated');
+            }
+            return `users/${currentUser.uid}${path ? '/' + path : ''}`;
+        }
+
+        // Load dữ liệu cho biên bản
+        async function loadBienBanData() {
+            try {
+                // Load thông tin đơn vị
+                const donViSnapshot = await db.ref(getUserPath('donVi')).once('value');
+                if (donViSnapshot.exists()) {
+                    const donViData = donViSnapshot.val();
+                    
+                    document.getElementById('tinhThanhBb').textContent = donViData.tinhThanh || '';
+                    document.getElementById('phuongXaBb').textContent = donViData.phuongXa || '';
+                    document.getElementById('phuongXaBb2').textContent = donViData.phuongXa || '';
+                    document.getElementById('khoaBb').textContent = donViData.khoa || '';
+                    document.getElementById('nhiemKyBb').textContent = donViData.nhiemKy || '';
+                    document.getElementById('khuVucBoPhieuBb').textContent = donViData.khuVucBoPhieu || '';
+                    document.getElementById('donViBauCuBb').textContent = donViData.donViBauCu || '';
+                    document.getElementById('gomCoBb').textContent = donViData.gomCo || '';
+                    document.getElementById('soNguoiUngCuBb').textContent = donViData.soNguoiUngCu || 0;
+                    document.getElementById('soNguoiDuocBauBb').textContent = donViData.soNguoiDuocBau || 0;
+                    
+                    // Xác định cấp bầu cử
+                    const capBauCu = donViData.bauCuCap || '';
+                    let capText = '';
+                    switch(capBauCu) {
+                        case 'quoc_hoi': capText = 'Quốc hội'; break;
+                        case 'thanh_pho': capText = 'Thành phố'; break;
+                        case 'phuong': capText = 'Phường'; break;
+                        default: capText = capBauCu;
+                    }
+                    document.getElementById('capBauCuBb').textContent = capText;
+                    document.getElementById('capBauCuBb2').textContent = capText;
+                }
+
+                // Load thông tin kiểm phiếu
+                const kiemPhieuSnapshot = await db.ref(getUserPath('kiemPhieuData')).once('value');
+                if (kiemPhieuSnapshot.exists()) {
+                    const kiemPhieuData = kiemPhieuSnapshot.val();
+                    
+                    document.getElementById('tongSoCuTriBb').textContent = kiemPhieuData.tongSoCuTri || 0;
+                    document.getElementById('thamGiaBoPhieuBb').textContent = kiemPhieuData.thamGiaBoPhieu || 0;
+                    document.getElementById('phanTramThamGiaBb').textContent = kiemPhieuData.phanTramThamGia || '0%';
+                    document.getElementById('soPhieuPhatRaBb').textContent = kiemPhieuData.soPhieuPhatRa || 0;
+                    document.getElementById('soPhieuThuVaoBb').textContent = kiemPhieuData.soPhieuThuVao || 0;
+                    
+                    // Tính phiếu hợp lệ và không hợp lệ (giả định tất cả phiếu thu vào là hợp lệ)
+                    const soPhieuThuVao = kiemPhieuData.soPhieuThuVao || 0;
+                    document.getElementById('soPhieuHopLeBb').textContent = soPhieuThuVao;
+                    document.getElementById('soPhieuKhongHopLeBb').textContent = 0;
+                }
+
+                // Load danh sách người kiểm phiếu
+                const danhSachKiemPhieuSnapshot = await db.ref(getUserPath('kiemPhieu')).once('value');
+                const danhSachKiemPhieuDiv = document.getElementById('danhSachKiemPhieuBb');
+                danhSachKiemPhieuDiv.innerHTML = '';
+                
+                if (danhSachKiemPhieuSnapshot.exists()) {
+                    let stt = 1;
+                    danhSachKiemPhieuSnapshot.forEach(child => {
+                        const data = child.val();
+                        const div = document.createElement('div');
+                        div.innerHTML = `<p>${stt}. Ông/Bà: ${data.hoTen} - ${data.chucVu}</p>`;
+                        danhSachKiemPhieuDiv.appendChild(div);
+                        stt++;
+                    });
+                }
+
+                // Load danh sách người chứng kiến
+                const danhSachChungKienSnapshot = await db.ref(getUserPath('chungKien')).once('value');
+                const danhSachChungKienDiv = document.getElementById('danhSachChungKienBb');
+                danhSachChungKienDiv.innerHTML = '';
+                
+                if (danhSachChungKienSnapshot.exists()) {
+                    let stt = 1;
+                    danhSachChungKienSnapshot.forEach(child => {
+                        const data = child.val();
+                        const div = document.createElement('div');
+                        div.innerHTML = `<p>${stt}. Ông/Bà: ${data.hoTen} - Nơi ở hiện nay: ${data.diaChi}</p>`;
+                        danhSachChungKienDiv.appendChild(div);
+                        stt++;
+                    });
+                }
+
+                // Load kết quả ứng viên
+                const candidateResultsSnapshot = await db.ref(getUserPath('candidateResults')).once('value');
+                const ketQuaUngVienTable = document.getElementById('ketQuaUngVienBb');
+                ketQuaUngVienTable.innerHTML = `
+                    <tr>
+                        <th>Họ tên ứng viên</th>
+                        <th>Số phiếu</th>
+                        <th>Tỷ lệ %</th>
+                    </tr>
+                `;
+                
+                if (candidateResultsSnapshot.exists()) {
+                    candidateResultsSnapshot.forEach(child => {
+                        const data = child.val();
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${data.hoTen || 'Ứng viên'}</td>
+                            <td>${data.soPhieu || 0}</td>
+                            <td>${data.phanTram || '0%'}</td>
+                        `;
+                        ketQuaUngVienTable.appendChild(row);
+                    });
+                }
+
+                // Đặt thời gian mặc định
+                const now = new Date();
+                document.getElementById('gioBatDau').textContent = '07';
+                document.getElementById('phutBatDau').textContent = '00';
+                document.getElementById('ngayBatDau').textContent = now.getDate();
+                document.getElementById('thangBatDau').textContent = now.getMonth() + 1;
+                document.getElementById('namBatDau').textContent = now.getFullYear();
+                
+                document.getElementById('gioKetThuc').textContent = '19';
+                document.getElementById('phutKetThuc').textContent = '00';
+                document.getElementById('ngayKetThuc').textContent = now.getDate();
+                document.getElementById('thangKetThuc').textContent = now.getMonth() + 1;
+                document.getElementById('namKetThuc').textContent = now.getFullYear();
+
+            } catch (error) {
+                console.error('Error loading bien ban data:', error);
+            }
+        }
+
+        // In biên bản
+        document.getElementById('btnInBienBan').addEventListener('click', function() {
+            window.print();
+        });
+
+        // Tải xuống PDF (cần thêm thư viện html2pdf)
+        document.getElementById('btnTaiXuong').addEventListener('click', function() {
+            alert('Chức năng tải PDF sẽ được tích hợp sau khi thêm thư viện html2pdf.js');
+            // Có thể tích hợp thư viện html2pdf.js để tải về PDF
+        });
+
+        // Main initialization
+        function initApp() {
+            auth.onAuthStateChanged(async (user) => {
+                const loadingElement = document.getElementById('loading');
+                const mainContentElement = document.getElementById('mainContent');
+                
+                if (user) {
+                    currentUser = user;
+                    document.getElementById('userName').textContent = user.email || 'Quản trị viên';
+                    
+                    loadingElement.style.display = 'none';
+                    mainContentElement.style.display = 'block';
+                    
+                    await loadBienBanData();
+                } else {
+                    loadingElement.innerHTML = 'Chưa đăng nhập, đang chuyển hướng...';
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 2000);
+                }
+            });
+        }
+
+        // Navigation
+        document.querySelectorAll('.nav-links a[data-target]').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                document.querySelectorAll('.nav-links a').forEach(item => {
+                    item.classList.remove('active');
+                });
+                
+                this.classList.add('active');
+                
+                const targetPage = this.getAttribute('data-target') + '.html';
+                if (targetPage !== 'bienban.html') {
+                    window.location.href = targetPage;
+                }
+            });
+        });
+
+        // Logout
+        document.getElementById('logout').addEventListener('click', function(e) {
+            e.preventDefault();
+            if (confirm('Bạn có chắc muốn đăng xuất?')) {
+                auth.signOut().then(() => {
+                    alert('Đã đăng xuất!');
+                    window.location.href = 'index.html';
+                }).catch(error => {
+                    console.error('Logout error:', error);
+                });
+            }
+        });
+
+        // Start application
+        window.addEventListener('load', function() {
+            initApp();
+        });
+    </script>
+</body>
+</html>
