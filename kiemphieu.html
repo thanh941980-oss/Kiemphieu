@@ -489,7 +489,7 @@
             font-size: 13px;
         }
 
-        /* Kiểm tra từng phiếu */
+        /* Kiểm tra từng phiếu - ĐÃ SỬA */
         .phieu-details {
             background: white;
             padding: 15px;
@@ -513,14 +513,13 @@
         }
 
         .phieu-table {
-            width: max-content;
-            min-width: 100%;
+            width: 100%;
             border-collapse: collapse;
-            font-size: 11px;
+            font-size: 12px;
         }
 
         .phieu-table th, .phieu-table td {
-            padding: 6px 8px;
+            padding: 8px 10px;
             text-align: center;
             border: 1px solid #ddd;
             white-space: nowrap;
@@ -535,52 +534,30 @@
             z-index: 1;
         }
 
-        /* Các cột cố định khi cuộn ngang */
-        .phieu-table .sticky-col {
-            position: sticky;
-            left: 0;
-            background-color: #f8f9fa;
-            z-index: 3;
-            box-shadow: 2px 0 2px rgba(0,0,0,0.1);
-        }
-
-        .phieu-table .sticky-col-2 {
-            position: sticky;
-            left: 60px;
-            background-color: #f8f9fa;
-            z-index: 3;
-            box-shadow: 2px 0 2px rgba(0,0,0,0.1);
-        }
-
-        .phieu-table .sticky-col-3 {
-            position: sticky;
-            left: 120px;
-            background-color: #f8f9fa;
-            z-index: 3;
-            box-shadow: 2px 0 2px rgba(0,0,0,0.1);
-        }
-
-        /* Đảm bảo các cột ứng viên có chiều rộng cố định */
+        /* Các cột ứng viên - ĐÃ SỬA */
         .phieu-table .candidate-col {
-            min-width: 60px;
-            max-width: 80px;
+            min-width: 100px;
+            text-align: center;
         }
 
-        /* Cột thao tác nhỏ hơn */
+        .phieu-table .candidate-name-header {
+            background-color: #2a5298;
+            color: white;
+            font-weight: 600;
+            font-size: 11px;
+            padding: 6px 8px;
+        }
+
         .phieu-table .action-col {
-            width: 60px;
-            position: sticky;
-            right: 0;
-            background-color: #f8f9fa;
-            z-index: 3;
-            box-shadow: -2px 0 2px rgba(0,0,0,0.1);
+            width: 70px;
+            text-align: center;
         }
 
         /* Style cho nút sửa trong cột thao tác */
         .phieu-table .btn-sm {
-            padding: 4px 6px;
-            font-size: 10px;
-            min-width: 45px;
+            padding: 4px 8px;
+            font-size: 11px;
+            min-width: 50px;
         }
 
         /* Màu sắc cho trạng thái */
@@ -757,7 +734,7 @@
             
             .number-input {
                 min-width: auto;
-                font-size: 16px; /* Tăng kích thước font cho dễ nhập trên mobile */
+                font-size: 16px;
             }
             
             .candidates-grid {
@@ -793,11 +770,11 @@
             }
             
             .phieu-table {
-                font-size: 10px;
+                font-size: 11px;
             }
             
             .phieu-table th, .phieu-table td {
-                padding: 4px 6px;
+                padding: 6px 8px;
             }
             
             .modal-content {
@@ -872,6 +849,14 @@
             
             table th, table td {
                 padding: 6px 8px;
+            }
+            
+            .phieu-table {
+                font-size: 10px;
+            }
+            
+            .phieu-table th, .phieu-table td {
+                padding: 4px 6px;
             }
         }
 
@@ -1114,7 +1099,7 @@
                     </table>
                 </div>
 
-                <!-- Kiểm tra từng phiếu -->
+                <!-- Kiểm tra từng phiếu - ĐÃ SỬA -->
                 <div class="phieu-details">
                     <h3>KIỂM TRA TỪNG PHIẾU</h3>
                     <div class="phieu-table-container" id="phieuTableContainer">
@@ -1435,7 +1420,7 @@
             });
         }
 
-        // Cập nhật bảng kiểm tra từng phiếu
+        // Cập nhật bảng kiểm tra từng phiếu - ĐÃ SỬA
         function updatePhieuTable() {
             const container = document.getElementById('phieuTableContainer');
             
@@ -1448,13 +1433,14 @@
                 <table class="phieu-table">
                     <thead>
                         <tr>
-                            <th class="sticky-col">Đọc phiếu</th>
-                            <th class="sticky-col-2">Phiếu số</th>
-                            <th class="sticky-col-3">Hợp lệ/Không hợp lệ</th>
+                            <th>Phiếu số</th>
+                            <th>Đọc phiếu</th>
+                            <th>Trạng thái</th>
             `;
             
+            // Thêm cột cho từng ứng viên với tên đầy đủ
             candidates.forEach(candidate => {
-                tableHTML += `<th class="candidate-col">${candidate.name}<br>N${candidate.stt}</th>`;
+                tableHTML += `<th class="candidate-col candidate-name-header">${candidate.name}<br>(N${candidate.stt})</th>`;
             });
             
             tableHTML += `
@@ -1479,11 +1465,12 @@
                     
                     tableHTML += `
                         <tr>
-                            <td class="sticky-col"><strong>${docPhieu}</strong></td>
-                            <td class="sticky-col-2"><strong>${phieu.phieuSo}</strong></td>
-                            <td class="sticky-col-3 ${getStatusClass(phieu.trangThai)}"><strong>${phieu.trangThai}</strong></td>
+                            <td><strong>${phieu.phieuSo}</strong></td>
+                            <td><strong>${docPhieu}</strong></td>
+                            <td class="${getStatusClass(phieu.trangThai)}"><strong>${phieu.trangThai}</strong></td>
                     `;
                     
+                    // Hiển thị kết quả cho từng ứng viên
                     candidates.forEach(candidate => {
                         const isLoai = phieu.selectedIds.includes(candidate.id);
                         tableHTML += `<td class="candidate-col">${isLoai ? '0' : '<strong>1</strong>'}</td>`;
