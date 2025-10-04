@@ -1692,10 +1692,9 @@ async function loadKiemPhieu() {
         const phieuSnapshot = await db.ref(getUserPath('phieuDetails')).once('value');
 if (phieuSnapshot.exists()) {
     const data = phieuSnapshot.val();
-    phieuDetails = Object.values(data); // Chuyển object Firebase sang array
+    phieuDetails = Object.values(data); // 🔹 Chuyển object thành mảng
     updatePhieuTable();
 }
-
     } catch (error) {
         console.error('Error loading kiem phieu:', error);
     }
