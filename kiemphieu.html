@@ -1653,81 +1653,54 @@
         }
 
         // Load thông tin kiểm phiếu
-        async function loadKiemPhieu() {
+        <!-- Bắt đầu phần đã chỉnh -->
+async function loadKiemPhieu() {
     try {
-        // Hàm này yêu cầu current user phải tồn tại
-        const userPath = getUserPath(''); 
-
-        // --- 1. Tải Thông tin chung (kiemPhieuData) ---
-        const kiemPhieuSnapshot = await db.ref(getUserPath('kiemPhieuData')).once('value');
-        if (kiemPhieuSnapshot.exists()) {
-            const data = kiemPhieuSnapshot.val();
+        const userPath = getUserPath('kiemPhieuData');
+        const snapshot = await db.ref(userPath).once('value');
+        
+        if (snapshot.exists()) {
+            const data = snapshot.val();
             document.getElementById('tongSoCuTri').value = data.tongSoCuTri || 0;
             document.getElementById('thamGiaBoPhieu').value = data.thamGiaBoPhieu || 0;
             document.getElementById('soPhieuPhatRa').value = data.soPhieuPhatRa || 0;
             
             if (data.soPhieuThuVao) {
                 document.getElementById('soPhieuThuVao').textContent = data.soPhieuThuVao;
+                currentPhieu = parseInt(data.soPhieuThuVao) + 1 || 1;
+                document.getElementById('currentPhieu').textContent = currentPhieu;
+                document.getElementById('currentPhieuDisplay').textContent = currentPhieu;
             }
             
             updatePercentages();
         }
 
-        // --- 2. Tải Kết quả ứng viên (candidateResults) ---
-        // (Bước này phải chạy sau loadCandidates để có danh sách ứng viên)
         const resultsSnapshot = await db.ref(getUserPath('candidateResults')).once('value');
         if (resultsSnapshot.exists()) {
             candidateResults = resultsSnapshot.val();
             candidates.forEach(candidate => {
                 if (candidateResults[candidate.id]) {
                     candidate.votes = parseInt(candidateResults[candidate.id].votes) || 0;
-                } else {
-                    candidate.votes = 0; 
+                    candidate.stt = parseInt(candidateResults[candidate.id].stt) || candidate.stt;
                 }
             });
             updateResultsTable();
+            updatePercentages();
         }
 
-        // --- 3. Tải Chi tiết Phiếu (phieuDetails) - Xử lý an toàn cấu trúc mảng ---
+        // ✅ CHỈNH PHẦN NÀY: chuyển object → mảng để hiển thị đúng
         const phieuSnapshot = await db.ref(getUserPath('phieuDetails')).once('value');
         if (phieuSnapshot.exists()) {
             const data = phieuSnapshot.val();
-            
-            // Xử lý an toàn: Chuyển đổi dữ liệu từ Object sang Array nếu cần
-            if (Array.isArray(data)) {
-                phieuDetails = data.filter(p => p !== null); 
-            } else if (data && typeof data === 'object') {
-                phieuDetails = Object.values(data).filter(p => p !== null);
-            } else {
-                phieuDetails = [];
-            }
-            
-            // Cập nhật Số phiếu thu vào và Phiếu hiện tại
-            document.getElementById('soPhieuThuVao').textContent = phieuDetails.length;
-
-            if (phieuDetails.length > 0) {
-                const maxPhieuSo = Math.max(...phieuDetails.map(p => p.phieuSo));
-                currentPhieu = maxPhieuSo + 1; 
-            } else {
-                 currentPhieu = 1;
-            }
-            
-            document.getElementById('currentPhieu').textContent = currentPhieu;
-            document.getElementById('currentPhieuDisplay').textContent = currentPhieu;
-            
+            phieuDetails = Array.isArray(data) ? data : Object.values(data);
             updatePhieuTable();
-            updatePercentages(); 
         }
 
     } catch (error) {
         console.error('Error loading kiem phieu:', error);
-        // Có thể thêm cảnh báo người dùng nếu lỗi liên quan đến xác thực
-        if (error.message.includes('User not authenticated')) {
-            alert('Lỗi: Bạn chưa đăng nhập hoặc phiên đã hết hạn. Đang chuyển hướng...');
-            window.location.href = 'index.html';
-        }
     }
 }
+<!-- Kết thúc phần đã chỉnh -->
         // Lưu thông tin kiểm phiếu
         async function saveKiemPhieu() {
             try {
