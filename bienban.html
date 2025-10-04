@@ -46,13 +46,35 @@
         .placeholder { color: #888; }
         
         @media (max-width: 992px) {
-  .container { flex-direction: column; }
-  .sidebar { position: fixed; left: 0; top: 0; bottom: 0; height: 100%; }
-  .menu-toggle { display: block; }
-  .main-content { padding: 15px; }
-  .header h2 { font-size: 18px; }
-  .summary-section { padding: 15px; }
+  .conta/* Sidebar luôn hiển thị, responsive đẹp */
+@media (max-width: 992px) {
+  .container {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    position: relative; /* bỏ fixed để không đè lên nội dung */
+    width: 100%; /* chiếm toàn bộ chiều ngang trên mobile */
+    height: auto; 
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    display: block; /* đảm bảo luôn hiển thị */
+  }
+
+  .main-content {
+    padding: 15px;
+    margin-left: 0; /* không bị chèn bởi sidebar */
+  }
+
+  .header h2 {
+    font-size: 18px;
+  }
+
+  .summary-section {
+    padding: 15px;
+  }
 }
+
+/* Tối ưu thêm cho điện thoại nhỏ */
 @media (max-width: 600px) {
   body { font-size: 12px; }
   .btn { padding: 6px 12px; font-size: 12px; }
