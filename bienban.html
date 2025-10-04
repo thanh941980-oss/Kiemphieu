@@ -1,199 +1,190 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Biên bản kết quả kiểm phiếu</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Times New Roman', serif; }
-        body { background-color: #f5f7fa; color: #000; font-size: 14px; line-height: 1.6; }
-        .container { display: flex; min-height: 100vh; }
-        .sidebar { width: 220px; background: linear-gradient(135deg, #1e3c72, #2a5298); color: white; padding: 15px 0; box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1); }
-        .logo { text-align: center; padding: 15px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 15px; }
-        .logo h1 { font-size: 18px; font-weight: 600; }
-        .nav-links { list-style: none; padding: 0 10px; }
-        .nav-links li { margin-bottom: 8px; }
-        .nav-links a { display: flex; align-items: center; padding: 10px 12px; color: white; text-decoration: none; border-radius: 6px; transition: all 0.3s ease; font-size: 13px; }
-        .nav-links a:hover, .nav-links a.active { background-color: rgba(255, 255, 255, 0.1); }
-        .main-content { flex: 1; padding: 20px; min-width: 0; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; }
-        .header h2 { font-size: 20px; color: #2a5298; }
-        .user-info { display: flex; align-items: center; background: white; padding: 8px 16px; border-radius: 25px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); font-size: 13px; }
-        .user-info img { width: 32px; height: 32px; border-radius: 50%; margin-right: 8px; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Biên bản kết quả kiểm phiếu</title>
+<style>
+    * {margin: 0; padding: 0; box-sizing: border-box;}
+    body {
+        font-family: "Segoe UI", Roboto, Arial, sans-serif;
+        background-color: #f5f7fa;
+        color: #222;
+        line-height: 1.6;
+        font-size: 16px;
+    }
 
-        .bien-ban-wrapper { background: white; padding: 40px; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1); max-width: 850px; margin: 20px auto; }
-        .bb-header-top { display: flex; justify-content: space-between; font-weight: bold; }
-        .bb-title { text-align: center; margin: 20px 0; }
-        .bb-title h2 { font-size: 16px; font-weight: bold; text-transform: uppercase; }
-        .bb-title p { font-size: 14px; font-weight: bold; }
-        .bb-body p { margin-bottom: 10px; }
-        .bb-list { padding-left: 20px; }
-        .bb-results-table { width: 100%; border-collapse: collapse; margin: 15px 0; }
-        .bb-results-table td { padding: 5px; }
-        .bb-signature { display: grid; grid-template-columns: 1fr 1fr; margin-top: 50px; text-align: center; gap: 20px; }
-        .bb-signature p { font-weight: bold; }
-        .bb-signature .sig-role { font-style: italic; font-weight: normal; }
-        .btn { padding: 8px 16px; background: #2a5298; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 13px; transition: background 0.3s ease; margin-right: 10px; margin-bottom: 10px; }
-        .btn:hover { background: #1e3c72; }
-        .btn-success { background: #28a745; }
-        .btn-success:hover { background: #218838; }
-        .loading { text-align: center; padding: 20px; color: #666; font-size: 13px; }
-        .action-buttons { display: flex; justify-content: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
-        .placeholder { color: #888; }
-        @media print {
-            body { background: white; font-size: 12pt; }
-            .sidebar, .header, .action-buttons { display: none !important; }
-            .main-content { padding: 0; }
-            .bien-ban-wrapper { box-shadow: none; padding: 0; margin: 0; max-width: none; border: none; }
-        }
-    </style>
+    .wrapper {
+        max-width: 800px;
+        margin: 0 auto;
+        background: white;
+        box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+        border-radius: 10px;
+        padding: 20px;
+    }
+
+    h1, h2, h3 {
+        text-align: center;
+        color: #1e3c72;
+        margin-bottom: 8px;
+    }
+
+    .sub {
+        text-align: center;
+        font-weight: bold;
+        color: #444;
+        margin-bottom: 15px;
+    }
+
+    .info p {margin-bottom: 5px;}
+
+    .result-list p {
+        background: #f1f3f6;
+        padding: 10px;
+        margin: 6px 0;
+        border-radius: 6px;
+    }
+
+    .footer {
+        margin-top: 25px;
+        text-align: center;
+        font-style: italic;
+        font-size: 14px;
+        color: #666;
+    }
+
+    .btn-group {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    button {
+        padding: 10px 18px;
+        background: #2a5298;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 15px;
+        margin: 5px;
+        cursor: pointer;
+    }
+
+    button:hover {background: #1e3c72;}
+
+    @media (max-width: 600px) {
+        body {font-size: 15px;}
+        .wrapper {padding: 15px;}
+        button {width: 100%;}
+    }
+</style>
 </head>
 <body>
-    <div class="container">
-        <div class="sidebar">
-            <div class="logo"><h1>HỆ THỐNG BẦU CỬ</h1></div>
-            <ul class="nav-links">
-                <li><a href="thongtin.html"><i>ℹ️</i> Thông tin</a></li>
-                <li><a href="kiemphieu.html"><i>✅</i> Kiểm phiếu</a></li>
-                <li><a href="#"><i>📈</i> Tổng hợp</a></li>
-                <li><a href="bienban.html" class="active"><i>📝</i> Biên bản</a></li>
-                <li class="logout"><a href="#" id="logout"><i>🚪</i> Đăng xuất</a></li>
-            </ul>
-        </div>
 
-        <div class="main-content">
-            <div class="header">
-                <h2>Biên bản kết quả kiểm phiếu</h2>
-                <div class="user-info">
-                    <img src="https://ui-avatars.com/api/?name=Admin&background=2a5298&color=fff" alt="User">
-                    <span id="userName">Quản trị viên</span>
-                </div>
-            </div>
+<div class="wrapper">
+    <h2>BIÊN BẢN KẾT QUẢ KIỂM PHIẾU</h2>
+    <div class="sub">BẦU CỬ ĐẠI BIỂU HỘI ĐỒNG NHÂN DÂN</div>
 
-            <div id="loading" class="loading">Đang tải dữ liệu...</div>
-
-            <div id="mainContent" style="display: none;">
-                <div class="action-buttons">
-                    <button id="btnInBienBan" class="btn">In biên bản</button>
-                    <button id="btnTaiXuongWord" class="btn btn-success">Tải xuống Word (.doc)</button>
-                </div>
-
-                <div id="bienBanContent" class="bien-ban-wrapper">
-                    <div class="bb-header-top">
-                        <p>Tỉnh/Thành phố: <span id="tinhThanhBb">...</span><br>Xã/Phường/Thị trấn: <span id="phuongXaBb">...</span></p>
-                        <p style="text-align: center;">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM<br>Độc lập - Tự do - Hạnh phúc</p>
-                    </div>
-
-                    <div class="bb-title">
-                        <h2>Biên bản kết quả kiểm phiếu</h2>
-                        <p>BẦU CỬ ĐẠI BIỂU HỘI ĐỒNG NHÂN DÂN <span id="capBauCuBb">...</span><br>KHÓA <span id="khoaBb">...</span> NHIỆM KỲ <span id="nhiemKyBb">...</span></p>
-                        <h3>CỦA TỔ BẦU CỬ</h3>
-                    </div>
-
-                    <div class="bb-body">
-                        <p><strong>- Số phiếu bầu cho mỗi người ứng cử:</strong></p>
-                        <div id="ketQuaUngVienContainer" class="bb-list">
-                            <p class="placeholder">Đang tải kết quả...</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="info">
+        <p><b>Đơn vị:</b> <span id="tinhThanhBb">...</span></p>
+        <p><b>Xã/Phường:</b> <span id="phuongXaBb">...</span></p>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+    <div class="btn-group">
+        <button id="btnInBienBan">🖨️ In biên bản</button>
+        <button id="btnTaiXuongWord">⬇️ Tải xuống</button>
+    </div>
 
-    <script>
-        const firebaseConfig = { 
-            apiKey: "AIzaSyAt-OooTscmthbJXNcvy80RgPDA9T46-0w", 
-            authDomain: "kiemphieu-45823.firebaseapp.com", 
-            databaseURL: "https://kiemphieu-45823-default-rtdb.asia-southeast1.firebasedatabase.app", 
-            projectId: "kiemphieu-45823", 
-            storageBucket: "kiemphieu-45823.firebasestorage.app", 
-            messagingSenderId: "908329514571", 
-            appId: "1:908329514571:web:16b43df5b795e4de06bfce" 
-        };
+    <p><b>Số phiếu bầu cho mỗi người ứng cử:</b></p>
+    <div id="ketQuaUngVienContainer" class="result-list">
+        <p>Đang tải kết quả...</p>
+    </div>
 
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-        const auth = firebase.auth();
-        let currentUser = null;
+    <div class="footer">
+        Cộng hòa Xã hội Chủ nghĩa Việt Nam — Độc lập, Tự do, Hạnh phúc
+    </div>
+</div>
 
-        function getUserPath(path = '') {
-            if (!currentUser || !currentUser.uid) throw new Error('User not authenticated');
-            return `users/${currentUser.uid}${path ? '/' + path : ''}`;
-        }
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
 
-        async function loadBienBanData() {
-            const [ungCuSnap, kiemPhieuDataSnap] = await Promise.all([
-                db.ref(getUserPath('ungCu')).once('value'),
-                db.ref(getUserPath('kiemPhieuData')).once('value')
-            ]);
+<script>
+const firebaseConfig = { 
+    apiKey: "AIzaSyAt-OooTscmthbJXNcvy80RgPDA9T46-0w", 
+    authDomain: "kiemphieu-45823.firebaseapp.com", 
+    databaseURL: "https://kiemphieu-45823-default-rtdb.asia-southeast1.firebasedatabase.app", 
+    projectId: "kiemphieu-45823", 
+    storageBucket: "kiemphieu-45823.firebasestorage.app", 
+    messagingSenderId: "908329514571", 
+    appId: "1:908329514571:web:16b43df5b795e4de06bfce" 
+};
 
-            // === TÍNH TỔNG PHIẾU CHO TỪNG ỨNG CỬ VIÊN ===
-            const ketQuaUngVienContainer = document.getElementById('ketQuaUngVienContainer');
-            ketQuaUngVienContainer.innerHTML = '';
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+const auth = firebase.auth();
+let currentUser = null;
 
-            const ungCuData = ungCuSnap.exists() ? ungCuSnap.val() : {};
-            let phieuDetails = [];
-            let soPhieuHopLe = 0;
+function getUserPath(path = '') {
+    if (!currentUser || !currentUser.uid) throw new Error('User not authenticated');
+    return `users/${currentUser.uid}${path ? '/' + path : ''}`;
+}
 
-            // --- Lấy danh sách phiếu đã kiểm từ Firebase ---
-            const phieuSnap = await db.ref(getUserPath('phieuDetails')).once('value');
-            if (phieuSnap.exists()) {
-                const raw = phieuSnap.val();
-                phieuDetails = Array.isArray(raw) ? raw.filter(p => p !== null) : Object.values(raw);
+async function loadBienBanData() {
+    const [ungCuSnap, kiemPhieuDataSnap] = await Promise.all([
+        db.ref(getUserPath('ungCu')).once('value'),
+        db.ref(getUserPath('kiemPhieuData')).once('value')
+    ]);
 
-                // Chỉ tính phiếu hợp lệ
-                soPhieuHopLe = phieuDetails.filter(p => p.trangThai === 'Hợp lệ').length;
-            }
+    const ketQuaUngVienContainer = document.getElementById('ketQuaUngVienContainer');
+    ketQuaUngVienContainer.innerHTML = '';
 
-            // Nếu chưa có dữ liệu phiếu hợp lệ thì lấy theo tổng số phiếu thu vào
-            if (soPhieuHopLe === 0 && kiemPhieuDataSnap.exists()) {
-                const data = kiemPhieuDataSnap.val();
-                soPhieuHopLe = parseInt(data.soPhieuThuVao) || 0;
-            }
+    const ungCuData = ungCuSnap.exists() ? ungCuSnap.val() : {};
+    let phieuDetails = [];
+    let soPhieuHopLe = 0;
 
-            // --- Khởi tạo tổng phiếu của từng ứng viên ---
-            const tongPhieuTheoUngVien = {};
+    const phieuSnap = await db.ref(getUserPath('phieuDetails')).once('value');
+    if (phieuSnap.exists()) {
+        const raw = phieuSnap.val();
+        phieuDetails = Array.isArray(raw) ? raw.filter(p => p !== null) : Object.values(raw);
+        soPhieuHopLe = phieuDetails.filter(p => p.trangThai === 'Hợp lệ').length;
+    }
+
+    if (soPhieuHopLe === 0 && kiemPhieuDataSnap.exists()) {
+        const data = kiemPhieuDataSnap.val();
+        soPhieuHopLe = parseInt(data.soPhieuThuVao) || 0;
+    }
+
+    const tongPhieuTheoUngVien = {};
+    Object.keys(ungCuData).forEach(key => tongPhieuTheoUngVien[key] = 0);
+
+    phieuDetails.forEach(phieu => {
+        if (phieu.trangThai === 'Hợp lệ') {
             Object.keys(ungCuData).forEach(key => {
-                tongPhieuTheoUngVien[key] = 0;
+                if (!phieu.selectedIds.includes(key)) tongPhieuTheoUngVien[key]++;
             });
-
-            // --- Cộng dồn tổng phiếu cho từng ứng viên ---
-            phieuDetails.forEach(phieu => {
-                if (phieu.trangThai === 'Hợp lệ') {
-                    Object.keys(ungCuData).forEach(key => {
-                        if (!phieu.selectedIds.includes(key)) {
-                            tongPhieuTheoUngVien[key]++;
-                        }
-                    });
-                }
-            });
-
-            // --- Hiển thị kết quả ---
-            let resultsHtml = '';
-            Object.keys(ungCuData).forEach(key => {
-                const hoTen = ungCuData[key].hoTen || '(Không tên)';
-                const tongPhieu = tongPhieuTheoUngVien[key] || 0;
-                resultsHtml += `<p>Ông/Bà ${hoTen} được ${tongPhieu} phiếu / ${soPhieuHopLe} phiếu hợp lệ</p>`;
-            });
-
-            ketQuaUngVienContainer.innerHTML = resultsHtml || '<p class=\"placeholder\">Chưa có kết quả.</p>';
         }
+    });
 
-        auth.onAuthStateChanged(async (user) => {
-            if (user) {
-                currentUser = user;
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('mainContent').style.display = 'block';
-                await loadBienBanData();
-            } else {
-                window.location.href = 'index.html';
-            }
-        });
-    </script>
+    let resultsHtml = '';
+    Object.keys(ungCuData).forEach(key => {
+        const hoTen = ungCuData[key].hoTen || '(Không tên)';
+        const tongPhieu = tongPhieuTheoUngVien[key] || 0;
+        resultsHtml += `<p>Ông/Bà <b>${hoTen}</b> được <b>${tongPhieu}</b> phiếu / ${soPhieuHopLe} phiếu hợp lệ</p>`;
+    });
+
+    ketQuaUngVienContainer.innerHTML = resultsHtml || '<p>Chưa có kết quả.</p>';
+}
+
+auth.onAuthStateChanged(async (user) => {
+    if (user) {
+        currentUser = user;
+        await loadBienBanData();
+    } else {
+        document.getElementById('ketQuaUngVienContainer').innerHTML = '<p>Vui lòng đăng nhập lại.</p>';
+    }
+});
+</script>
+
 </body>
 </html>
