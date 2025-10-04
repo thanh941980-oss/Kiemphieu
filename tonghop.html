@@ -384,13 +384,14 @@
                     <table class="summary-table" id="votesPerCandidateTable">
                         <thead>
                             <tr class="header-row">
-                                <th>STT</th>
-                                <th>Họ và tên ứng cử viên</th>
-                                <th>Số phiếu được bầu</th>
-                                <th>Tỷ lệ %</th>
+                                <th rowspan="2">Số phiếu bầu cho</th>
+                                <th colspan="0" id="candidateCountHeader">Số lượng người được bầu</th>
+                            </tr>
+                            <tr class="sub-header" id="candidateHeaders">
+                                <!-- Headers sẽ được tạo động bằng JavaScript -->
                             </tr>
                         </thead>
-                        <tbody id="votesPerCandidateBody">
+                        <tbody id="votesDistributionBody">
                             <!-- Dữ liệu sẽ được thêm bằng JavaScript -->
                         </tbody>
                     </table>
@@ -494,37 +495,140 @@
             document.getElementById('lastUpdateDisplay').textContent = timeString;
         }
 
-        // Cập nhật bảng SỐ PHIẾU BẦU CHO TỪNG NGƯỜI
-        function updateVotesPerCandidateTable(candidates) {
-            const tbody = document.getElementById('votesPerCandidateBody');
-            if (!tbody) return;
+        // Hàm tính toán phân bố thực tế từ dữ liệu phiếu - LẤY TỪ CỘT TỔNG
+        function calculateRealDistribution(phieuDetails, totalVotes, totalCandidates) {
+            const distribution = {};
             
-            tbody.innerHTML = '';
-
-            if (candidates.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #666;">Chưa có dữ liệu bầu cử</td></tr>';
-                return;
+            console.log('Calculating distribution from phieuDetails:', phieuDetails);
+            console.log('Total candidates:', totalCandidates);
+            
+            if (!phieuDetails || phieuDetails.length === 0) {
+                console.log('No phieu details found');
+                // Nếu không có phiếu, tạo distribution với tất cả giá trị 0
+                for (let i = 1; i <= totalCandidates; i++) {
+                    distribution[i] = 0;
+                }
+                return distribution;
             }
-
-            // Sắp xếp theo STT
-            const sortedCandidates = [...candidates].sort((a, b) => a.stt - b.stt);
             
-            sortedCandidates.forEach(candidate => {
-                const row = document.createElement('tr');
-                
-                row.innerHTML = `
-                    <td>${candidate.stt}</td>
-                    <td class="candidate-name">${candidate.name}</td>
-                    <td><strong>${candidate.votes}</strong></td>
-                    <td><strong>${candidate.percent}%</strong></td>
-                `;
-                tbody.appendChild(row);
+            // Đếm số phiếu cho từng số lượng người được bầu DỰA TRÊN CỘT TỔNG
+            phieuDetails.forEach((phieu, index) => {
+                if (phieu) {
+                    // Tính số người được bầu từ cột tổng
+                    let soNguoiDuocBau = 0;
+                    
+                    // Ưu tiên lấy từ cột tổng đã được tính toán
+                    if (phieu.soNguoiKhongBiLoai !== undefined) {
+                        soNguoiDuocBau = phieu.soNguoiKhongBiLoai;
+                    }
+                    // Nếu không có thì tính từ số lượng đã chọn
+                    else if (phieu.selectedIds && Array.isArray(phieu.selectedIds)) {
+                        soNguoiDuocBau = totalCandidates - phieu.selectedIds.length;
+                    }
+                    else if (phieu.selectedStt && Array.isArray(phieu.selectedStt)) {
+                        soNguoiDuocBau = totalCandidates - phieu.selectedStt.length;
+                    }
+                    // Dự phòng: tính từ tổng số đã lưu
+                    else if (phieu.tongSo !== undefined) {
+                        soNguoiDuocBau = phieu.tongSo;
+                    }
+                    
+                    console.log(`Phieu ${index + 1}: soNguoiDuocBau=${soNguoiDuocBau}`);
+                    
+                    // Đảm bảo số người được bầu nằm trong khoảng hợp lệ
+                    if (soNguoiDuocBau >= 1 && soNguoiDuocBau <= totalCandidates) {
+                        distribution[soNguoiDuocBau] = (distribution[soNguoiDuocBau] || 0) + 1;
+                    } else if (soNguoiDuocBau === 0) {
+                        // Phiếu không chọn ai
+                        console.log(`Phieu ${index + 1}: Không chọn ứng viên nào`);
+                    } else if (soNguoiDuocBau > totalCandidates) {
+                        console.log(`Phieu ${index + 1}: Số người được bầu vượt quá tổng ứng viên`);
+                    }
+                }
             });
 
-            console.log('Bảng SỐ PHIẾU BẦU CHO TỪNG NGƯỜI đã được cập nhật');
+            // Đảm bảo tất cả các cột từ 1 đến totalCandidates đều có giá trị
+            for (let i = 1; i <= totalCandidates; i++) {
+                if (distribution[i] === undefined) {
+                    distribution[i] = 0;
+                }
+            }
+            
+            console.log('Final distribution from column data:', distribution);
+            return distribution;
         }
 
-        // Cập nhật bảng kết quả bầu cử (có xếp hạng)
+        // Cập nhật bảng phân bố số phiếu với số cột động
+        function updateVotesDistributionTable(phieuDetails, totalVotes, totalCandidates) {
+            const tableBody = document.getElementById('votesDistributionBody');
+            const candidateHeaders = document.getElementById('candidateHeaders');
+            const candidateCountHeader = document.getElementById('candidateCountHeader');
+            
+            if (!tableBody || !candidateHeaders) return;
+
+            console.log('Phieu details for distribution:', phieuDetails);
+            console.log('Total candidates:', totalCandidates);
+
+            // Tính số phiếu cho từng số lượng người được bầu
+            const distribution = calculateRealDistribution(phieuDetails, totalVotes, totalCandidates);
+            console.log('Distribution calculated:', distribution);
+
+            // Tìm số cột tối đa (số người được bầu cao nhất)
+            const distributionKeys = Object.keys(distribution).map(Number);
+            const maxCandidates = distributionKeys.length > 0 ? Math.max(...distributionKeys) : 0;
+            const actualMaxCandidates = Math.max(maxCandidates, totalCandidates);
+            
+            console.log('Max candidates to display:', actualMaxCandidates);
+
+            // Cập nhật header
+            candidateCountHeader.colSpan = actualMaxCandidates;
+            candidateHeaders.innerHTML = '';
+            
+            for (let i = 1; i <= actualMaxCandidates; i++) {
+                const th = document.createElement('th');
+                th.textContent = i + ' người';
+                candidateHeaders.appendChild(th);
+            }
+            
+            // Tạo hàng "Tổng số phiếu đạt"
+            const totalRow = document.createElement('tr');
+            const totalCell = document.createElement('td');
+            totalCell.className = 'sub-header';
+            totalCell.textContent = 'Tổng số phiếu đạt';
+            totalRow.appendChild(totalCell);
+            
+            // Tạo hàng "Đạt %"
+            const percentRow = document.createElement('tr');
+            const percentCell = document.createElement('td');
+            percentCell.className = 'sub-header';
+            percentCell.textContent = 'Đạt %';
+            percentRow.appendChild(percentCell);
+            
+            // Điền dữ liệu cho từng cột
+            for (let i = 1; i <= actualMaxCandidates; i++) {
+                const votes = distribution[i] || 0;
+                const percent = calculatePercent(votes, totalVotes);
+                
+                // Thêm vào hàng tổng số phiếu
+                const votesTd = document.createElement('td');
+                votesTd.textContent = votes;
+                totalRow.appendChild(votesTd);
+                
+                // Thêm vào hàng phần trăm
+                const percentTd = document.createElement('td');
+                percentTd.textContent = percent + '%';
+                percentRow.appendChild(percentTd);
+            }
+            
+            // Cập nhật bảng
+            tableBody.innerHTML = '';
+            tableBody.appendChild(totalRow);
+            tableBody.appendChild(percentRow);
+
+            console.log('Distribution table updated successfully');
+        }
+
+        // Cập nhật bảng kết quả bầu cử
         function updateElectionResultsTable(candidates) {
             const tbody = document.getElementById('electionResultsBody');
             if (!tbody) return;
@@ -536,32 +640,26 @@
                 return;
             }
 
-            // Sắp xếp theo số phiếu giảm dần để xếp hạng
-            const rankedCandidates = [...candidates].sort((a, b) => b.votes - a.votes);
-
-            // Thêm xếp hạng
-            rankedCandidates.forEach((candidate, index) => {
-                candidate.rank = index + 1;
-            });
-
-            rankedCandidates.forEach(candidate => {
+            candidates.forEach(candidate => {
                 const row = document.createElement('tr');
                 // Tô màu cho top 3
                 if (candidate.rank <= 3 && candidate.votes > 0) {
                     row.classList.add('highlight');
                 }
                 
+                // Đảm bảo STT luôn là số hợp lệ
+                const stt = candidate.stt && !isNaN(candidate.stt) ? candidate.stt : 'N/A';
+                const rank = candidate.rank && !isNaN(candidate.rank) ? candidate.rank : 'N/A';
+                
                 row.innerHTML = `
-                    <td>${candidate.stt}</td>
+                    <td>${stt}</td>
                     <td class="candidate-name">${candidate.name}</td>
-                    <td><strong>${candidate.votes}</strong></td>
-                    <td><strong>${candidate.percent}%</strong></td>
-                    <td><strong>${candidate.rank}</strong></td>
+                    <td>${candidate.votes}</td>
+                    <td>${candidate.percent}%</td>
+                    <td>${rank}</td>
                 `;
                 tbody.appendChild(row);
             });
-
-            console.log('Bảng KẾT QUẢ BẦU CỬ đã được cập nhật');
         }
 
         // Load và xử lý dữ liệu tổng hợp với real-time listener
@@ -572,12 +670,10 @@
                 // Load dữ liệu ứng cử viên
                 const candidatesSnapshot = await db.ref(getUserPath('ungCu')).once('value');
                 const kiemPhieuDataSnapshot = await db.ref(getUserPath('kiemPhieuData')).once('value');
-                const candidateResultsSnapshot = await db.ref(getUserPath('candidateResults')).once('value');
+                const phieuDetailsSnapshot = await db.ref(getUserPath('phieuDetails')).once('value');
 
                 if (!candidatesSnapshot.exists()) {
                     console.log('Chưa có dữ liệu ứng cử viên');
-                    document.getElementById('votesPerCandidateBody').innerHTML = 
-                        '<tr><td colspan="4" style="text-align: center; color: #666;">Chưa có dữ liệu ứng cử viên</td></tr>';
                     document.getElementById('electionResultsBody').innerHTML = 
                         '<tr><td colspan="5" style="text-align: center; color: #666;">Chưa có dữ liệu ứng cử viên</td></tr>';
                     return;
@@ -587,7 +683,7 @@
                 const candidateResultsRef = db.ref(getUserPath('candidateResults'));
                 realtimeListeners.push(candidateResultsRef.on('value', (snapshot) => {
                     console.log('Real-time update detected in candidateResults');
-                    updateAllTables(candidatesSnapshot, kiemPhieuDataSnapshot, snapshot);
+                    updateAllTables(candidatesSnapshot, kiemPhieuDataSnapshot, phieuDetailsSnapshot, snapshot);
                 }));
 
                 // Thiết lập real-time listener cho dữ liệu kiểm phiếu
@@ -595,12 +691,26 @@
                 realtimeListeners.push(kiemPhieuDataRef.on('value', (snapshot) => {
                     console.log('Real-time update detected in kiemPhieuData');
                     candidateResultsRef.once('value').then((candidateResultsSnap) => {
-                        updateAllTables(candidatesSnapshot, snapshot, candidateResultsSnap);
+                        phieuDetailsSnapshot.ref.once('value').then((phieuDetailsSnap) => {
+                            updateAllTables(candidatesSnapshot, snapshot, phieuDetailsSnap, candidateResultsSnap);
+                        });
+                    });
+                }));
+
+                // Thiết lập real-time listener cho chi tiết phiếu
+                const phieuDetailsRef = db.ref(getUserPath('phieuDetails'));
+                realtimeListeners.push(phieuDetailsRef.on('value', (snapshot) => {
+                    console.log('Real-time update detected in phieuDetails');
+                    candidateResultsRef.once('value').then((candidateResultsSnap) => {
+                        kiemPhieuDataSnapshot.ref.once('value').then((kiemPhieuDataSnap) => {
+                            updateAllTables(candidatesSnapshot, kiemPhieuDataSnap, snapshot, candidateResultsSnap);
+                        });
                     });
                 }));
 
                 // Load lần đầu
-                updateAllTables(candidatesSnapshot, kiemPhieuDataSnapshot, candidateResultsSnapshot);
+                const candidateResultsSnapshot = await candidateResultsRef.once('value');
+                updateAllTables(candidatesSnapshot, kiemPhieuDataSnapshot, phieuDetailsSnapshot, candidateResultsSnapshot);
 
                 // Cập nhật trạng thái kết nối
                 updateConnectionStatus(true);
@@ -612,14 +722,27 @@
         }
 
         // Hàm cập nhật tất cả bảng
-        function updateAllTables(candidatesSnapshot, kiemPhieuDataSnapshot, candidateResultsSnapshot) {
+        function updateAllTables(candidatesSnapshot, kiemPhieuDataSnapshot, phieuDetailsSnapshot, candidateResultsSnapshot) {
             const candidates = [];
             const candidateResults = candidateResultsSnapshot.exists() ? candidateResultsSnapshot.val() : {};
             const kiemPhieuData = kiemPhieuDataSnapshot.exists() ? kiemPhieuDataSnapshot.val() : {};
             
+            // Xử lý dữ liệu phiếu chi tiết
+            let phieuDetails = [];
+            if (phieuDetailsSnapshot.exists()) {
+                const phieuData = phieuDetailsSnapshot.val();
+                if (Array.isArray(phieuData)) {
+                    phieuDetails = phieuData;
+                } else {
+                    // Nếu là object, chuyển thành array
+                    phieuDetails = Object.values(phieuData);
+                }
+            }
+            
             const totalVotes = kiemPhieuData.soPhieuThuVao || 0;
 
             console.log('Updating tables with total votes:', totalVotes);
+            console.log('Phieu details for processing:', phieuDetails);
 
             // Cập nhật thông tin tổng quan
             document.getElementById('totalVotesDisplay').textContent = totalVotes;
@@ -645,16 +768,22 @@
             const totalCandidates = candidates.length;
             document.getElementById('totalCandidatesDisplay').textContent = totalCandidates;
 
-            // Cập nhật bảng SỐ PHIẾU BẦU CHO TỪNG NGƯỜI (theo STT)
-            updateVotesPerCandidateTable(candidates);
+            // Sắp xếp theo số phiếu giảm dần
+            candidates.sort((a, b) => b.votes - a.votes);
 
-            // Cập nhật bảng KẾT QUẢ BẦU CỬ (có xếp hạng)
+            // Thêm xếp hạng
+            candidates.forEach((candidate, index) => {
+                candidate.rank = index + 1;
+            });
+
+            // Cập nhật bảng kết quả bầu cử
             updateElectionResultsTable(candidates);
+
+            // Tính toán và cập nhật bảng số phiếu bầu cho từng người (DỰA TRÊN CỘT TỔNG)
+            updateVotesDistributionTable(phieuDetails, totalVotes, totalCandidates);
 
             // Cập nhật thời gian
             updateLastUpdateTime();
-
-            console.log('Tất cả bảng đã được cập nhật thành công');
         }
 
         // Hàm refresh manual
