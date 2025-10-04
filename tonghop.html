@@ -385,30 +385,14 @@
                         <thead>
                             <tr class="header-row">
                                 <th rowspan="2">Số phiếu bầu cho</th>
-                                <th colspan="4">Số lượng người được bầu</th>
+                                <th colspan="0" id="candidateCountHeader">Số lượng người được bầu</th>
                             </tr>
-                            <tr class="sub-header">
-                                <th>1 người</th>
-                                <th>2 người</th>
-                                <th>3 người</th>
-                                <th>4 người</th>
+                            <tr class="sub-header" id="candidateHeaders">
+                                <!-- Headers sẽ được tạo động bằng JavaScript -->
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td class="sub-header">Tổng số phiếu đạt</td>
-                                <td id="totalVotes1">0</td>
-                                <td id="totalVotes2">0</td>
-                                <td id="totalVotes3">0</td>
-                                <td id="totalVotes4">0</td>
-                            </tr>
-                            <tr>
-                                <td class="sub-header">Đạt %</td>
-                                <td id="percentVotes1">0%</td>
-                                <td id="percentVotes2">0%</td>
-                                <td id="percentVotes3">0%</td>
-                                <td id="percentVotes4">0%</td>
-                            </tr>
+                        <tbody id="votesDistributionBody">
+                            <!-- Dữ liệu sẽ được thêm bằng JavaScript -->
                         </tbody>
                     </table>
                 </div>
@@ -516,6 +500,131 @@
             document.getElementById('lastUpdateDisplay').textContent = timeString;
         }
 
+        // Cập nhật bảng phân bố số phiếu với số cột động
+        function updateVotesDistributionTable(candidates, totalVotes) {
+            const candidateCount = candidates.length;
+            const tableBody = document.getElementById('votesDistributionBody');
+            const candidateHeaders = document.getElementById('candidateHeaders');
+            const candidateCountHeader = document.getElementById('candidateCountHeader');
+            
+            if (!tableBody || !candidateHeaders) return;
+
+            // Cập nhật header
+            candidateCountHeader.colSpan = candidateCount;
+            candidateHeaders.innerHTML = '';
+            
+            for (let i = 1; i <= candidateCount; i++) {
+                const th = document.createElement('th');
+                th.textContent = i + ' người';
+                candidateHeaders.appendChild(th);
+            }
+
+            // Tính toán phân bố phiếu thực tế
+            const distribution = calculateRealDistribution(candidates, totalVotes);
+            
+            // Tạo hàng "Tổng số phiếu đạt"
+            const totalRow = document.createElement('tr');
+            const totalCell = document.createElement('td');
+            totalCell.className = 'sub-header';
+            totalCell.textContent = 'Tổng số phiếu đạt';
+            totalRow.appendChild(totalCell);
+            
+            // Tạo hàng "Đạt %"
+            const percentRow = document.createElement('tr');
+            const percentCell = document.createElement('td');
+            percentCell.className = 'sub-header';
+            percentCell.textContent = 'Đạt %';
+            percentRow.appendChild(percentCell);
+            
+            // Điền dữ liệu cho từng cột
+            for (let i = 1; i <= candidateCount; i++) {
+                const votes = distribution[`votes${i}`] || 0;
+                const percent = calculatePercent(votes, totalVotes);
+                
+                // Thêm vào hàng tổng số phiếu
+                const votesTd = document.createElement('td');
+                votesTd.textContent = votes;
+                totalRow.appendChild(votesTd);
+                
+                // Thêm vào hàng phần trăm
+                const percentTd = document.createElement('td');
+                percentTd.textContent = percent + '%';
+                percentRow.appendChild(percentTd);
+            }
+            
+            // Cập nhật bảng
+            tableBody.innerHTML = '';
+            tableBody.appendChild(totalRow);
+            tableBody.appendChild(percentRow);
+        }
+
+        // Hàm tính toán phân bố thực tế với số cột động
+        function calculateRealDistribution(candidates, totalVotes) {
+            const candidateCount = candidates.length;
+            const distribution = {};
+            
+            if (totalVotes === 0 || candidateCount === 0) {
+                // Nếu không có phiếu hoặc không có ứng cử viên
+                for (let i = 1; i <= candidateCount; i++) {
+                    distribution[`votes${i}`] = 0;
+                }
+                return distribution;
+            }
+            
+            // Logic tính toán phân bố phiếu thực tế
+            // Dựa trên số phiếu của từng ứng cử viên
+            const sortedCandidates = [...candidates].sort((a, b) => b.votes - a.votes);
+            
+            // Tính tổng số phiếu cho từng số lượng người được bầu
+            for (let i = 1; i <= candidateCount; i++) {
+                if (i === 1) {
+                    // Số phiếu bầu 1 người = tổng số phiếu của người cao nhất
+                    distribution.votes1 = sortedCandidates[0]?.votes || 0;
+                } else if (i === 2) {
+                    // Số phiếu bầu 2 người = tổng số phiếu của 2 người cao nhất
+                    distribution.votes2 = sortedCandidates.slice(0, 2).reduce((sum, candidate) => sum + candidate.votes, 0);
+                } else if (i === 3) {
+                    // Số phiếu bầu 3 người = tổng số phiếu của 3 người cao nhất
+                    distribution.votes3 = sortedCandidates.slice(0, 3).reduce((sum, candidate) => sum + candidate.votes, 0);
+                } else {
+                    // Cho các trường hợp nhiều hơn 3 người
+                    distribution[`votes${i}`] = sortedCandidates.slice(0, i).reduce((sum, candidate) => sum + candidate.votes, 0);
+                }
+            }
+            
+            return distribution;
+        }
+
+        // Cập nhật bảng kết quả bầu cử
+        function updateElectionResultsTable(candidates) {
+            const tbody = document.getElementById('electionResultsBody');
+            if (!tbody) return;
+            
+            tbody.innerHTML = '';
+
+            if (candidates.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #666;">Chưa có dữ liệu bầu cử</td></tr>';
+                return;
+            }
+
+            candidates.forEach(candidate => {
+                const row = document.createElement('tr');
+                // Tô màu cho top 3
+                if (candidate.rank <= 3 && candidate.votes > 0) {
+                    row.classList.add('highlight');
+                }
+                
+                row.innerHTML = `
+                    <td>${candidate.stt}</td>
+                    <td class="candidate-name">${candidate.name}</td>
+                    <td>${candidate.votes}</td>
+                    <td>${candidate.percent}%</td>
+                    <td>${candidate.rank}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
         // Load và xử lý dữ liệu tổng hợp với real-time listener
         async function loadTongHopData() {
             try {
@@ -602,85 +711,11 @@
             // Cập nhật bảng kết quả bầu cử
             updateElectionResultsTable(candidates);
 
-            // Tính toán và cập nhật bảng số phiếu bầu cho từng người
+            // Tính toán và cập nhật bảng số phiếu bầu cho từng người (với số cột động)
             updateVotesDistributionTable(candidates, totalVotes);
 
             // Cập nhật thời gian
             updateLastUpdateTime();
-        }
-
-        // Cập nhật bảng kết quả bầu cử
-        function updateElectionResultsTable(candidates) {
-            const tbody = document.getElementById('electionResultsBody');
-            if (!tbody) return;
-            
-            tbody.innerHTML = '';
-
-            if (candidates.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #666;">Chưa có dữ liệu bầu cử</td></tr>';
-                return;
-            }
-
-            candidates.forEach(candidate => {
-                const row = document.createElement('tr');
-                // Tô màu cho top 3
-                if (candidate.rank <= 3 && candidate.votes > 0) {
-                    row.classList.add('highlight');
-                }
-                
-                row.innerHTML = `
-                    <td>${candidate.stt}</td>
-                    <td class="candidate-name">${candidate.name}</td>
-                    <td>${candidate.votes}</td>
-                    <td>${candidate.percent}%</td>
-                    <td>${candidate.rank}</td>
-                `;
-                tbody.appendChild(row);
-            });
-        }
-
-        // Cập nhật bảng phân bố số phiếu
-        function updateVotesDistributionTable(candidates, totalVotes) {
-            if (totalVotes === 0) {
-                // Reset về 0 nếu không có phiếu nào
-                const resetValues = ['totalVotes1', 'totalVotes2', 'totalVotes3', 'totalVotes4'];
-                const resetPercents = ['percentVotes1', 'percentVotes2', 'percentVotes3', 'percentVotes4'];
-                
-                resetValues.forEach(id => document.getElementById(id).textContent = '0');
-                resetPercents.forEach(id => document.getElementById(id).textContent = '0%');
-                return;
-            }
-
-            // Tính toán phân bố dựa trên số phiếu thực tế
-            const distribution = calculateRealDistribution(candidates, totalVotes);
-
-            // Cập nhật tổng số phiếu
-            document.getElementById('totalVotes1').textContent = distribution.votes1;
-            document.getElementById('totalVotes2').textContent = distribution.votes2;
-            document.getElementById('totalVotes3').textContent = distribution.votes3;
-            document.getElementById('totalVotes4').textContent = distribution.votes4;
-
-            // Cập nhật phần trăm
-            document.getElementById('percentVotes1').textContent = calculatePercent(distribution.votes1, totalVotes) + '%';
-            document.getElementById('percentVotes2').textContent = calculatePercent(distribution.votes2, totalVotes) + '%';
-            document.getElementById('percentVotes3').textContent = calculatePercent(distribution.votes3, totalVotes) + '%';
-            document.getElementById('percentVotes4').textContent = calculatePercent(distribution.votes4, totalVotes) + '%';
-        }
-
-        // Hàm tính toán phân bố thực tế
-        function calculateRealDistribution(candidates, totalVotes) {
-            // Logic tính toán dựa trên số phiếu thực tế của ứng cử viên
-            // Giả sử phân bố dựa trên hiệu suất bầu cử
-            const highPerformers = candidates.filter(c => c.votes > totalVotes * 0.6).length;
-            const mediumPerformers = candidates.filter(c => c.votes > totalVotes * 0.3 && c.votes <= totalVotes * 0.6).length;
-            const lowPerformers = candidates.filter(c => c.votes > 0 && c.votes <= totalVotes * 0.3).length;
-            
-            return {
-                votes1: Math.floor(totalVotes * 0.4), // 40% phiếu bầu 1 người
-                votes2: Math.floor(totalVotes * 0.3), // 30% phiếu bầu 2 người
-                votes3: Math.floor(totalVotes * 0.2), // 20% phiếu bầu 3 người
-                votes4: Math.floor(totalVotes * 0.1)  // 10% phiếu bầu 4 người
-            };
         }
 
         // Hàm refresh manual
