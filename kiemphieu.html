@@ -1690,11 +1690,11 @@ async function loadKiemPhieu() {
 
         // ✅ CHỈNH PHẦN NÀY: chuyển object → mảng để hiển thị đúng
         const phieuSnapshot = await db.ref(getUserPath('phieuDetails')).once('value');
-        if (phieuSnapshot.exists()) {
-            const data = phieuSnapshot.val();
-            phieuDetails = Array.isArray(data) ? data : Object.values(data);
-            updatePhieuTable();
-        }
+if (phieuSnapshot.exists()) {
+    const data = phieuSnapshot.val();
+    phieuDetails = Object.values(data); // Chuyển object Firebase sang array
+    updatePhieuTable();
+}
 
     } catch (error) {
         console.error('Error loading kiem phieu:', error);
