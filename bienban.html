@@ -31,27 +31,21 @@
         .bb-results-table { width: 100%; border-collapse: collapse; margin: 15px 0; }
         .bb-results-table td { padding: 5px; }
         .bb-signature { display: grid; grid-template-columns: 1fr 1fr; margin-top: 50px; text-align: center; gap: 20px; }
-        .bb-signature .sig-block { display: flex; flex-direction: column; justify-content: space-between; }
         .bb-signature p { font-weight: bold; }
         .bb-signature .sig-role { font-style: italic; font-weight: normal; }
-        .bb-footer { margin-top: 50px; }
-        
         .btn { padding: 8px 16px; background: #2a5298; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 13px; transition: background 0.3s ease; margin-right: 10px; margin-bottom: 10px; }
         .btn:hover { background: #1e3c72; }
         .btn-success { background: #28a745; }
         .btn-success:hover { background: #218838; }
         .loading { text-align: center; padding: 20px; color: #666; font-size: 13px; }
         .action-buttons { display: flex; justify-content: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
-
         .placeholder { color: #888; }
-        
         @media print {
             body { background: white; font-size: 12pt; }
             .sidebar, .header, .action-buttons { display: none !important; }
             .main-content { padding: 0; }
             .bien-ban-wrapper { box-shadow: none; padding: 0; margin: 0; max-width: none; border: none; }
         }
-        @media (max-width: 768px) { .sidebar { display: none; } .main-content { padding: 15px; } .bb-header-top, .bb-signature { flex-direction: column; text-align: center; gap: 10px; } }
     </style>
 </head>
 <body>
@@ -86,74 +80,20 @@
 
                 <div id="bienBanContent" class="bien-ban-wrapper">
                     <div class="bb-header-top">
-                        <p>Tỉnh/Thành phố: <span id="tinhThanhBb" class="placeholder">...</span><br>Xã/Phường/Thị trấn: <span id="phuongXaBb" class="placeholder">...</span></p>
+                        <p>Tỉnh/Thành phố: <span id="tinhThanhBb">...</span><br>Xã/Phường/Thị trấn: <span id="phuongXaBb">...</span></p>
                         <p style="text-align: center;">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM<br>Độc lập - Tự do - Hạnh phúc</p>
                     </div>
 
                     <div class="bb-title">
                         <h2>Biên bản kết quả kiểm phiếu</h2>
-                        <p>BẦU CỬ ĐẠI BIỂU HỘI ĐỒNG NHÂN DÂN <span id="capBauCuBb" class="placeholder">...</span><br>KHÓA <span id="khoaBb" class="placeholder">...</span> NHIỆM KỲ <span id="nhiemKyBb" class="placeholder">...</span></p>
+                        <p>BẦU CỬ ĐẠI BIỂU HỘI ĐỒNG NHÂN DÂN <span id="capBauCuBb">...</span><br>KHÓA <span id="khoaBb">...</span> NHIỆM KỲ <span id="nhiemKyBb">...</span></p>
                         <h3>CỦA TỔ BẦU CỬ</h3>
                     </div>
 
                     <div class="bb-body">
-                        <p>Khu vực bỏ phiếu số: <span id="khuVucBoPhieuBb" class="placeholder">...</span> Xã/Phường/Thị trấn: <span id="phuongXaBb2" class="placeholder">...</span></p>
-                        <p>Đơn vị bầu cử đại biểu Hội đồng nhân dân <span id="capBauCuBb2" class="placeholder">...</span> số: <span id="donViBauCuBb" class="placeholder">...</span></p>
-                        <p>Gồm có: <span id="gomCoBb" class="placeholder">...</span></p>
-                        <p>Hồi ........ giờ ......... phút, ngày ...... tháng ....... năm ......, Tổ bầu cử gồm có:</p>
-                        <div id="danhSachKiemPhieuBb" class="bb-list">
-                            <p class="placeholder">Đang tải danh sách...</p>
-                        </div>
-                        <p>Đã họp tại phòng bầu cử của khu vực bỏ phiếu số: <span id="khuVucBoPhieuBb2" class="placeholder">...</span> xã/phường/thị trấn: <span id="phuongXaBb3" class="placeholder">...</span> thuộc đơn vị bầu cử đại biểu Hội đồng nhân dân số: <span id="donViBauCuBb2" class="placeholder">...</span> để tiến hành việc kiểm phiếu bầu cử đại biểu Hội đồng nhân dân <span id="capBauCuBb3" class="placeholder">...</span> khóa <span id="khoaBb2" class="placeholder">...</span> nhiệm kỳ <span id="nhiemKyBb2" class="placeholder">...</span>.</p>
-                        <p>Đúng ........ giờ ....... phút, ngày .... tháng .... năm ...., đại diện Tổ bầu cử kiểm tra hòm phiếu với sự chứng kiến của hai cử tri là:</p>
-                        <div id="danhSachChungKienBb1" class="bb-list">
-                            <p class="placeholder">Đang tải danh sách...</p>
-                        </div>
-                        <p>Sau đó, Tổ bầu cử đã khoá và niêm phong hòm phiếu lại, mời cử tri bắt đầu bầu cử.</p>
-                        <p>Đúng ....... giờ ...... phút ngày ...... tháng ...... năm ...., Tổ trưởng Tổ bầu cử tuyên bố kết thúc cuộc bầu cử và tiến hành kiểm phiếu ngay tại phòng bầu cử.</p>
-                        <p>Trước khi mở hòm phiếu, Tổ trưởng Tổ bầu cử đã mời hai cử tri biết chữ, không phải là người ứng cử chứng kiến việc kiểm phiếu gồm:</p>
-                         <div id="danhSachChungKienBb2" class="bb-list">
-                            <p class="placeholder">Đang tải danh sách...</p>
-                        </div>
-                        <p>Trước khi mở hòm phiếu, Tổ bầu cử đã tiến hành kiểm kê và lập biên bản về việc sử dụng phiếu bầu cử đại biểu Hội đồng nhân dân các cấp.</p>
-                        <p><strong>Kết quả cuộc bầu cử như sau:</strong></p>
-                        <table class="bb-results-table">
-                            <tr><td>- Số đại biểu Hội đồng nhân dân ấn định cho đơn vị bầu cử:</td><td><span id="soNguoiDuocBauBb" class="placeholder">0</span> người</td></tr>
-                            <tr><td>- Số người ứng cử:</td><td><span id="soNguoiUngCuBb" class="placeholder">0</span> người</td></tr>
-                            <tr><td>- Tổng số cử tri của khu vực bỏ phiếu:</td><td><span id="tongSoCuTriBb" class="placeholder">0</span> người</td></tr>
-                            <tr><td>- Số cử tri đã tham gia bỏ phiếu:</td><td><span id="thamGiaBoPhieuBb" class="placeholder">0</span> người</td></tr>
-                            <tr><td>- Tỷ lệ cử tri đã tham gia bầu phiếu so với tổng số cử tri:</td><td><span id="phanTramThamGiaBb" class="placeholder">0%</span></td></tr>
-                            <tr><td>- Số phiếu phát ra:</td><td><span id="soPhieuPhatRaBb" class="placeholder">0</span></td></tr>
-                            <tr><td>- Số phiếu thu vào:</td><td><span id="soPhieuThuVaoBb" class="placeholder">0</span></td></tr>
-                            <tr><td>- Số phiếu hợp lệ:</td><td><span id="soPhieuHopLeBb" class="placeholder">0</span> (Tỷ lệ: <span id="phanTramHopLeBb" class="placeholder">0%</span>)</td></tr>
-                            <tr><td>- Số phiếu không hợp lệ:</td><td><span id="soPhieuKhongHopLeBb" class="placeholder">0</span> (Tỷ lệ: <span id="phanTramKhongHopLeBb" class="placeholder">0%</span>)</td></tr>
-                        </table>
                         <p><strong>- Số phiếu bầu cho mỗi người ứng cử:</strong></p>
                         <div id="ketQuaUngVienContainer" class="bb-list">
-                           <p class="placeholder">Đang tải kết quả...</p>
-                        </div>
-                        <p>Trong ngày bầu cử và thời gian kiểm phiếu, đã xảy ra sự việc hoặc khiếu nại, tố cáo sau đây: ....................................................................................................................................................</p>
-                        <p>Những vấn đề hoặc khiếu nại, tố cáo chưa được giải quyết và kiến nghị: ....................................................................................................................................................</p>
-                        <p>Biên bản này được lập thành 03 bản và được gửi đến Ban bầu cử đại biểu Hội đồng nhân dân <span id="capBauCuBb4" class="placeholder">...</span> và Ủy ban nhân dân, Ban thường trực Ủy ban Mặt trận Tổ quốc Việt Nam cấp xã.</p>
-                    </div>
-
-                    <div class="bb-signature">
-                        <div class="sig-block">
-                            <p>CỬ TRI THỨ NHẤT CHỨNG KIẾN</p>
-                            <p class="sig-role">(Ký, ghi rõ họ tên)</p>
-                        </div>
-                         <div class="sig-block">
-                            <p>TM. TỔ BẦU CỬ</p>
-                            <p>TỔ TRƯỞNG</p>
-                            <p class="sig-role">(Ký tên và đóng dấu)</p>
-                        </div>
-                         <div class="sig-block">
-                            <p>CỬ TRI THỨ HAI CHỨNG KIẾN</p>
-                            <p class="sig-role">(Ký, ghi rõ họ tên)</p>
-                        </div>
-                         <div class="sig-block">
-                            <p>THƯ KÝ TỔ BẦU CỬ</p>
-                             <p class="sig-role">(Ký, ghi rõ họ tên)</p>
+                            <p class="placeholder">Đang tải kết quả...</p>
                         </div>
                     </div>
                 </div>
@@ -164,6 +104,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+
     <script>
         const firebaseConfig = { 
             apiKey: "AIzaSyAt-OooTscmthbJXNcvy80RgPDA9T46-0w", 
@@ -184,160 +125,73 @@
             if (!currentUser || !currentUser.uid) throw new Error('User not authenticated');
             return `users/${currentUser.uid}${path ? '/' + path : ''}`;
         }
-        
-        function fillText(id, value, defaultValue = '...') {
-             const elements = document.querySelectorAll(`#${id}`);
-             elements.forEach(el => el.textContent = value || defaultValue);
-        }
 
         async function loadBienBanData() {
-            try {
-                const [donViSnap, kiemPhieuDataSnap, dsKiemPhieuSnap, dsChungKienSnap, ungCuSnap, candidateResultsSnap] = await Promise.all([
-                    db.ref(getUserPath('donVi')).once('value'),
-                    db.ref(getUserPath('kiemPhieuData')).once('value'),
-                    db.ref(getUserPath('kiemPhieu')).once('value'),
-                    db.ref(getUserPath('chungKien')).once('value'),
-                    db.ref(getUserPath('ungCu')).once('value'),
-                    db.ref(getUserPath('candidateResults')).once('value')
-                ]);
+            const [ungCuSnap, kiemPhieuDataSnap] = await Promise.all([
+                db.ref(getUserPath('ungCu')).once('value'),
+                db.ref(getUserPath('kiemPhieuData')).once('value')
+            ]);
 
-                // Process "donVi" data
-                if (donViSnap.exists()) {
-                    const data = donViSnap.val();
-                    fillText('tinhThanhBb', data.tinhThanh);
-                    fillText('phuongXaBb', data.phuongXa);
-                    fillText('phuongXaBb2', data.phuongXa);
-                    fillText('phuongXaBb3', data.phuongXa);
-                    fillText('khoaBb', data.khoa);
-                    fillText('khoaBb2', data.khoa);
-                    fillText('nhiemKyBb', data.nhiemKy);
-                    fillText('nhiemKyBb2', data.nhiemKy);
-                    fillText('khuVucBoPhieuBb', data.khuVucBoPhieu);
-                    fillText('khuVucBoPhieuBb2', data.khuVucBoPhieu);
-                    fillText('donViBauCuBb', data.donViBauCu);
-                    fillText('donViBauCuBb2', data.donViBauCu);
-                    fillText('gomCoBb', data.gomCo);
-                    fillText('soNguoiUngCuBb', data.soNguoiUngCu, 0);
-                    fillText('soNguoiDuocBauBb', data.soNguoiDuocBau, 0);
+            // === TÍNH TỔNG PHIẾU CHO TỪNG ỨNG CỬ VIÊN ===
+            const ketQuaUngVienContainer = document.getElementById('ketQuaUngVienContainer');
+            ketQuaUngVienContainer.innerHTML = '';
 
-                    const capText = data.bauCuCap ? { 'quoc_hoi': 'Quốc hội', 'thanh_pho': 'Thành phố', 'phuong': 'Phường' }[data.bauCuCap] || data.bauCuCap : '...';
-                    fillText('capBauCuBb', capText);
-                    fillText('capBauCuBb2', capText);
-                    fillText('capBauCuBb3', capText);
-                    fillText('capBauCuBb4', capText);
-                }
+            const ungCuData = ungCuSnap.exists() ? ungCuSnap.val() : {};
+            let phieuDetails = [];
+            let soPhieuHopLe = 0;
 
-                // Process "kiemPhieuData"
-                let tongPhieuThuVao = 0;
-                let soPhieuHopLe = 0; // Defaulting to total votes
-                if (kiemPhieuDataSnap.exists()) {
-                    const data = kiemPhieuDataSnap.val();
-                    tongPhieuThuVao = parseInt(data.soPhieuThuVao) || 0;
-                    soPhieuHopLe = tongPhieuThuVao; // Assuming all votes are valid for now
-                    
-                    fillText('tongSoCuTriBb', data.tongSoCuTri, 0);
-                    fillText('thamGiaBoPhieuBb', data.thamGiaBoPhieu, 0);
-                    fillText('phanTramThamGiaBb', data.phanTramThamGia, '0%');
-                    fillText('soPhieuPhatRaBb', data.soPhieuPhatRa, 0);
-                    fillText('soPhieuThuVaoBb', data.soPhieuThuVao, 0);
-                    fillText('soPhieuHopLeBb', soPhieuHopLe, 0);
-                    fillText('soPhieuKhongHopLeBb', 0); // Placeholder
-                    
-                    const phanTramHopLe = tongPhieuThuVao > 0 ? '100%' : '0%'; // Simplified
-                    fillText('phanTramHopLeBb', phanTramHopLe);
-                    fillText('phanTramKhongHopLeBb', '0%'); // Simplified
-                }
+            // --- Lấy danh sách phiếu đã kiểm từ Firebase ---
+            const phieuSnap = await db.ref(getUserPath('phieuDetails')).once('value');
+            if (phieuSnap.exists()) {
+                const raw = phieuSnap.val();
+                phieuDetails = Array.isArray(raw) ? raw.filter(p => p !== null) : Object.values(raw);
 
-                // Process list of "kiemPhieu"
-                const dsKiemPhieuDiv = document.getElementById('danhSachKiemPhieuBb');
-                dsKiemPhieuDiv.innerHTML = '';
-                if (dsKiemPhieuSnap.exists()) {
-                    let stt = 1;
-                    dsKiemPhieuSnap.forEach(child => {
-                        const data = child.val();
-                        dsKiemPhieuDiv.innerHTML += `<p>${stt}. Ông/Bà ${data.hoTen || ''} - ${data.chucVu || 'Ủy viên'}</p>`;
-                        stt++;
-                    });
-                } else { dsKiemPhieuDiv.innerHTML = '<p class="placeholder">Không có dữ liệu người kiểm phiếu.</p>'; }
-
-                // Process list of "chungKien" for both sections
-                const dsChungKienDiv1 = document.getElementById('danhSachChungKienBb1');
-                const dsChungKienDiv2 = document.getElementById('danhSachChungKienBb2');
-                dsChungKienDiv1.innerHTML = '';
-                dsChungKienDiv2.innerHTML = '';
-                 if (dsChungKienSnap.exists()) {
-                    let stt = 1;
-                    let htmlContent = '';
-                    dsChungKienSnap.forEach(child => {
-                        const data = child.val();
-                        htmlContent += `<p>${stt}. Ông/Bà: ${data.hoTen || ''} - Nơi ở hiện nay: ${data.diaChi || ''}</p>`;
-                        stt++;
-                    });
-                    dsChungKienDiv1.innerHTML = htmlContent;
-                    dsChungKienDiv2.innerHTML = htmlContent;
-                } else { 
-                    const noDataMsg = '<p class="placeholder">Không có dữ liệu người chứng kiến.</p>';
-                    dsChungKienDiv1.innerHTML = noDataMsg;
-                    dsChungKienDiv2.innerHTML = noDataMsg;
-                }
-                
-                // Process candidate results
-                const ketQuaUngVienContainer = document.getElementById('ketQuaUngVienContainer');
-                ketQuaUngVienContainer.innerHTML = '';
-                const ungCuData = ungCuSnap.exists() ? ungCuSnap.val() : {};
-                const candidateResultsData = candidateResultsSnap.exists() ? candidateResultsSnap.val() : {};
-                
-                let resultsHtml = '';
-                Object.keys(ungCuData).forEach(key => {
-                    const hoTen = ungCuData[key].hoTen;
-                    const result = candidateResultsData[key] || { soPhieu: 0 };
-                    resultsHtml += `<p>Ông/Bà ${hoTen} được ${result.soPhieu} phiếu / ${soPhieuHopLe} phiếu hợp lệ</p>`;
-                });
-                ketQuaUngVienContainer.innerHTML = resultsHtml || '<p class="placeholder">Chưa có kết quả.</p>';
-
-            } catch (error) {
-                console.error('Error loading data:', error);
-                alert('Lỗi tải dữ liệu: ' + error.message);
+                // Chỉ tính phiếu hợp lệ
+                soPhieuHopLe = phieuDetails.filter(p => p.trangThai === 'Hợp lệ').length;
             }
-        }
-        
-        function exportToWord() {
-            const header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Biên bản</title></head><body>";
-            const footer = "</body></html>";
-            const sourceHTML = header + document.getElementById('bienBanContent').innerHTML + footer;
-            
-            const source = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(sourceHTML);
-            const fileDownload = document.createElement("a");
-            document.body.appendChild(fileDownload);
-            fileDownload.href = source;
-            const khuVucSo = document.getElementById('khuVucBoPhieuBb').textContent || 'X';
-            fileDownload.download = `bien_ban_khu_vuc_so_${khuVucSo}.doc`;
-            fileDownload.click();
-            document.body.removeChild(fileDownload);
-        }
 
-        document.getElementById('btnInBienBan').addEventListener('click', () => window.print());
-        document.getElementById('btnTaiXuongWord').addEventListener('click', exportToWord);
+            // Nếu chưa có dữ liệu phiếu hợp lệ thì lấy theo tổng số phiếu thu vào
+            if (soPhieuHopLe === 0 && kiemPhieuDataSnap.exists()) {
+                const data = kiemPhieuDataSnap.val();
+                soPhieuHopLe = parseInt(data.soPhieuThuVao) || 0;
+            }
+
+            // --- Khởi tạo tổng phiếu của từng ứng viên ---
+            const tongPhieuTheoUngVien = {};
+            Object.keys(ungCuData).forEach(key => {
+                tongPhieuTheoUngVien[key] = 0;
+            });
+
+            // --- Cộng dồn tổng phiếu cho từng ứng viên ---
+            phieuDetails.forEach(phieu => {
+                if (phieu.trangThai === 'Hợp lệ') {
+                    Object.keys(ungCuData).forEach(key => {
+                        if (!phieu.selectedIds.includes(key)) {
+                            tongPhieuTheoUngVien[key]++;
+                        }
+                    });
+                }
+            });
+
+            // --- Hiển thị kết quả ---
+            let resultsHtml = '';
+            Object.keys(ungCuData).forEach(key => {
+                const hoTen = ungCuData[key].hoTen || '(Không tên)';
+                const tongPhieu = tongPhieuTheoUngVien[key] || 0;
+                resultsHtml += `<p>Ông/Bà ${hoTen} được ${tongPhieu} phiếu / ${soPhieuHopLe} phiếu hợp lệ</p>`;
+            });
+
+            ketQuaUngVienContainer.innerHTML = resultsHtml || '<p class=\"placeholder\">Chưa có kết quả.</p>';
+        }
 
         auth.onAuthStateChanged(async (user) => {
-            const loadingElement = document.getElementById('loading');
-            const mainContentElement = document.getElementById('mainContent');
             if (user) {
                 currentUser = user;
-                document.getElementById('userName').textContent = user.email || 'Quản trị viên';
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
                 await loadBienBanData();
-                loadingElement.style.display = 'none';
-                mainContentElement.style.display = 'block';
             } else {
-                loadingElement.innerHTML = 'Chưa đăng nhập. Đang chuyển hướng...';
-                setTimeout(() => { window.location.href = 'index.html'; }, 2000);
-            }
-        });
-        
-        document.getElementById('logout').addEventListener('click', (e) => {
-            e.preventDefault();
-            if (confirm('Bạn có chắc muốn đăng xuất?')) {
-                auth.signOut().then(() => { window.location.href = 'index.html'; });
+                window.location.href = 'index.html';
             }
         });
     </script>
