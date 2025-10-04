@@ -5,53 +5,77 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tổng hợp - Quản lý Phiếu bầu</title>
 <style>
-/* --- Giữ nguyên phần CSS gốc của bạn --- */
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-body { background-color: #f5f7fa; color: #333; font-size: 13px; line-height: 1.4; }
-.container { display: flex; min-height: 100vh; }
-.sidebar { width: 220px; background: linear-gradient(135deg, #1e3c72, #2a5298); color: white; padding: 15px 0; box-shadow: 2px 0 10px rgba(0,0,0,0.1); }
+body { background-color: #f5f7fa; color: #333; font-size: 14px; line-height: 1.4; }
+
+.container { display: flex; min-height: 100vh; flex-direction: row; }
+.sidebar { width: 220px; background: linear-gradient(135deg, #1e3c72, #2a5298); color: white; padding: 15px 0; box-shadow: 2px 0 10px rgba(0,0,0,0.1); transition: transform 0.3s ease; z-index: 100; }
+.sidebar.hidden { transform: translateX(-100%); }
 .logo { text-align: center; padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 15px; }
 .logo h1 { font-size: 18px; font-weight: 600; }
 .nav-links { list-style: none; padding: 0 10px; }
 .nav-links li { margin-bottom: 8px; }
-.nav-links a { display: flex; align-items: center; padding: 10px 12px; color: white; text-decoration: none; border-radius: 6px; transition: all 0.3s ease; font-size: 13px; }
+.nav-links a { display: flex; align-items: center; padding: 10px 12px; color: white; text-decoration: none; border-radius: 6px; transition: all 0.3s ease; font-size: 14px; }
 .nav-links a:hover, .nav-links a.active { background-color: rgba(255,255,255,0.1); }
 .nav-links i { margin-right: 8px; font-size: 16px; }
 .logout { margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; }
+
 .main-content { flex: 1; padding: 20px; min-width: 0; }
 .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; }
 .header h2 { font-size: 20px; color: #2a5298; }
 .user-info { display: flex; align-items: center; background: white; padding: 8px 16px; border-radius: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); font-size: 13px; }
 .user-info img { width: 32px; height: 32px; border-radius: 50%; margin-right: 8px; }
 .header-controls { display: flex; align-items: center; gap: 10px; }
+.menu-toggle { display: none; font-size: 22px; cursor: pointer; color: #2a5298; }
+
 .btn { padding: 8px 16px; background: #2a5298; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 13px; transition: background 0.3s ease; }
 .btn:hover { background: #1e3c72; }
 .btn-success { background: #28a745; }
 .btn-success:hover { background: #218838; }
-.summary-section { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 3px 10px rgba(0,0,0,0.05); margin-bottom: 20px; }
+
+.summary-section { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 3px 10px rgba(0,0,0,0.05); margin-bottom: 20px; overflow-x: auto; }
 .summary-section h3 { font-size: 16px; color: #2a5298; margin-bottom: 15px; font-weight: 600; }
-.summary-table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 13px; }
-.summary-table th, .summary-table td { padding: 12px 15px; text-align: center; border: 1px solid #e0e0e0; }
+
+.summary-table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 13px; min-width: 600px; }
+.summary-table th, .summary-table td { padding: 10px 12px; text-align: center; border: 1px solid #e0e0e0; }
 .summary-table th { background-color: #2a5298; color: white; font-weight: 600; font-size: 13px; }
-.summary-table td { background-color: #fff; }
 .summary-table .header-row { background-color: #1e3c72; color: white; font-weight: bold; }
 .summary-table .sub-header { background-color: #f8f9fa; font-weight: 600; color: #2a5298; }
-.candidate-name { text-align: left; font-weight: 600; }
+
+.candidate-name { text-align: left; font-weight: 600; white-space: nowrap; }
 .highlight { background-color: #e8f5e8 !important; font-weight: 600; }
+
 .loading { text-align: center; padding: 20px; color: #666; font-size: 13px; }
+
 .status-indicator { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; }
 .status-online { background-color: #28a745; }
 .status-offline { background-color: #dc3545; }
+
+/* ---------------- Responsive ---------------- */
+@media (max-width: 992px) {
+  .container { flex-direction: column; }
+  .sidebar { position: fixed; left: 0; top: 0; bottom: 0; height: 100%; }
+  .menu-toggle { display: block; }
+  .main-content { padding: 15px; }
+  .header h2 { font-size: 18px; }
+  .summary-section { padding: 15px; }
+}
+@media (max-width: 600px) {
+  body { font-size: 12px; }
+  .btn { padding: 6px 12px; font-size: 12px; }
+  .summary-section h3 { font-size: 14px; }
+  .user-info span { display: none; }
+  .user-info img { margin-right: 0; }
+  .summary-table { font-size: 12px; min-width: 500px; }
+}
 </style>
 </head>
 
 <body>
 <div class="container">
     <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="logo">
-            <h1>HỆ THỐNG BẦU CỬ</h1>
-        </div>
+    <div class="sidebar hidden" id="sidebar">
+        <div class="logo"><h1>HỆ THỐNG BẦU CỬ</h1></div>
         <ul class="nav-links">
             <li><a href="thongtin.html"><i>ℹ️</i> Thông tin</a></li>
             <li><a href="kiemphieu.html"><i>✅</i> Kiểm phiếu</a></li>
@@ -61,13 +85,14 @@ body { background-color: #f5f7fa; color: #333; font-size: 13px; line-height: 1.4
         </ul>
     </div>
 
-    <!-- Main Content -->
+    <!-- Main -->
     <div class="main-content">
         <div class="header">
+            <span class="menu-toggle" onclick="toggleMenu()">📋</span>
             <h2>Tổng hợp kết quả bầu cử</h2>
             <div class="header-controls">
                 <div class="user-info">
-                    <img src="https://ui-avatars.com/api/?name=Admin&background=2a5298&color=fff" alt="User">
+                    <img src="https://ui-avatars.com/api/?name=Admin&background=2a5298&color=fff">
                     <span id="userName">Quản trị viên</span>
                 </div>
                 <button onclick="refreshData()" class="btn btn-success">🔄 Làm mới</button>
@@ -77,14 +102,13 @@ body { background-color: #f5f7fa; color: #333; font-size: 13px; line-height: 1.4
         <div id="loading" class="loading">Đang tải dữ liệu...</div>
 
         <div id="mainContent" style="display:none;">
-            <!-- Trạng thái -->
             <div class="summary-section">
                 <h3>TRẠNG THÁI DỮ LIỆU</h3>
                 <div id="connectionStatus">
                     <span class="status-indicator status-offline"></span>
                     <span>Đang kết nối...</span>
                 </div>
-                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px;margin-top:15px;">
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:15px;">
                     <div style="background:#f8f9fa;padding:15px;border-radius:6px;border-left:4px solid #2a5298;">
                         <div style="font-size:12px;color:#666;">Tổng số phiếu</div>
                         <div style="font-size:18px;font-weight:bold;color:#2a5298;" id="totalVotesDisplay">0</div>
@@ -100,146 +124,82 @@ body { background-color: #f5f7fa; color: #333; font-size: 13px; line-height: 1.4
                 </div>
             </div>
 
-            <!-- Bảng 1 -->
             <div class="summary-section">
                 <h3>SỐ PHIẾU BẦU CHO TỪNG NGƯỜI</h3>
-                <table class="summary-table">
-                    <thead>
-                        <tr class="header-row">
-                            <th rowspan="2">Số phiếu bầu cho</th>
-                            <th colspan="0" id="candidateCountHeader">Số lượng người được bầu</th>
-                        </tr>
-                        <tr class="sub-header" id="candidateHeaders"></tr>
-                    </thead>
-                    <tbody id="votesDistributionBody"></tbody>
-                </table>
+                <div style="overflow-x:auto;">
+                    <table class="summary-table">
+                        <thead>
+                            <tr class="header-row">
+                                <th rowspan="2">Số phiếu bầu cho</th>
+                                <th colspan="0" id="candidateCountHeader">Số lượng người được bầu</th>
+                            </tr>
+                            <tr class="sub-header" id="candidateHeaders"></tr>
+                        </thead>
+                        <tbody id="votesDistributionBody"></tbody>
+                    </table>
+                </div>
             </div>
 
-            <!-- Bảng 2 -->
             <div class="summary-section">
                 <h3>KẾT QUẢ BẦU CỬ</h3>
-                <table class="summary-table" id="electionResultsTable">
-                    <thead>
-                        <tr class="header-row">
-                            <th>STT</th>
-                            <th>Họ và tên ứng cử viên</th>
-                            <th>Số phiếu được bầu</th>
-                            <th>Tỷ lệ %</th>
-                            <th>Xếp hạng</th>
-                        </tr>
-                    </thead>
-                    <tbody id="electionResultsBody"></tbody>
-                </table>
+                <div style="overflow-x:auto;">
+                    <table class="summary-table" id="electionResultsTable">
+                        <thead>
+                            <tr class="header-row">
+                                <th>STT</th>
+                                <th>Họ và tên ứng cử viên</th>
+                                <th>Số phiếu được bầu</th>
+                                <th>Tỷ lệ %</th>
+                                <th>Xếp hạng</th>
+                            </tr>
+                        </thead>
+                        <tbody id="electionResultsBody"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
 <script>
-const firebaseConfig = {
-    apiKey: "AIzaSyAt-OooTscmthbJXNcvy80RgPDA9T46-0w",
-    authDomain: "kiemphieu-45823.firebaseapp.com",
-    databaseURL: "https://kiemphieu-45823-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "kiemphieu-45823",
-    storageBucket: "kiemphieu-45823.firebasestorage.app",
-    messagingSenderId: "908329514571",
-    appId: "1:908329514571:web:16b43df5b795e4de06bfce"
-};
+const firebaseConfig={apiKey:"AIzaSyAt-OooTscmthbJXNcvy80RgPDA9T46-0w",authDomain:"kiemphieu-45823.firebaseapp.com",databaseURL:"https://kiemphieu-45823-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"kiemphieu-45823",storageBucket:"kiemphieu-45823.firebasestorage.app",messagingSenderId:"908329514571",appId:"1:908329514571:web:16b43df5b795e4de06bfce"};
 firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
-const auth = firebase.auth();
-let currentUser=null,realtimeListeners=[];
-
-function getUserPath(p=''){ if(!currentUser||!currentUser.uid) throw new Error('User not authenticated'); return `users/${currentUser.uid}${p?'/'+p:''}`;}
+const db=firebase.database(),auth=firebase.auth();let currentUser=null;
+function toggleMenu(){document.getElementById('sidebar').classList.toggle('hidden');}
+function getUserPath(p=''){if(!currentUser||!currentUser.uid)throw new Error('User not authenticated');return`users/${currentUser.uid}${p?'/'+p:''}`;}
 function calculatePercent(v,t){return t===0?0:((v/t)*100).toFixed(1);}
-function updateConnectionStatus(connected){const el=document.getElementById('connectionStatus');const ind=el.querySelector('.status-indicator');const txt=el.querySelector('span:last-child');if(connected){ind.className='status-indicator status-online';txt.textContent='Đang kết nối real-time';}else{ind.className='status-indicator status-offline';txt.textContent='Mất kết nối';}}
-
+function updateConnectionStatus(connected){const e=document.getElementById('connectionStatus'),i=e.querySelector('.status-indicator'),t=e.querySelector('span:last-child');if(connected){i.className='status-indicator status-online';t.textContent='Đang kết nối real-time';}else{i.className='status-indicator status-offline';t.textContent='Mất kết nối';}}
 function updateLastUpdateTime(){document.getElementById('lastUpdateDisplay').textContent=new Date().toLocaleTimeString('vi-VN');}
-
-// -----------------------
-// TÍNH PHÂN BỐ PHIẾU
-// -----------------------
-function calculateRealDistribution(phieuDetails,totalCandidates){
- const d={};if(!phieuDetails||phieuDetails.length===0){for(let i=1;i<=totalCandidates;i++)d[i]=0;return d;}
- phieuDetails.forEach(p=>{if(p&&p.selectedIds){const soDuocBau=totalCandidates-p.selectedIds.length;if(soDuocBau>=1&&soDuocBau<=totalCandidates)d[soDuocBau]=(d[soDuocBau]||0)+1;}});
- for(let i=1;i<=totalCandidates;i++)if(d[i]===undefined)d[i]=0;
- return d;
-}
-
-function updateVotesDistributionTable(phieuDetails,totalVotes,totalCandidates){
- const body=document.getElementById('votesDistributionBody'),hdr=document.getElementById('candidateHeaders'),hdrCount=document.getElementById('candidateCountHeader');
- const dist=calculateRealDistribution(phieuDetails,totalCandidates);
- const maxC=Math.max(...Object.keys(dist).map(Number));
- hdrCount.colSpan=maxC;hdr.innerHTML='';for(let i=1;i<=maxC;i++){const th=document.createElement('th');th.textContent=i+' người';hdr.appendChild(th);}
- const tr1=document.createElement('tr');const td1=document.createElement('td');td1.className='sub-header';td1.textContent='Tổng số phiếu đạt';tr1.appendChild(td1);
- const tr2=document.createElement('tr');const td2=document.createElement('td');td2.className='sub-header';td2.textContent='Đạt %';tr2.appendChild(td2);
- for(let i=1;i<=maxC;i++){const v=dist[i]||0;const p=calculatePercent(v,totalVotes);const tdv=document.createElement('td');tdv.textContent=v;tr1.appendChild(tdv);const tdp=document.createElement('td');tdp.textContent=p+'%';tr2.appendChild(tdp);}
- body.innerHTML='';body.appendChild(tr1);body.appendChild(tr2);
-}
-
-// -----------------------
-// CẬP NHẬT BẢNG KẾT QUẢ
-// -----------------------
-function updateElectionResultsTable(c){
- const tb=document.getElementById('electionResultsBody');tb.innerHTML='';
- if(c.length===0){tb.innerHTML='<tr><td colspan="5" style="text-align:center;color:#666;">Chưa có dữ liệu</td></tr>';return;}
- c.forEach(x=>{const tr=document.createElement('tr');if(x.rank<=3&&x.votes>0)tr.classList.add('highlight');tr.innerHTML=`<td>${x.stt}</td><td class="candidate-name">${x.name}</td><td>${x.votes}</td><td>${x.percent}%</td><td>${x.rank}</td>`;tb.appendChild(tr);});
-}
-
-// -----------------------
-// LOAD & REALTIME DATA
-// -----------------------
-async function loadTongHopData(){
- try{
-  const ungCuSnap=await db.ref(getUserPath('ungCu')).once('value');
-  const kiemPhieuSnap=await db.ref(getUserPath('kiemPhieuData')).once('value');
-  const phieuSnap=await db.ref(getUserPath('phieuDetails')).once('value');
-  const resSnap=await db.ref(getUserPath('candidateResults')).once('value');
-  updateAllTables(ungCuSnap,kiemPhieuSnap,phieuSnap,resSnap);
-  updateConnectionStatus(true);
- }catch(e){console.error(e);updateConnectionStatus(false);}
-}
-
-function updateAllTables(ungCuSnap,kiemPhieuSnap,phieuSnap,resSnap){
- const candidateResults=resSnap.exists()?resSnap.val():{};
- const kiemPhieuData=kiemPhieuSnap.exists()?kiemPhieuSnap.val():{};
- let phieuDetails=[];
- if(phieuSnap.exists()){const d=phieuSnap.val();phieuDetails=Array.isArray(d)?d.filter(p=>p):Object.values(d);}
- const totalVotes=kiemPhieuData.soPhieuThuVao||0;
- document.getElementById('totalVotesDisplay').textContent=totalVotes;
- const cands=[];let stt=1;
- ungCuSnap.forEach(ch=>{const id=ch.key;const data=ch.val();const res=candidateResults[id]||{votes:0};cands.push({id,stt,name:data.hoTen||'Không có tên',votes:parseInt(res.votes)||0,percent:calculatePercent(parseInt(res.votes)||0,totalVotes)});stt++;});
- const totalC=cands.length;document.getElementById('totalCandidatesDisplay').textContent=totalC;
- cands.sort((a,b)=>b.votes-a.votes);cands.forEach((x,i)=>x.rank=i+1);
- updateElectionResultsTable(cands);
- updateVotesDistributionTable(phieuDetails,totalVotes,totalC);
- updateLastUpdateTime();
-}
-
+function calculateRealDistribution(p,t){const d={};if(!p||p.length===0){for(let i=1;i<=t;i++)d[i]=0;return d;}p.forEach(x=>{if(x&&x.selectedIds){const s=t-x.selectedIds.length;if(s>=1&&s<=t)d[s]=(d[s]||0)+1;}});for(let i=1;i<=t;i++)if(d[i]===undefined)d[i]=0;return d;}
+function updateVotesDistributionTable(p,t,c){const b=document.getElementById('votesDistributionBody'),h=document.getElementById('candidateHeaders'),hc=document.getElementById('candidateCountHeader'),d=calculateRealDistribution(p,c);const m=Math.max(...Object.keys(d).map(Number));hc.colSpan=m;h.innerHTML='';for(let i=1;i<=m;i++){const th=document.createElement('th');th.textContent=i+' người';h.appendChild(th);}const tr1=document.createElement('tr'),td1=document.createElement('td');td1.className='sub-header';td1.textContent='Tổng số phiếu đạt';tr1.appendChild(td1);const tr2=document.createElement('tr'),td2=document.createElement('td');td2.className='sub-header';td2.textContent='Đạt %';tr2.appendChild(td2);for(let i=1;i<=m;i++){const v=d[i]||0,pct=calculatePercent(v,t);const tdv=document.createElement('td');tdv.textContent=v;tr1.appendChild(tdv);const tdp=document.createElement('td');tdp.textContent=pct+'%';tr2.appendChild(tdp);}b.innerHTML='';b.appendChild(tr1);b.appendChild(tr2);}
+function updateElectionResultsTable(c){const tb=document.getElementById('electionResultsBody');tb.innerHTML='';if(c.length===0){tb.innerHTML='<tr><td colspan="5" style="text-align:center;color:#666;">Chưa có dữ liệu</td></tr>';return;}c.forEach(x=>{const tr=document.createElement('tr');if(x.rank<=3&&x.votes>0)tr.classList.add('highlight');tr.innerHTML=`<td>${x.stt}</td><td class="candidate-name">${x.name}</td><td>${x.votes}</td><td>${x.percent}%</td><td>${x.rank}</td>`;tb.appendChild(tr);});}
+async function loadTongHopData(){try{const u=await db.ref(getUserPath('ungCu')).once('value'),k=await db.ref(getUserPath('kiemPhieuData')).once('value'),p=await db.ref(getUserPath('phieuDetails')).once('value'),r=await db.ref(getUserPath('candidateResults')).once('value');updateAllTables(u,k,p,r);updateConnectionStatus(true);}catch(e){console.error(e);updateConnectionStatus(false);}}
+function updateAllTables(u,k,p,r){const res=r.exists()?r.val():{},kd=k.exists()?k.val():{};let phieu=[];if(p.exists()){const d=p.val();phieu=Array.isArray(d)?d.filter(x=>x):Object.values(d);}const total=kd.soPhieuThuVao||0;document.getElementById('totalVotesDisplay').textContent=total;const cands=[];let stt=1;u.forEach(ch=>{const id=ch.key,data=ch.val(),cr=res[id]||{votes:0};cands.push({id,stt,name:data.hoTen||'Không có tên',votes:parseInt(cr.votes)||0,percent:calculatePercent(parseInt(cr.votes)||0,total)});stt++;});const tc=cands.length;document.getElementById('totalCandidatesDisplay').textContent=tc;cands.sort((a,b)=>b.votes-a.votes);cands.forEach((x,i)=>x.rank=i+1);updateElectionResultsTable(cands);updateVotesDistributionTable(phieu,total,tc);updateLastUpdateTime();}
 function refreshData(){loadTongHopData();}
-function cleanupListeners(){realtimeListeners.forEach(fn=>fn&&fn());realtimeListeners=[];}
-
-// -----------------------
-// APP INIT
-// -----------------------
-function initApp(){
- auth.onAuthStateChanged(async(u)=>{
-  if(u){currentUser=u;document.getElementById('userName').textContent=u.email||'Quản trị viên';document.getElementById('loading').style.display='none';document.getElementById('mainContent').style.display='block';await loadTongHopData();}
-  else{document.getElementById('loading').innerHTML='Chưa đăng nhập, đang chuyển hướng...';setTimeout(()=>window.location.href='index.html',1500);}
- });
-}
-
+function initApp(){auth.onAuthStateChanged(async(u)=>{if(u){currentUser=u;document.getElementById('userName').textContent=u.email||'Quản trị viên';document.getElementById('loading').style.display='none';document.getElementById('mainContent').style.display='block';await loadTongHopData();}else{document.getElementById('loading').innerHTML='Chưa đăng nhập, đang chuyển hướng...';setTimeout(()=>window.location.href='index.html',1500);}});}
+document.querySelectorAll
 document.querySelectorAll('.nav-links a[data-target]').forEach(a=>{
- a.addEventListener('click',e=>{e.preventDefault();document.querySelectorAll('.nav-links a').forEach(x=>x.classList.remove('active'));a.classList.add('active');window.location.href=a.getAttribute('data-target')+'.html';});
+ a.addEventListener('click',e=>{
+   e.preventDefault();
+   document.querySelectorAll('.nav-links a').forEach(x=>x.classList.remove('active'));
+   a.classList.add('active');
+   window.location.href=a.getAttribute('data-target')+'.html';
+ });
 });
-document.getElementById('logout').addEventListener('click',e=>{e.preventDefault();if(confirm('Bạn có chắc muốn đăng xuất?')){cleanupListeners();auth.signOut().then(()=>{alert('Đã đăng xuất!');window.location.href='index.html';});}});
-window.addEventListener('beforeunload', cleanupListeners);
 
-// Khởi động ứng dụng
+document.getElementById('logout').addEventListener('click',e=>{
+ e.preventDefault();
+ if(confirm('Bạn có chắc muốn đăng xuất?')){
+   auth.signOut().then(()=>{
+     alert('Đã đăng xuất!');
+     window.location.href='index.html';
+   });
+ }
+});
+
 window.onload = initApp;
 </script>
 </body>
