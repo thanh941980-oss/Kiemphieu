@@ -1657,81 +1657,95 @@
 // Load thông tin kiểm phiếu - ĐÃ SỬA
 async function loadKiemPhieu() {
     try {
+        // --- 1️⃣ Thông tin thống kê ---
         const userPath = getUserPath('kiemPhieuData');
         const snapshot = await db.ref(userPath).once('value');
-        
+
         if (snapshot.exists()) {
             const data = snapshot.val();
             document.getElementById('tongSoCuTri').value = data.tongSoCuTri || 0;
             document.getElementById('thamGiaBoPhieu').value = data.thamGiaBoPhieu || 0;
             document.getElementById('soPhieuPhatRa').value = data.soPhieuPhatRa || 0;
-            
+
             if (data.soPhieuThuVao) {
                 document.getElementById('soPhieuThuVao').textContent = data.soPhieuThuVao;
                 currentPhieu = parseInt(data.soPhieuThuVao) + 1 || 1;
                 document.getElementById('currentPhieu').textContent = currentPhieu;
                 document.getElementById('currentPhieuDisplay').textContent = currentPhieu;
             }
-            
-            updatePercentages();
         }
 
-        // Load kết quả ứng viên
+        // --- 2️⃣ Kết quả ứng viên ---
         const resultsSnapshot = await db.ref(getUserPath('candidateResults')).once('value');
         if (resultsSnapshot.exists()) {
-            candidateResults = resultsSnapshot.val();
+            const resultData = resultsSnapshot.val();
             candidates.forEach(candidate => {
-                if (candidateResults[candidate.id]) {
-                    candidate.votes = parseInt(candidateResults[candidate.id].votes) || 0;
-                    candidate.stt = parseInt(candidateResults[candidate.id].stt) || candidate.stt;
+                const c = resultData[candidate.id];
+                if (c) {
+                    candidate.votes = parseInt(c.votes) || 0;
+                    candidate.stt = parseInt(c.stt) || candidate.stt;
                 }
             });
             updateResultsTable();
-            updatePercentages();
         }
 
-        // Load chi tiết phiếu - ĐÃ FIX
+        // --- 3️⃣ Dữ liệu phiếu đã kiểm ---
         const phieuSnapshot = await db.ref(getUserPath('phieuDetails')).once('value');
         if (phieuSnapshot.exists()) {
-            const data = phieuSnapshot.val();
-            phieuDetails = Object.keys(data).map(key => data[key]); // ← chuyển object thành array
+            const rawData = phieuSnapshot.val();
+            if (Array.isArray(rawData)) {
+                // Nếu lưu dạng mảng
+                phieuDetails = rawData.filter(item => item !== null);
+            } else {
+                // Nếu lưu dạng object
+                phieuDetails = Object.values(rawData);
+            }
+            updatePhieuTable();
+        } else {
+            phieuDetails = [];
             updatePhieuTable();
         }
+
+        updatePercentages();
+        console.log('✅ Dữ liệu kiểm phiếu đã được tải!');
     } catch (error) {
-        console.error('Error loading kiem phieu:', error);
+        console.error('❌ Lỗi khi tải kiểm phiếu:', error);
     }
 }
 <!-- Kết thúc phần đã chỉnh -->
         // Lưu thông tin kiểm phiếu
         async function saveKiemPhieu() {
-            try {
-                const userPath = getUserPath('kiemPhieuData');
-                const data = {
-                    tongSoCuTri: parseInt(document.getElementById('tongSoCuTri').value) || 0,
-                    thamGiaBoPhieu: parseInt(document.getElementById('thamGiaBoPhieu').value) || 0,
-                    soPhieuPhatRa: parseInt(document.getElementById('soPhieuPhatRa').value) || 0,
-                    soPhieuThuVao: parseInt(document.getElementById('soPhieuThuVao').textContent) || 0
-                };
-                
-                await db.ref(userPath).set(data);
+    try {
+        // --- 1️⃣ Lưu thông tin chung ---
+        const userPath = getUserPath('kiemPhieuData');
+        const kiemPhieuData = {
+            tongSoCuTri: parseInt(document.getElementById('tongSoCuTri').value) || 0,
+            thamGiaBoPhieu: parseInt(document.getElementById('thamGiaBoPhieu').value) || 0,
+            soPhieuPhatRa: parseInt(document.getElementById('soPhieuPhatRa').value) || 0,
+            soPhieuThuVao: parseInt(document.getElementById('soPhieuThuVao').textContent) || 0
+        };
+        await db.ref(userPath).set(kiemPhieuData);
 
-                const resultsData = {};
-                candidates.forEach(candidate => {
-                    resultsData[candidate.id] = {
-                        votes: candidate.votes,
-                        name: candidate.name,
-                        stt: candidate.stt
-                    };
-                });
-                await db.ref(getUserPath('candidateResults')).set(resultsData);
+        // --- 2️⃣ Lưu kết quả ứng viên ---
+        const resultsData = {};
+        candidates.forEach(candidate => {
+            resultsData[candidate.id] = {
+                votes: candidate.votes || 0,
+                name: candidate.name,
+                stt: candidate.stt
+            };
+        });
+        await db.ref(getUserPath('candidateResults')).set(resultsData);
 
-                await db.ref(getUserPath('phieuDetails')).set(phieuDetails);
+        // --- 3️⃣ Lưu chi tiết phiếu ---
+        const filteredPhieu = phieuDetails.filter(p => p && p.phieuSo);
+        await db.ref(getUserPath('phieuDetails')).set(filteredPhieu);
 
-                console.log('Đã lưu thông tin kiểm phiếu thành công!');
-            } catch (error) {
-                console.error('Error saving kiem phieu:', error);
-            }
-        }
+        console.log('💾 Đã lưu toàn bộ dữ liệu kiểm phiếu thành công!');
+    } catch (error) {
+        console.error('❌ Lỗi khi lưu kiểm phiếu:', error);
+    }
+}
 
         // Reset selection
         function resetSelection() {
