@@ -1,56 +1,1897 @@
-<!DOCTYPE html><html lang="vi">
+<!DOCTYPE html>
+<html lang="vi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kiểm phiếu - Quản lý Phiếu bầu</title>
-<style>
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-body { background-color: #f5f7fa; color: #333; font-size: 14px; line-height: 1.4; }.container { display: flex; min-height: 100vh; flex-direction: row; } .sidebar { width: 220px; background: linear-gradient(135deg, #1e3c72, #2a5298); color: white; padding: 15px 0; box-shadow: 2px 0 10px rgba(0,0,0,0.1); transition: transform 0.3s ease; z-index: 100; } .sidebar.hidden { transform: translateX(-100%); } .logo { text-align: center; padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 15px; } .logo h1 { font-size: 18px; font-weight: 600; } .nav-links { list-style: none; padding: 0 10px; } .nav-links li { margin-bottom: 8px; } .nav-links a { display: flex; align-items: center; padding: 10px 12px; color: white; text-decoration: none; border-radius: 6px; transition: all 0.3s ease; font-size: 14px; } .nav-links a:hover, .nav-links a.active { background-color: rgba(255,255,255,0.1); } .nav-links i { margin-right: 8px; font-size: 16px; } .logout { margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kiểm phiếu - Quản lý Phiếu bầu</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-.main-content { flex: 1; padding: 20px; min-width: 0; } .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; } .header h2 { font-size: 20px; color: #2a5298; } .user-info { display: flex; align-items: center; background: white; padding: 8px 16px; border-radius: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); font-size: 13px; } .user-info img { width: 32px; height: 32px; border-radius: 50%; margin-right: 8px; } .menu-toggle { display: none; font-size: 22px; cursor: pointer; color: #2a5298; }
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            font-size: 13px;
+            line-height: 1.4;
+        }
 
-.section { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 3px 10px rgba(0,0,0,0.05); margin-bottom: 20px; overflow-x: auto; } .section h3 { font-size: 16px; color: #2a5298; margin-bottom: 15px; font-weight: 600; }
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
 
-.btn { padding: 8px 16px; background: #2a5298; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 13px; transition: background 0.3s ease; } .btn:hover { background: #1e3c72; } .btn-warning { background: #ffc107; color: #212529; } .btn-warning:hover { background: #e0a800; }
+        /* Mobile Header */
+        .mobile-header {
+            display: none;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            padding: 12px 15px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
 
-/* Responsive */ @media (max-width: 992px) { .container { flex-direction: column; } .sidebar { position: fixed; left: 0; top: 0; bottom: 0; height: 100%; } .menu-toggle { display: block; } .main-content { padding: 15px; } .header h2 { font-size: 18px; } } @media (max-width: 600px) { body { font-size: 12px; } .btn { padding: 6px 12px; font-size: 12px; } .user-info span { display: none; } .user-info img { margin-right: 0; } } </style>
+        .mobile-header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
+        .menu-toggle {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        /* Mobile Sidebar */
+        .mobile-sidebar {
+            position: fixed;
+            top: 0;
+            left: -280px;
+            width: 280px;
+            height: 100vh;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            padding: 20px 0;
+            z-index: 1001;
+            transition: left 0.3s ease;
+            overflow-y: auto;
+        }
+
+        .mobile-sidebar.active {
+            left: 0;
+        }
+
+        .mobile-sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 15px;
+        }
+
+        .close-menu {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        /* Sidebar - Desktop */
+        .sidebar {
+            width: 220px;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            padding: 15px 0;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .logo {
+            text-align: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 15px;
+        }
+
+        .logo h1 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 0 10px;
+        }
+
+        .nav-links li {
+            margin-bottom: 8px;
+        }
+
+        .nav-links a {
+            display: flex;
+            align-items: center;
+            padding: 10px 12px;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            font-size: 13px;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-links i {
+            margin-right: 8px;
+            font-size: 16px;
+        }
+
+        .logout {
+            margin-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 15px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            min-width: 0;
+            transition: margin-left 0.3s ease;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header h2 {
+            font-size: 20px;
+            color: #2a5298;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            background: white;
+            padding: 8px 16px;
+            border-radius: 25px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            font-size: 13px;
+        }
+
+        .user-info img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        /* Candidate Selection */
+        .candidate-selection {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+        }
+
+        .candidate-selection h3 {
+            font-size: 16px;
+            color: #2a5298;
+            margin-bottom: 15px;
+        }
+
+        .quick-input-section {
+            margin-bottom: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border: 1px solid #e9ecef;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .input-group label {
+            font-weight: 600;
+            color: #2a5298;
+            white-space: nowrap;
+        }
+
+        .number-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 10px 12px;
+            border: 2px solid #2a5298;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .number-input:focus {
+            outline: none;
+            border-color: #1e3c72;
+            box-shadow: 0 0 0 3px rgba(42, 82, 152, 0.1);
+        }
+
+        .input-hint {
+            font-size: 11px;
+            color: #666;
+            margin-top: 5px;
+            text-align: center;
+        }
+
+        .candidates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 8px;
+            margin-bottom: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .candidate-item {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-height: 50px;
+        }
+
+        .candidate-item:hover {
+            border-color: #2a5298;
+            background-color: #f8f9fa;
+        }
+
+        .candidate-item.selected {
+            border-color: #28a745;
+            background-color: #e8f5e8;
+        }
+
+        .candidate-checkbox {
+            margin-right: 8px;
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+        }
+
+        .candidate-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .candidate-stt {
+            font-weight: 600;
+            color: #2a5298;
+            margin-right: 6px;
+        }
+
+        .candidate-name {
+            color: #333;
+            font-size: 12px;
+            word-break: break-word;
+        }
+
+        .selection-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .current-phieu {
+            font-weight: 600;
+            color: #2a5298;
+        }
+
+        .selection-info {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid #2a5298;
+        }
+
+        .stat-card h3 {
+            font-size: 14px;
+            color: #2a5298;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .stat-row:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 13px;
+        }
+
+        .stat-value {
+            font-weight: 600;
+            color: #333;
+            font-size: 13px;
+        }
+
+        .stat-percent {
+            color: #28a745;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 13px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: #2a5298;
+            outline: none;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            background: #2a5298;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: background 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .btn:hover {
+            background: #1e3c72;
+        }
+
+        .btn-success {
+            background: #28a745;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .btn-warning:hover {
+            background: #e0a800;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 13px;
+        }
+
+        /* Candidate Results */
+        .candidate-results {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            margin-top: 20px;
+            overflow-x: auto;
+        }
+
+        .candidate-results h3 {
+            font-size: 16px;
+            color: #2a5298;
+            margin-bottom: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+            font-size: 13px;
+            min-width: 400px;
+        }
+
+        table th, table td {
+            padding: 8px 10px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        table th {
+            background-color: #f8f9fa;
+            color: #2a5298;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        /* Kiểm tra từng phiếu - ĐÃ SỬA */
+        .phieu-details {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            margin-top: 20px;
+            overflow-x: auto;
+        }
+
+        .phieu-details h3 {
+            font-size: 16px;
+            color: #2a5298;
+            margin-bottom: 15px;
+        }
+
+        .phieu-table-container {
+            width: 100%;
+            overflow-x: auto;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+        }
+
+        .phieu-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        .phieu-table th, .phieu-table td {
+            padding: 8px 10px;
+            text-align: center;
+            border: 1px solid #ddd;
+            white-space: nowrap;
+        }
+
+        .phieu-table th {
+            background-color: #f8f9fa;
+            color: #2a5298;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+
+        /* Các cột ứng viên - ĐÃ SỬA */
+        .phieu-table .candidate-col {
+            min-width: 100px;
+            text-align: center;
+        }
+
+        .phieu-table .candidate-name-header {
+            background-color: #2a5298;
+            color: white;
+            font-weight: 600;
+            font-size: 11px;
+            padding: 6px 8px;
+        }
+
+        .phieu-table .action-col {
+            width: 70px;
+            text-align: center;
+        }
+
+        /* Style cho nút sửa trong cột thao tác */
+        .phieu-table .btn-sm {
+            padding: 4px 8px;
+            font-size: 11px;
+            min-width: 50px;
+        }
+
+        /* Màu sắc cho trạng thái */
+        .valid {
+            color: #28a745;
+            font-weight: 600;
+        }
+
+        .invalid {
+            color: #dc3545;
+            font-weight: 600;
+        }
+
+        .insufficient {
+            color: #ffc107;
+            font-weight: 600;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .modal-header h3 {
+            color: #2a5298;
+            margin: 0;
+            font-size: 16px;
+        }
+
+        .close {
+            color: #aaa;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .edit-candidates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 8px;
+            margin-bottom: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .edit-candidate-item {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-height: 50px;
+        }
+
+        .edit-candidate-item:hover {
+            border-color: #2a5298;
+            background-color: #f8f9fa;
+        }
+
+        .edit-candidate-item.selected {
+            border-color: #28a745;
+            background-color: #e8f5e8;
+        }
+
+        .edit-candidate-checkbox {
+            margin-right: 8px;
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+        }
+
+        .edit-selection-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        /* Responsive Design */
+        /* Tablet */
+        @media (max-width: 1024px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .candidates-grid {
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            }
+        }
+
+        /* Mobile */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            /* Ẩn sidebar desktop trên mobile */
+            .sidebar {
+                display: none;
+            }
+            
+            /* Hiển thị mobile header */
+            .mobile-header {
+                display: block;
+            }
+            
+            /* Điều chỉnh main content cho mobile */
+            .main-content {
+                padding: 70px 15px 20px 15px;
+                margin-left: 0 !important;
+            }
+            
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .user-info {
+                align-self: stretch;
+                justify-content: center;
+                padding: 6px 12px;
+            }
+            
+            /* Điều chỉnh các section cho mobile */
+            .candidate-selection {
+                padding: 15px;
+            }
+            
+            .quick-input-section {
+                padding: 12px;
+            }
+            
+            .input-group {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+            }
+            
+            .number-input {
+                min-width: auto;
+                font-size: 16px;
+            }
+            
+            .candidates-grid {
+                grid-template-columns: 1fr;
+                max-height: 200px;
+            }
+            
+            .selection-controls {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+            
+            .selection-info {
+                justify-content: space-between;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .stat-card {
+                padding: 12px;
+            }
+            
+            .candidate-results {
+                padding: 12px;
+            }
+            
+            .phieu-details {
+                padding: 12px;
+            }
+            
+            .phieu-table {
+                font-size: 11px;
+            }
+            
+            .phieu-table th, .phieu-table td {
+                padding: 6px 8px;
+            }
+            
+            .modal-content {
+                margin: 10% auto;
+                padding: 15px;
+                width: 95%;
+            }
+            
+            .edit-candidates-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Small Mobile */
+        @media (max-width: 480px) {
+            body {
+                font-size: 12px;
+            }
+            
+            .main-content {
+                padding: 65px 10px 15px 10px;
+            }
+            
+            .header h2 {
+                font-size: 18px;
+            }
+            
+            .user-info {
+                padding: 5px 10px;
+                font-size: 12px;
+            }
+            
+            .user-info img {
+                width: 28px;
+                height: 28px;
+            }
+            
+            .candidate-selection h3 {
+                font-size: 14px;
+            }
+            
+            .number-input {
+                padding: 8px 10px;
+                font-size: 14px;
+            }
+            
+            .candidate-item {
+                padding: 6px;
+                min-height: 45px;
+            }
+            
+            .candidate-name {
+                font-size: 11px;
+            }
+            
+            .btn {
+                padding: 6px 12px;
+                font-size: 12px;
+            }
+            
+            .stat-card h3 {
+                font-size: 13px;
+            }
+            
+            .stat-label, .stat-value {
+                font-size: 12px;
+            }
+            
+            table {
+                font-size: 11px;
+            }
+            
+            table th, table td {
+                padding: 6px 8px;
+            }
+            
+            .phieu-table {
+                font-size: 10px;
+            }
+            
+            .phieu-table th, .phieu-table td {
+                padding: 4px 6px;
+            }
+        }
+
+        /* Very Small Mobile */
+        @media (max-width: 360px) {
+            .mobile-sidebar {
+                width: 100%;
+                left: -100%;
+            }
+            
+            .main-content {
+                padding: 60px 8px 12px 8px;
+            }
+            
+            .candidate-selection {
+                padding: 12px;
+            }
+            
+            .quick-input-section {
+                padding: 10px;
+            }
+            
+            .input-hint {
+                font-size: 10px;
+            }
+            
+            .selection-info {
+                font-size: 11px;
+            }
+            
+            .phieu-table {
+                font-size: 9px;
+            }
+            
+            .phieu-table th, .phieu-table td {
+                padding: 3px 4px;
+            }
+            
+            .phieu-table .btn-sm {
+                padding: 3px 4px;
+                font-size: 9px;
+                min-width: 40px;
+            }
+        }
+
+        /* Utility Classes */
+        .text-center {
+            text-align: center;
+        }
+        
+        .mb-10 {
+            margin-bottom: 10px;
+        }
+        
+        .mb-20 {
+            margin-bottom: 20px;
+        }
+
+        /* Hiệu ứng khi cuộn */
+        .phieu-table-container::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .phieu-table-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .phieu-table-container::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 4px;
+        }
+
+        .phieu-table-container::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+    </style>
 </head>
 <body>
-<div class="container">
-  <div class="sidebar hidden" id="sidebar">
-    <div class="logo"><h1>HỆ THỐNG BẦU CỬ</h1></div>
-    <ul class="nav-links">
-      <li><a href="thongtin.html"><i>ℹ️</i> Thông tin</a></li>
-      <li><a href="#" class="active"><i>✅</i> Kiểm phiếu</a></li>
-      <li><a href="tonghop.html"><i>📈</i> Tổng hợp</a></li>
-      <li><a href="bienban.html"><i>📝</i> Biên bản</a></li>
-      <li class="logout"><a href="#" id="logout"><i>🚪</i> Đăng xuất</a></li>
-    </ul>
-  </div>  <div class="main-content">
-    <div class="header">
-      <span class="menu-toggle" onclick="toggleMenu()">📋</span>
-      <h2>Kiểm phiếu</h2>
-      <div class="user-info">
-        <img src="https://ui-avatars.com/api/?name=Admin&background=2a5298&color=fff">
-        <span id="userName">Quản trị viên</span>
-      </div>
-    </div><div class="section">
-  <h3>Chọn ứng cử viên</h3>
-  <input type="text" id="numberInput" class="form-control" placeholder="Nhập số ứng viên...">
-  <button class="btn btn-warning" style="margin-top:10px;">Bỏ chọn tất cả</button>
-</div>
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+        <div class="mobile-header-content">
+            <button class="menu-toggle">☰</button>
+            <div class="logo">
+                <h1>HỆ THỐNG BẦU CỬ</h1>
+            </div>
+            <div class="user-info">
+                <img src="https://ui-avatars.com/api/?name=Admin&background=2a5298&color=fff" alt="User">
+                <span id="mobileUserName">Admin</span>
+            </div>
+        </div>
+    </div>
 
-<div class="section">
-  <h3>Kết quả ứng viên</h3>
-  <table style="width:100%;border-collapse:collapse;">
-    <thead><tr><th>STT</th><th>Ứng viên</th><th>Phiếu</th><th>%</th></tr></thead>
-    <tbody id="resultsBody"></tbody>
-  </table>
-</div>
+    <!-- Mobile Sidebar -->
+    <div class="mobile-sidebar">
+        <div class="mobile-sidebar-header">
+            <div class="logo">
+                <h1>HỆ THỐNG BẦU CỬ</h1>
+            </div>
+            <button class="close-menu">✕</button>
+        </div>
+        <ul class="nav-links">
+            <li><a href="thongtin.html"><i>ℹ️</i> Thông tin</a></li>
+            <li><a href="#" class="active" data-target="kiemphieu"><i>✅</i> Kiểm phiếu</a></li>
+            <li><a href="#" data-target="tonghop"><i>📈</i> Tổng hợp</a></li>
+            <li><a href="#" data-target="bienban"><i>📝</i> Biên bản</a></li>
+            <li class="logout"><a href="#" id="mobileLogout"><i>🚪</i> Đăng xuất</a></li>
+        </ul>
+    </div>
 
-  </div>
-</div><script>
-function toggleMenu(){document.getElementById('sidebar').classList.toggle('hidden');}
-</script></body>
+    <!-- Overlay -->
+    <div class="overlay"></div>
+
+    <div class="container">
+        <!-- Sidebar Desktop -->
+        <div class="sidebar">
+            <div class="logo">
+                <h1>HỆ THỐNG BẦU CỬ</h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="thongtin.html"><i>ℹ️</i> Thông tin</a></li>
+                <li><a href="#" class="active" data-target="kiemphieu"><i>✅</i> Kiểm phiếu</a></li>
+                <li><a href="#" data-target="tonghop"><i>📈</i> Tổng hợp</a></li>
+                <li><a href="#" data-target="bienban"><i>📝</i> Biên bản</a></li>
+                <li class="logout"><a href="#" id="logout"><i>🚪</i> Đăng xuất</a></li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <h2>Kiểm phiếu</h2>
+                <div class="user-info">
+                    <img src="https://ui-avatars.com/api/?name=Admin&background=2a5298&color=fff" alt="User">
+                    <span id="userName">Quản trị viên</span>
+                </div>
+            </div>
+
+            <!-- Loading indicator -->
+            <div id="loading" class="loading">Đang tải dữ liệu...</div>
+
+            <!-- Nội dung chính (ẩn ban đầu) -->
+            <div id="mainContent" style="display: none;">
+                <!-- Chọn ứng cử viên -->
+                <div class="candidate-selection">
+                    <h3>CHỌN ỨNG CỬ VIÊN CHO PHIẾU <span class="current-phieu" id="currentPhieu">1</span></h3>
+                    
+                    <!-- Phần nhập số nhanh -->
+                    <div class="quick-input-section">
+                        <div class="input-group">
+                            <label for="numberInput">Nhập số ứng viên (cách nhau bằng dấu cách):</label>
+                            <input type="text" id="numberInput" class="number-input" placeholder="Ví dụ: 1 3 5" autocomplete="off">
+                        </div>
+                        <div class="input-hint">
+                            💡 Gõ số ứng viên (1, 2, 3...) và nhấn Enter để kiểm phiếu tự động
+                        </div>
+                    </div>
+
+                    <div class="candidates-grid" id="candidatesGrid">
+                        <!-- Danh sách ứng cử viên sẽ được load ở đây -->
+                    </div>
+                    <div class="selection-controls">
+                        <div class="selection-info">
+                            <span>Số đã chọn: <strong id="selectedCount">0</strong></span>
+                            <span>Phiếu hiện tại: <strong id="currentPhieuDisplay">1</strong></span>
+                        </div>
+                        <button id="btnResetSelection" class="btn btn-warning">Bỏ chọn tất cả</button>
+                    </div>
+                </div>
+
+                <!-- Thống kê 3 cột -->
+                <div class="stats-grid">
+                    <!-- Cột 1: Thông tin cử tri -->
+                    <div class="stat-card">
+                        <h3>THÔNG TIN CỬ TRI</h3>
+                        <div class="stat-row">
+                            <span class="stat-label">Tổng số cử tri</span>
+                            <input type="number" id="tongSoCuTri" class="form-control" style="width: 80px; padding: 4px 8px; text-align: right;" value="0" min="0">
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Tham gia bỏ phiếu</span>
+                            <input type="number" id="thamGiaBoPhieu" class="form-control" style="width: 80px; padding: 4px 8px; text-align: right;" value="0" min="0">
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Đạt %</span>
+                            <span class="stat-percent" id="phanTramThamGia">0%</span>
+                        </div>
+                    </div>
+
+                    <!-- Cột 2: Thông tin phiếu -->
+                    <div class="stat-card">
+                        <h3>THÔNG TIN PHIẾU</h3>
+                        <div class="stat-row">
+                            <span class="stat-label">Số phiếu phát ra</span>
+                            <input type="number" id="soPhieuPhatRa" class="form-control" style="width: 80px; padding: 4px 8px; text-align: right;" value="0" min="0">
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Số phiếu thu vào</span>
+                            <span class="stat-value" id="soPhieuThuVao">0</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Đạt %</span>
+                            <span class="stat-percent" id="phanTramPhieu">0%</span>
+                        </div>
+                    </div>
+
+                    <!-- Cột 3: Thông tin ứng cử -->
+                    <div class="stat-card">
+                        <h3>THÔNG TIN ỨNG CỬ</h3>
+                        <div class="stat-row">
+                            <span class="stat-label">Số người ứng cử</span>
+                            <span class="stat-value" id="soNguoiUngCu">0</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Số người được bầu</span>
+                            <span class="stat-value" id="soNguoiDuocBau">0</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Số dư</span>
+                            <span class="stat-value" id="soDu">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Kết quả ứng viên -->
+                <div class="candidate-results">
+                    <h3>KẾT QUẢ ỨNG VIÊN</h3>
+                    <table id="resultsTable">
+                        <thead>
+                            <tr>
+                                <th>STT</th>
+                                <th>Họ tên ứng viên</th>
+                                <th>Số phiếu</th>
+                                <th>Tỷ lệ %</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Kết quả sẽ được cập nhật ở đây -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Kiểm tra từng phiếu - ĐÃ SỬA -->
+                <div class="phieu-details">
+                    <h3>KIỂM TRA TỪNG PHIẾU</h3>
+                    <div class="phieu-table-container" id="phieuTableContainer">
+                        <!-- Bảng kiểm tra từng phiếu sẽ được tạo ở đây -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal sửa phiếu -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>SỬA PHIẾU SỐ <span id="editPhieuSo"></span></h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="candidate-selection">
+                <h3>CHỌN ỨNG CỬ VIÊN CHO PHIẾU</h3>
+                <div class="edit-candidates-grid" id="editCandidatesGrid">
+                    <!-- Danh sách ứng cử viên để sửa sẽ được load ở đây -->
+                </div>
+                <div class="edit-selection-controls">
+                    <button id="btnSaveEdit" class="btn btn-success">Lưu thay đổi</button>
+                    <button id="btnDeletePhieu" class="btn btn-danger">Xóa phiếu</button>
+                    <span>Số đã chọn: <strong id="editSelectedCount">0</strong></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+    <script>
+        // Firebase config
+        const firebaseConfig = { 
+            apiKey: "AIzaSyAt-OooTscmthbJXNcvy80RgPDA9T46-0w", 
+            authDomain: "kiemphieu-45823.firebaseapp.com", 
+            databaseURL: "https://kiemphieu-45823-default-rtdb.asia-southeast1.firebasedatabase.app", 
+            projectId: "kiemphieu-45823", 
+            storageBucket: "kiemphieu-45823.firebasestorage.app", 
+            messagingSenderId: "908329514571", 
+            appId: "1:908329514571:web:16b43df5b795e4de06bfce" 
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+
+        const db = firebase.database();
+        const auth = firebase.auth();
+
+        let currentUser = null;
+        let currentPhieu = 1;
+        let candidates = [];
+        let candidateResults = {};
+        let phieuDetails = [];
+        let currentEditPhieuIndex = -1;
+
+        // Mobile menu functionality
+        function initMobileMenu() {
+            const menuToggle = document.querySelector('.menu-toggle');
+            const closeMenu = document.querySelector('.close-menu');
+            const mobileSidebar = document.querySelector('.mobile-sidebar');
+            const overlay = document.querySelector('.overlay');
+
+            function openMenu() {
+                mobileSidebar.classList.add('active');
+                overlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeMenuFunc() {
+                mobileSidebar.classList.remove('active');
+                overlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+
+            menuToggle.addEventListener('click', openMenu);
+            closeMenu.addEventListener('click', closeMenuFunc);
+            overlay.addEventListener('click', closeMenuFunc);
+
+            // Close menu when clicking on nav links
+            document.querySelectorAll('.mobile-sidebar .nav-links a').forEach(link => {
+                link.addEventListener('click', closeMenuFunc);
+            });
+        }
+
+        // Simple user path function
+        function getUserPath(path = '') {
+            if (!currentUser || !currentUser.uid) {
+                throw new Error('User not authenticated');
+            }
+            return `users/${currentUser.uid}${path ? '/' + path : ''}`;
+        }
+
+        // Tính phần trăm
+        function calculatePercent(value, total) {
+            if (total === 0) return 0;
+            return ((value / total) * 100).toFixed(1);
+        }
+
+        // Cập nhật phần trăm tự động
+        function updatePercentages() {
+            try {
+                const tongSoCuTri = parseInt(document.getElementById('tongSoCuTri').value) || 0;
+                const thamGiaBoPhieu = parseInt(document.getElementById('thamGiaBoPhieu').value) || 0; 
+                const soPhieuPhatRa = parseInt(document.getElementById('soPhieuPhatRa').value) || 0;
+                const soPhieuThuVao = parseInt(document.getElementById('soPhieuThuVao').textContent) || 0;
+
+                // Cập nhật phần trăm tham gia
+                let phanTramThamGia = 0;
+                if (tongSoCuTri > 0) {
+                    phanTramThamGia = (thamGiaBoPhieu / tongSoCuTri) * 100; 
+                }
+                document.getElementById('phanTramThamGia').textContent = phanTramThamGia.toFixed(1) + '%';
+
+                // Cập nhật phần trăm phiếu
+                let phanTramPhieu = 0;
+                if (soPhieuPhatRa > 0) {
+                    phanTramPhieu = (soPhieuThuVao / soPhieuPhatRa) * 100;
+                }
+                document.getElementById('phanTramPhieu').textContent = phanTramPhieu.toFixed(1) + '%';
+
+                // THÊM DÒNG NÀY - Tự động lưu khi có thay đổi
+                saveKiemPhieu();
+                
+            } catch (error) {
+                console.error('Lỗi trong updatePercentages:', error);
+            }
+        }
+
+        // Load danh sách ứng cử viên
+        async function loadCandidates() {
+            try {
+                const userPath = getUserPath('ungCu');
+                const snapshot = await db.ref(userPath).once('value');
+                
+                if (snapshot.exists()) {
+                    candidates = [];
+                    let stt = 1;
+                    
+                    snapshot.forEach((child) => {
+                        const candidateData = child.val();
+                        candidates.push({
+                            id: child.key,
+                            stt: stt,
+                            name: candidateData.hoTen || '',
+                            votes: 0
+                        });
+                        stt++;
+                    });
+                    
+                    renderCandidatesGrid();
+                    updateResultsTable();
+                    updatePhieuTable();
+                }
+            } catch (error) {
+                console.error('Error loading candidates:', error);
+            }
+        }
+
+        // Render grid chọn ứng cử viên
+        function renderCandidatesGrid() {
+            const grid = document.getElementById('candidatesGrid');
+            grid.innerHTML = '';
+            
+            candidates.forEach(candidate => {
+                const candidateItem = document.createElement('div');
+                candidateItem.className = 'candidate-item';
+                candidateItem.innerHTML = `
+                    <input type="checkbox" class="candidate-checkbox" data-id="${candidate.id}" data-stt="${candidate.stt}">
+                    <div class="candidate-info">
+                        <span class="candidate-stt">${candidate.stt}.</span>
+                        <span class="candidate-name">${candidate.name}</span>
+                    </div>
+                `;
+                grid.appendChild(candidateItem);
+            });
+
+            document.querySelectorAll('.candidate-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', updateSelectedCount);
+            });
+        }
+
+        // Cập nhật số lượng đã chọn
+        function updateSelectedCount() {
+            const selectedCount = document.querySelectorAll('.candidate-checkbox:checked').length;
+            document.getElementById('selectedCount').textContent = selectedCount;
+        }
+
+        // Xử lý nhập số từ textbox
+        function handleNumberInput() {
+            const numberInput = document.getElementById('numberInput');
+            const inputValue = numberInput.value.trim();
+            
+            if (!inputValue) {
+                resetSelection();
+                return;
+            }
+
+            // Tách các số bằng dấu cách
+            const numbers = inputValue.split(' ').filter(num => num.trim() !== '');
+            
+            // Reset tất cả checkbox
+            document.querySelectorAll('.candidate-checkbox').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            
+            // Tích chọn các số được nhập
+            numbers.forEach(num => {
+                const stt = parseInt(num);
+                if (!isNaN(stt) && stt >= 1 && stt <= candidates.length) {
+                    const checkbox = document.querySelector(`.candidate-checkbox[data-stt="${stt}"]`);
+                    if (checkbox) {
+                        checkbox.checked = true;
+                        // Thêm class selected cho item
+                        const candidateItem = checkbox.closest('.candidate-item');
+                        if (candidateItem) {
+                            candidateItem.classList.add('selected');
+                        }
+                    }
+                }
+            });
+            
+            updateSelectedCount();
+        }
+
+        // Kiểm phiếu tự động khi nhấn Enter
+        function kiemPhieuTuDong() {
+            const selectedCheckboxes = document.querySelectorAll('.candidate-checkbox:checked');
+            const selectedIds = Array.from(selectedCheckboxes).map(cb => cb.getAttribute('data-id'));
+            const selectedStt = Array.from(selectedCheckboxes).map(cb => parseInt(cb.getAttribute('data-stt')));
+            
+            if (selectedIds.length === 0) {
+                alert('Vui lòng chọn ít nhất một ứng cử viên!');
+                return;
+            }
+
+            // Logic bầu loại: Tăng số phiếu cho những người KHÔNG được chọn
+            candidates.forEach(candidate => {
+                if (!selectedIds.includes(candidate.id)) {
+                    candidate.votes += 1;
+                }
+            });
+
+            // Tăng số phiếu thu vào
+            const currentSoPhieuThuVao = parseInt(document.getElementById('soPhieuThuVao').textContent) || 0;
+            const newSoPhieuThuVao = currentSoPhieuThuVao + 1;
+            document.getElementById('soPhieuThuVao').textContent = newSoPhieuThuVao;
+            document.getElementById('thamGiaBoPhieu').value = newSoPhieuThuVao;
+
+            // Lấy thông tin số người được bầu và số dư
+            const soNguoiDuocBau = parseInt(document.getElementById('soNguoiDuocBau').textContent) || 0;
+            const soDu = parseInt(document.getElementById('soDu').textContent) || 0;
+            
+            // Xác định trạng thái phiếu
+            let trangThai = '';
+            const soUngVienDuocChon = selectedIds.length;
+
+            if (soUngVienDuocChon === 0 || soUngVienDuocChon === candidates.length) {
+                trangThai = 'Không hợp lệ';
+            } else if (soUngVienDuocChon === soDu) {
+                trangThai = 'Hợp lệ';
+            } else if (soUngVienDuocChon < soDu) {
+                trangThai = 'Không hợp lệ';
+            } else if (soUngVienDuocChon < soNguoiDuocBau) {
+                trangThai = 'Bầu thiếu';
+            } else {
+                trangThai = 'Không hợp lệ';
+            }
+            
+            // Lưu thông tin phiếu
+            phieuDetails.push({
+                phieuSo: currentPhieu,
+                selectedIds: selectedIds,
+                selectedStt: selectedStt,
+                trangThai: trangThai
+            });
+
+            // Chuyển đến phiếu tiếp theo
+            currentPhieu++;
+            document.getElementById('currentPhieu').textContent = currentPhieu;
+            document.getElementById('currentPhieuDisplay').textContent = currentPhieu;
+
+            // Reset selection và input
+            resetSelection();
+            document.getElementById('numberInput').value = '';
+
+            // Cập nhật kết quả 
+            updateResultsTable();
+            updatePhieuTable();
+            updatePercentages();
+
+            // Tự động lưu vào Firebase
+            saveKiemPhieu();
+
+            // Focus lại vào input để tiếp tục nhập
+            document.getElementById('numberInput').focus();
+
+            console.log(`Đã kiểm phiếu ${currentPhieu - 1}! Chuyển đến phiếu ${currentPhieu}`);
+        }
+
+        // Cập nhật bảng kết quả
+        function updateResultsTable() {
+            const tbody = document.querySelector('#resultsTable tbody');
+            const soPhieuThuVao = parseInt(document.getElementById('soPhieuThuVao').textContent) || 0;
+            
+            tbody.innerHTML = '';
+            
+            candidates.forEach(candidate => {
+                const percent = calculatePercent(candidate.votes, soPhieuThuVao);
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${candidate.stt}</td>
+                    <td>${candidate.name}</td>
+                    <td>${candidate.votes}</td>
+                    <td>${percent}%</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Cập nhật bảng kiểm tra từng phiếu - ĐÃ SỬA
+        function updatePhieuTable() {
+            const container = document.getElementById('phieuTableContainer');
+            
+            if (candidates.length === 0) {
+                container.innerHTML = '<p style="font-size: 11px; text-align: center; color: #666; padding: 20px;">Chưa có dữ liệu ứng cử viên</p>';
+                return;
+            }
+
+            let tableHTML = `
+                <table class="phieu-table">
+                    <thead>
+                        <tr>
+                            <th>Phiếu số</th>
+                            <th>Đọc phiếu</th>
+                            <th>Trạng thái</th>
+            `;
+            
+            // Thêm cột cho từng ứng viên với tên đầy đủ
+            candidates.forEach(candidate => {
+                tableHTML += `<th class="candidate-col candidate-name-header">${candidate.name}<br>(N${candidate.stt})</th>`;
+            });
+            
+            tableHTML += `
+                        <th class="action-col">Tổng</th>
+                        <th class="action-col">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+            `;
+            
+            if (phieuDetails.length === 0) {
+                tableHTML += `
+                    <tr>
+                        <td colspan="${3 + candidates.length + 2}" style="text-align: center; color: #666; padding: 20px;">
+                            Chưa có phiếu nào được kiểm
+                        </td>
+                    </tr>
+                `;
+            } else {
+                phieuDetails.forEach((phieu, index) => {
+                    const docPhieu = phieu.selectedStt ? phieu.selectedStt.sort((a, b) => a - b).join(' ') : '';
+                    
+                    tableHTML += `
+                        <tr>
+                            <td><strong>${phieu.phieuSo}</strong></td>
+                            <td><strong>${docPhieu}</strong></td>
+                            <td class="${getStatusClass(phieu.trangThai)}"><strong>${phieu.trangThai}</strong></td>
+                    `;
+                    
+                    // Hiển thị kết quả cho từng ứng viên
+                    candidates.forEach(candidate => {
+                        const isLoai = phieu.selectedIds.includes(candidate.id);
+                        tableHTML += `<td class="candidate-col">${isLoai ? '0' : '<strong>1</strong>'}</td>`;
+                    });
+                    
+                    const soNguoiKhongBiLoai = candidates.length - phieu.selectedIds.length;
+                    tableHTML += `
+                        <td class="action-col"><strong>${soNguoiKhongBiLoai}</strong></td>
+                        <td class="action-col">
+                            <button class="btn btn-warning btn-sm" onclick="openEditModal(${index})">Sửa</button>
+                        </td>
+                    </tr>`;
+                });
+            }
+            
+            tableHTML += `</tbody></table>`;
+            container.innerHTML = tableHTML;
+        }
+
+        // Hàm trả về class CSS cho trạng thái
+        function getStatusClass(trangThai) {
+            switch(trangThai) {
+                case 'Hợp lệ': return 'valid';
+                case 'Bầu thiếu': return 'insufficient';
+                case 'Không hợp lệ': return 'invalid';
+                default: return '';
+            }
+        }
+
+        // Mở modal sửa phiếu
+        function openEditModal(phieuIndex) {
+            currentEditPhieuIndex = phieuIndex;
+            const phieu = phieuDetails[phieuIndex];
+            
+            document.getElementById('editPhieuSo').textContent = phieu.phieuSo;
+            
+            const editGrid = document.getElementById('editCandidatesGrid');
+            editGrid.innerHTML = '';
+            
+            candidates.forEach(candidate => {
+                const isSelected = phieu.selectedIds.includes(candidate.id);
+                const candidateItem = document.createElement('div');
+                candidateItem.className = `edit-candidate-item ${isSelected ? 'selected' : ''}`;
+                candidateItem.innerHTML = `
+                    <input type="checkbox" class="edit-candidate-checkbox" data-id="${candidate.id}" data-stt="${candidate.stt}" ${isSelected ? 'checked' : ''}>
+                    <div class="candidate-info">
+                        <span class="candidate-stt">${candidate.stt}.</span>
+                        <span class="candidate-name">${candidate.name}</span>
+                    </div>
+                `;
+                editGrid.appendChild(candidateItem);
+            });
+
+            updateEditSelectedCount();
+            document.getElementById('editModal').style.display = 'block';
+        }
+
+        // Cập nhật số lượng đã chọn trong modal
+        function updateEditSelectedCount() {
+            const selectedCount = document.querySelectorAll('.edit-candidate-checkbox:checked').length;
+            document.getElementById('editSelectedCount').textContent = selectedCount;
+        }
+
+        // Lưu thay đổi phiếu
+        function saveEditedPhieu() {
+            if (currentEditPhieuIndex === -1) return;
+
+            const selectedCheckboxes = document.querySelectorAll('.edit-candidate-checkbox:checked');
+            const selectedIds = Array.from(selectedCheckboxes).map(cb => cb.getAttribute('data-id'));
+            const selectedStt = Array.from(selectedCheckboxes).map(cb => parseInt(cb.getAttribute('data-stt')));
+
+            const phieu = phieuDetails[currentEditPhieuIndex];
+            const oldSelectedIds = [...phieu.selectedIds];
+
+            // Cập nhật thông tin phiếu
+            phieu.selectedIds = selectedIds;
+            phieu.selectedStt = selectedStt;
+
+            // Tính lại trạng thái
+            const soNguoiDuocBau = parseInt(document.getElementById('soNguoiDuocBau').textContent) || 0;
+            const soDu = parseInt(document.getElementById('soDu').textContent) || 0;
+            const soUngVienDuocChon = selectedIds.length;
+
+            if (soUngVienDuocChon === 0 || soUngVienDuocChon === candidates.length) {
+                phieu.trangThai = 'Không hợp lệ';
+            } else if (soUngVienDuocChon === soDu) {
+                phieu.trangThai = 'Hợp lệ';
+            } else if (soUngVienDuocChon < soDu) {
+                phieu.trangThai = 'Không hợp lệ';
+            } else if (soUngVienDuocChon < soNguoiDuocBau) {
+                phieu.trangThai = 'Bầu thiếu';
+            } else {
+                phieu.trangThai = 'Không hợp lệ';
+            }
+
+            // Cập nhật số phiếu của ứng viên
+            candidates.forEach(candidate => {
+                // Giảm số phiếu của những người không còn được chọn
+                if (oldSelectedIds.includes(candidate.id) && !selectedIds.includes(candidate.id)) {
+                    candidate.votes -= 1;
+                }
+                // Tăng số phiếu của những người mới được chọn
+                if (!oldSelectedIds.includes(candidate.id) && selectedIds.includes(candidate.id)) {
+                    candidate.votes += 1;
+                }
+            });
+
+            updateResultsTable();
+            updatePhieuTable();
+            updatePercentages();
+            closeEditModal();
+
+            // Tự động lưu vào Firebase
+            saveKiemPhieu();
+
+            alert('Đã cập nhật phiếu thành công!');
+        }
+
+        // Xóa phiếu
+        function deletePhieu() {
+            if (currentEditPhieuIndex === -1) return;
+
+            if (!confirm('Bạn có chắc muốn xóa phiếu này?')) {
+                return;
+            }
+
+            const phieu = phieuDetails[currentEditPhieuIndex];
+            const selectedIds = phieu.selectedIds;
+
+            // Giảm số phiếu của những người không được chọn
+            candidates.forEach(candidate => {
+                if (!selectedIds.includes(candidate.id)) {
+                    candidate.votes -= 1;
+                }
+            });
+
+            // Giảm số phiếu thu vào
+            const currentSoPhieuThuVao = parseInt(document.getElementById('soPhieuThuVao').textContent) || 0;
+            document.getElementById('soPhieuThuVao').textContent = currentSoPhieuThuVao - 1;
+            document.getElementById('thamGiaBoPhieu').value = currentSoPhieuThuVao - 1;
+
+            // Xóa phiếu khỏi danh sách
+            phieuDetails.splice(currentEditPhieuIndex, 1);
+
+            updateResultsTable();
+            updatePhieuTable();
+            updatePercentages();
+            closeEditModal();
+
+            // Tự động lưu vào Firebase
+            saveKiemPhieu();
+
+            alert('Đã xóa phiếu thành công!');
+        }
+
+        // Đóng modal
+        function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+            currentEditPhieuIndex = -1;
+        }
+
+        // Load thông tin từ trang thông tin
+        async function loadThongTin() {
+            try {
+                const userPath = getUserPath('donVi');
+                const snapshot = await db.ref(userPath).once('value');
+                
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    document.getElementById('soNguoiUngCu').textContent = data.soNguoiUngCu || 0;
+                    document.getElementById('soNguoiDuocBau').textContent = data.soNguoiDuocBau || 0;
+                    document.getElementById('soDu').textContent = (data.soNguoiUngCu - data.soNguoiDuocBau) || 0;
+                }
+            } catch (error) {
+                console.error('Error loading thong tin:', error);
+            }
+        }
+
+        // Load thông tin kiểm phiếu
+        <!-- Bắt đầu phần đã chỉnh -->
+// Load thông tin kiểm phiếu - ĐÃ SỬA
+async function loadKiemPhieu() {
+    try {
+        // --- 1️⃣ Thông tin thống kê ---
+        const userPath = getUserPath('kiemPhieuData');
+        const snapshot = await db.ref(userPath).once('value');
+
+        if (snapshot.exists()) {
+            const data = snapshot.val();
+            document.getElementById('tongSoCuTri').value = data.tongSoCuTri || 0;
+            document.getElementById('thamGiaBoPhieu').value = data.thamGiaBoPhieu || 0;
+            document.getElementById('soPhieuPhatRa').value = data.soPhieuPhatRa || 0;
+
+            if (data.soPhieuThuVao) {
+                document.getElementById('soPhieuThuVao').textContent = data.soPhieuThuVao;
+                currentPhieu = parseInt(data.soPhieuThuVao) + 1 || 1;
+                document.getElementById('currentPhieu').textContent = currentPhieu;
+                document.getElementById('currentPhieuDisplay').textContent = currentPhieu;
+            }
+        }
+
+        // --- 2️⃣ Kết quả ứng viên ---
+        const resultsSnapshot = await db.ref(getUserPath('candidateResults')).once('value');
+        if (resultsSnapshot.exists()) {
+            const resultData = resultsSnapshot.val();
+            candidates.forEach(candidate => {
+                const c = resultData[candidate.id];
+                if (c) {
+                    candidate.votes = parseInt(c.votes) || 0;
+                    candidate.stt = parseInt(c.stt) || candidate.stt;
+                }
+            });
+            updateResultsTable();
+        }
+
+        // --- 3️⃣ Dữ liệu phiếu đã kiểm ---
+        const phieuSnapshot = await db.ref(getUserPath('phieuDetails')).once('value');
+        if (phieuSnapshot.exists()) {
+            const rawData = phieuSnapshot.val();
+            if (Array.isArray(rawData)) {
+                // Nếu lưu dạng mảng
+                phieuDetails = rawData.filter(item => item !== null);
+            } else {
+                // Nếu lưu dạng object
+                phieuDetails = Object.values(rawData);
+            }
+            updatePhieuTable();
+        } else {
+            phieuDetails = [];
+            updatePhieuTable();
+        }
+
+        updatePercentages();
+        console.log('✅ Dữ liệu kiểm phiếu đã được tải!');
+    } catch (error) {
+        console.error('❌ Lỗi khi tải kiểm phiếu:', error);
+    }
+}
+<!-- Kết thúc phần đã chỉnh -->
+        // Lưu thông tin kiểm phiếu
+        async function saveKiemPhieu() {
+    try {
+        // --- 1️⃣ Lưu thông tin chung ---
+        const userPath = getUserPath('kiemPhieuData');
+        const kiemPhieuData = {
+            tongSoCuTri: parseInt(document.getElementById('tongSoCuTri').value) || 0,
+            thamGiaBoPhieu: parseInt(document.getElementById('thamGiaBoPhieu').value) || 0,
+            soPhieuPhatRa: parseInt(document.getElementById('soPhieuPhatRa').value) || 0,
+            soPhieuThuVao: parseInt(document.getElementById('soPhieuThuVao').textContent) || 0
+        };
+        await db.ref(userPath).set(kiemPhieuData);
+
+        // --- 2️⃣ Lưu kết quả ứng viên ---
+        const resultsData = {};
+        candidates.forEach(candidate => {
+            resultsData[candidate.id] = {
+                votes: candidate.votes || 0,
+                name: candidate.name,
+                stt: candidate.stt
+            };
+        });
+        await db.ref(getUserPath('candidateResults')).set(resultsData);
+
+        // --- 3️⃣ Lưu chi tiết phiếu ---
+        const filteredPhieu = phieuDetails.filter(p => p && p.phieuSo);
+        await db.ref(getUserPath('phieuDetails')).set(filteredPhieu);
+
+        console.log('💾 Đã lưu toàn bộ dữ liệu kiểm phiếu thành công!');
+    } catch (error) {
+        console.error('❌ Lỗi khi lưu kiểm phiếu:', error);
+    }
+}
+
+        // Reset selection
+        function resetSelection() {
+            document.querySelectorAll('.candidate-checkbox').forEach(checkbox => {
+                checkbox.checked = false;
+                const candidateItem = checkbox.closest('.candidate-item');
+                if (candidateItem) {
+                    candidateItem.classList.remove('selected');
+                }
+            });
+            updateSelectedCount();
+        }
+
+        // Khởi tạo ứng dụng
+        async function initApp() {
+            try {
+                await new Promise((resolve) => {
+                    const unsubscribe = auth.onAuthStateChanged(user => {
+                        unsubscribe();
+                        currentUser = user;
+                        resolve();
+                    });
+                });
+
+                if (!currentUser) {
+                    window.location.href = 'index.html';
+                    return;
+                }
+
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+
+                // Cập nhật tên user trên mobile
+                document.getElementById('mobileUserName').textContent = currentUser.email || 'Admin';
+
+                await loadThongTin();
+                await loadCandidates();
+                await loadKiemPhieu();
+
+                // Xóa nút kiểm phiếu cũ và thêm sự kiện cho textbox
+                document.getElementById('btnResetSelection').addEventListener('click', resetSelection);
+
+                // Sự kiện cho textbox nhập số
+                const numberInput = document.getElementById('numberInput');
+                numberInput.addEventListener('input', handleNumberInput);
+                numberInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        kiemPhieuTuDong();
+                    }
+                });
+
+                // Focus vào textbox khi trang load
+                numberInput.focus();
+
+                document.getElementById('tongSoCuTri').addEventListener('input', updatePercentages);
+                document.getElementById('thamGiaBoPhieu').addEventListener('input', updatePercentages);
+                document.getElementById('soPhieuPhatRa').addEventListener('input', updatePercentages);
+
+                // Thêm event listeners cho modal
+                document.querySelector('.close').addEventListener('click', closeEditModal);
+                document.getElementById('btnSaveEdit').addEventListener('click', saveEditedPhieu);
+                document.getElementById('btnDeletePhieu').addEventListener('click', deletePhieu);
+
+                // Event listener cho checkbox trong modal
+                document.addEventListener('change', function(e) {
+                    if (e.target.classList.contains('edit-candidate-checkbox')) {
+                        updateEditSelectedCount();
+                        const candidateItem = e.target.closest('.edit-candidate-item');
+                        if (e.target.checked) {
+                            candidateItem.classList.add('selected');
+                        } else {
+                            candidateItem.classList.remove('selected');
+                        }
+                    }
+                });
+
+                // Đóng modal khi click bên ngoài
+                window.addEventListener('click', function(e) {
+                    const modal = document.getElementById('editModal');
+                    if (e.target === modal) {
+                        closeEditModal();
+                    }
+                });
+
+                updatePercentages();
+
+            } catch (error) {
+                console.error('Error initializing app:', error);
+                document.getElementById('loading').innerHTML = 'Lỗi khi tải dữ liệu. Vui lòng thử lại.';
+            }
+        }
+
+        // Navigation
+        function initNavigation() {
+            document.querySelectorAll('.nav-links a[data-target]').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    document.querySelectorAll('.nav-links a').forEach(item => {
+                        item.classList.remove('active');
+                    });
+                    
+                    this.classList.add('active');
+                    
+                    const targetPage = this.getAttribute('data-target') + '.html';
+                    if (!window.location.href.includes(targetPage)) {
+                        window.location.href = targetPage;
+                    }
+                });
+            });
+        }
+
+        // Logout
+        function initLogout() {
+            document.getElementById('logout').addEventListener('click', function(e) {
+                e.preventDefault();
+                if (confirm('Bạn có chắc muốn đăng xuất?')) {
+                    auth.signOut().then(() => {
+                        alert('Đã đăng xuất!');
+                        window.location.href = 'index.html';
+                    }).catch(error => {
+                        console.error('Logout error:', error);
+                    });
+                }
+            });
+
+            document.getElementById('mobileLogout').addEventListener('click', function(e) {
+                e.preventDefault();
+                if (confirm('Bạn có chắc muốn đăng xuất?')) {
+                    auth.signOut().then(() => {
+                        alert('Đã đăng xuất!');
+                        window.location.href = 'index.html';
+                    }).catch(error => {
+                        console.error('Logout error:', error);
+                    });
+                }
+            });
+        }
+
+        // Khởi chạy ứng dụng
+        window.addEventListener('load', function() {
+            initMobileMenu();
+            initNavigation();
+            initLogout();
+            initApp();
+        });
+    </script>
+</body>
 </html>
