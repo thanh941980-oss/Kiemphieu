@@ -1224,6 +1224,9 @@
                 }
                 document.getElementById('phanTramPhieu').textContent = phanTramPhieu.toFixed(1) + '%';
 
+                // THÊM DÒNG NÀY - Tự động lưu khi có thay đổi
+                saveKiemPhieu();
+                
             } catch (error) {
                 console.error('Lỗi trong updatePercentages:', error);
             }
