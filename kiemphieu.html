@@ -1654,6 +1654,7 @@
 
         // Load thông tin kiểm phiếu
         <!-- Bắt đầu phần đã chỉnh -->
+// Load thông tin kiểm phiếu - ĐÃ SỬA
 async function loadKiemPhieu() {
     try {
         const userPath = getUserPath('kiemPhieuData');
@@ -1675,6 +1676,7 @@ async function loadKiemPhieu() {
             updatePercentages();
         }
 
+        // Load kết quả ứng viên
         const resultsSnapshot = await db.ref(getUserPath('candidateResults')).once('value');
         if (resultsSnapshot.exists()) {
             candidateResults = resultsSnapshot.val();
@@ -1688,13 +1690,13 @@ async function loadKiemPhieu() {
             updatePercentages();
         }
 
-        // ✅ CHỈNH PHẦN NÀY: chuyển object → mảng để hiển thị đúng
+        // Load chi tiết phiếu - ĐÃ FIX
         const phieuSnapshot = await db.ref(getUserPath('phieuDetails')).once('value');
-if (phieuSnapshot.exists()) {
-    const data = phieuSnapshot.val();
-    phieuDetails = Object.values(data); // 🔹 Chuyển object thành mảng
-    updatePhieuTable();
-}
+        if (phieuSnapshot.exists()) {
+            const data = phieuSnapshot.val();
+            phieuDetails = Object.keys(data).map(key => data[key]); // ← chuyển object thành array
+            updatePhieuTable();
+        }
     } catch (error) {
         console.error('Error loading kiem phieu:', error);
     }
