@@ -291,7 +291,7 @@
                 Object.keys(ungCuData).forEach(key => {
                     const hoTen = ungCuData[key].hoTen;
                     const result = candidateResultsData[key] || { soPhieu: 0 };
-                    resultsHtml += `<p>Ông/Bà ${hoTen} được ${result.soPhieu} phiếu / ${soPhieuHopLe} phiếu hợp lệ</p>`;
+                    resultsHtml += `<p>Ông/Bà ${hoTen} được ${result.votes} phiếu / ${soPhieuHopLe} phiếu hợp lệ</p>`;
                 });
                 ketQuaUngVienContainer.innerHTML = resultsHtml || '<p class="placeholder">Chưa có kết quả.</p>';
 
