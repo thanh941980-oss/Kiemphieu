@@ -597,37 +597,119 @@
             totalCell.textContent = 'Tổng số phiếu đạt';
             totalRow.appendChild(totalCell);
             
-            // Tạo hàng "Đạt %"
-            const percentRow = document.createElement('tr');
-            const percentCell = document.createElement('td');
-            percentCell.className = 'sub-header';
-            percentCell.textContent = 'Đạt %';
-            percentRow.appendChild(percentCell);
-            
-            // Điền dữ liệu cho từng cột
-            for (let i = 1; i <= actualMaxCandidates; i++) {
-                const votes = distribution[i] || 0;
-                const percent = calculatePercent(votes, totalVotes);
-                
-                // Thêm vào hàng tổng số phiếu
-                const votesTd = document.createElement('td');
-                votesTd.textContent = votes;
-                totalRow.appendChild(votesTd);
-                
-                // Thêm vào hàng phần trăm
-                const percentTd = document.createElement('td');
-                percentTd.textContent = percent + '%';
-                percentRow.appendChild(percentTd);
-            }
-            
-            // Cập nhật bảng
-            tableBody.innerHTML = '';
-            tableBody.appendChild(totalRow);
-            tableBody.appendChild(percentRow);
-
-            console.log('Distribution table updated successfully');
+// Hàm tính toán phân bố thực tế từ dữ liệu phiếu - ĐÃ SỬA ĐỂ ĐẾM SỐ PHIẾU THEO SỐ NGƯỜI ĐƯỢC BẦU
+function calculateRealDistribution(phieuDetails, totalCandidates) {
+    const distribution = {};
+    
+    console.log('Calculating distribution from phieuDetails:', phieuDetails);
+    console.log('Total candidates:', totalCandidates);
+    
+    if (!phieuDetails || phieuDetails.length === 0) {
+        console.log('No phieu details found');
+        // Nếu không có phiếu, tạo distribution với tất cả giá trị 0
+        for (let i = 1; i <= totalCandidates; i++) {
+            distribution[i] = 0;
         }
+        return distribution;
+    }
+    
+    // Đếm số phiếu cho từng số lượng người được bầu
+    phieuDetails.forEach((phieu, index) => {
+        if (phieu && phieu.selectedIds) {
+            // Số người ĐƯỢC BẦU = tổng số ứng viên - số người bị LOẠI
+            const soNguoiDuocBau = totalCandidates - phieu.selectedIds.length;
+            
+            console.log(`Phieu ${index + 1}: selectedIds=${phieu.selectedIds.length}, soNguoiDuocBau=${soNguoiDuocBau}`);
+            
+            if (soNguoiDuocBau >= 1 && soNguoiDuocBau <= totalCandidates) {
+                distribution[soNguoiDuocBau] = (distribution[soNguoiDuocBau] || 0) + 1;
+            } else if (soNguoiDuocBau === 0) {
+                // Trường hợp bầu loại hết tất cả ứng viên
+                distribution[totalCandidates] = (distribution[totalCandidates] || 0) + 0; // Không tính phiếu này
+            }
+        }
+    });
 
+    // Đảm bảo tất cả các cột từ 1 đến totalCandidates đều có giá trị
+    for (let i = 1; i <= totalCandidates; i++) {
+        if (distribution[i] === undefined) {
+            distribution[i] = 0;
+        }
+    }
+    
+    console.log('Final distribution:', distribution);
+    return distribution;
+}
+
+// Cập nhật bảng phân bố số phiếu với số cột động
+function updateVotesDistributionTable(phieuDetails, totalVotes, totalCandidates) {
+    const tableBody = document.getElementById('votesDistributionBody');
+    const candidateHeaders = document.getElementById('candidateHeaders');
+    const candidateCountHeader = document.getElementById('candidateCountHeader');
+    
+    if (!tableBody || !candidateHeaders) return;
+
+    console.log('Phieu details for distribution:', phieuDetails);
+    console.log('Total candidates:', totalCandidates);
+
+    // Tính số phiếu cho từng số lượng người được bầu
+    const distribution = calculateRealDistribution(phieuDetails, totalCandidates);
+    console.log('Distribution calculated:', distribution);
+
+    // Tìm số cột tối đa (số người được bầu cao nhất)
+    const distributionKeys = Object.keys(distribution).map(Number);
+    const maxCandidates = distributionKeys.length > 0 ? Math.max(...distributionKeys) : 0;
+    const actualMaxCandidates = Math.max(maxCandidates, totalCandidates);
+    
+    console.log('Max candidates to display:', actualMaxCandidates);
+
+    // Cập nhật header
+    candidateCountHeader.colSpan = actualMaxCandidates;
+    candidateHeaders.innerHTML = '';
+    
+    for (let i = 1; i <= actualMaxCandidates; i++) {
+        const th = document.createElement('th');
+        th.textContent = i + ' người';
+        candidateHeaders.appendChild(th);
+    }
+    
+    // Tạo hàng "Tổng số phiếu đạt"
+    const totalRow = document.createElement('tr');
+    const totalCell = document.createElement('td');
+    totalCell.className = 'sub-header';
+    totalCell.textContent = 'Tổng số phiếu đạt';
+    totalRow.appendChild(totalCell);
+    
+    // Tạo hàng "Đạt %"
+    const percentRow = document.createElement('tr');
+    const percentCell = document.createElement('td');
+    percentCell.className = 'sub-header';
+    percentCell.textContent = 'Đạt %';
+    percentRow.appendChild(percentCell);
+    
+    // Điền dữ liệu cho từng cột
+    for (let i = 1; i <= actualMaxCandidates; i++) {
+        const votes = distribution[i] || 0;
+        const percent = calculatePercent(votes, totalVotes);
+        
+        // Thêm vào hàng tổng số phiếu
+        const votesTd = document.createElement('td');
+        votesTd.textContent = votes;
+        totalRow.appendChild(votesTd);
+        
+        // Thêm vào hàng phần trăm
+        const percentTd = document.createElement('td');
+        percentTd.textContent = percent + '%';
+        percentRow.appendChild(percentTd);
+    }
+    
+    // Cập nhật bảng
+    tableBody.innerHTML = '';
+    tableBody.appendChild(totalRow);
+    tableBody.appendChild(percentRow);
+
+    console.log('Distribution table updated successfully');
+}
         // Cập nhật bảng kết quả bầu cử
         function updateElectionResultsTable(candidates) {
             const tbody = document.getElementById('electionResultsBody');
