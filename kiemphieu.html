@@ -1488,7 +1488,30 @@
                     </tr>`;
                 });
             }
-            
+
+        // Thêm hàng tổng cộng
+if (phieuDetails.length > 0) {
+    tableHTML += `<tr style="background:#f1f3f5;font-weight:600;">
+        <td colspan="3" style="text-align:right;">TỔNG</td>`;
+    
+    // Tính tổng cho từng ứng viên (số phiếu không bị loại)
+    candidates.forEach(candidate => {
+        let total = 0;
+        phieuDetails.forEach(phieu => {
+            if (!phieu.selectedIds.includes(candidate.id)) total++;
+        });
+        tableHTML += `<td>${total}</td>`;
+    });
+
+    // Tổng tất cả (tổng số phiếu * số ứng viên không bị loại)
+    const totalPerColumn = candidates.map(candidate =>
+        phieuDetails.reduce((sum, phieu) => sum + (!phieu.selectedIds.includes(candidate.id) ? 1 : 0), 0)
+    );
+    const grandTotal = totalPerColumn.reduce((a, b) => a + b, 0);
+
+    tableHTML += `<td><strong>${grandTotal}</strong></td><td></td></tr>`;
+}
+        
             tableHTML += `</tbody></table>`;
             container.innerHTML = tableHTML;
         }
