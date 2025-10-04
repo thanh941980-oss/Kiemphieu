@@ -45,43 +45,139 @@
 
         .placeholder { color: #888; }
         
-        @media (max-width: 992px) {
-  .conta/* Sidebar luôn hiển thị, responsive đẹp */
+        /* ========== Responsive cho tablet và điện thoại ========== */
+
+/* Màn hình nhỏ hơn laptop (tablet trở xuống) */
 @media (max-width: 992px) {
   .container {
     flex-direction: column;
   }
 
   .sidebar {
-    position: relative; /* bỏ fixed để không đè lên nội dung */
-    width: 100%; /* chiếm toàn bộ chiều ngang trên mobile */
-    height: auto; 
+    width: 100%;
+    position: relative;
+    height: auto;
     background: linear-gradient(135deg, #1e3c72, #2a5298);
-    display: block; /* đảm bảo luôn hiển thị */
+    box-shadow: none;
+    padding: 10px 0;
+  }
+
+  .nav-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .nav-links li {
+    margin: 5px;
+  }
+
+  .nav-links a {
+    font-size: 13px;
+    padding: 8px 10px;
+    border-radius: 4px;
   }
 
   .main-content {
     padding: 15px;
-    margin-left: 0; /* không bị chèn bởi sidebar */
+    margin-left: 0;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
   }
 
   .header h2 {
     font-size: 18px;
+    text-align: left;
   }
 
-  .summary-section {
-    padding: 15px;
+  .user-info {
+    align-self: flex-end;
+  }
+
+  .bien-ban-wrapper {
+    padding: 20px;
+    margin: 10px auto;
+    width: 100%;
+  }
+
+  .bb-signature {
+    grid-template-columns: 1fr;
+    gap: 30px;
   }
 }
 
-/* Tối ưu thêm cho điện thoại nhỏ */
+/* Màn hình điện thoại nhỏ (dưới 600px) */
 @media (max-width: 600px) {
-  body { font-size: 12px; }
-  .btn { padding: 6px 12px; font-size: 12px; }
-  .summary-section h3 { font-size: 14px; }
-  .user-info span { display: none; }
-  .user-info img { margin-right: 0; }
-  .summary-table { font-size: 12px; min-width: 500px; }
+  body {
+    font-size: 12px;
+  }
+
+  .logo h1 {
+    font-size: 16px;
+  }
+
+  .nav-links {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .nav-links a {
+    font-size: 12px;
+    padding: 6px 8px;
+    width: 90%;
+    text-align: center;
+  }
+
+  .header h2 {
+    font-size: 16px;
+    text-align: center;
+    width: 100%;
+  }
+
+  .user-info {
+    font-size: 11px;
+    padding: 5px 10px;
+  }
+
+  .user-info span {
+    display: none; /* ẩn chữ, chỉ để avatar */
+  }
+
+  .user-info img {
+    width: 28px;
+    height: 28px;
+    margin-right: 0;
+  }
+
+  .btn {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .bb-results-table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    font-size: 12px;
+  }
+
+  .bb-results-table td {
+    padding: 4px;
+  }
+
+  .bb-signature {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
 }
     </style>
 </head>
