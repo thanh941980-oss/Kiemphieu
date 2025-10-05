@@ -53,20 +53,107 @@ body { background-color: #f5f7fa; color: #333; font-size: 14px; line-height: 1.4
 
 /* ---------------- Responsive ---------------- */
 @media (max-width: 992px) {
-  .container { flex-direction: column; }
-  .sidebar { position: fixed; left: 0; top: 0; bottom: 0; height: 100%; }
-  .menu-toggle { display: block; }
-  .main-content { padding: 15px; }
-  .header h2 { font-size: 18px; }
-  .summary-section { padding: 15px; }
+/* Responsive: hiển thị menu ngang trên điện thoại */
+@media (max-width: 992px) {
+  .container {
+    flex-direction: column;
+  }
+
+  /* Sidebar biến thành thanh điều hướng ngang */
+  .sidebar {
+    width: 100%;
+    height: auto;
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    box-shadow: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 10px;
+  }
+
+  .logo {
+    border-bottom: none;
+    margin-bottom: 5px;
+    padding: 10px 0;
+  }
+
+  /* Menu nằm ngang */
+  .nav-links {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 0 10px;
+  }
+
+  .nav-links li {
+    margin: 0;
+  }
+
+  .nav-links a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 12px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    font-size: 13px;
+    text-align: center;
+  }
+
+  .nav-links a.active {
+    background-color: rgba(255, 255, 255, 0.25);
+  }
+
+  .main-content {
+    padding: 15px;
+    margin: 0;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .bien-ban-wrapper {
+    padding: 20px;
+    margin: 15px auto;
+    width: 100%;
+  }
+
+  .bb-signature {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
 }
+
+/* Dưới 600px: tinh chỉnh thêm */
 @media (max-width: 600px) {
-  body { font-size: 12px; }
-  .btn { padding: 6px 12px; font-size: 12px; }
-  .summary-section h3 { font-size: 14px; }
-  .user-info span { display: none; }
-  .user-info img { margin-right: 0; }
-  .summary-table { font-size: 12px; min-width: 500px; }
+  .nav-links a {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+
+  .logo h1 {
+    font-size: 16px;
+  }
+
+  .btn {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+
+  .user-info span {
+    display: none;
+  }
+
+  .bb-results-table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    font-size: 12px;
+  }
 }
 </style>
 </head>
