@@ -110,7 +110,7 @@ body { background-color: #f5f7fa; color: #333; font-size: 14px; line-height: 1.4
 @media (max-width: 992px) {
   .container { flex-direction: column; }
   .sidebar { position: fixed; left: 0; top: 0; bottom: 0; height: 100%; }
-  .menu-toggle { display: block; }
+  .menu-toggle { display: none; }
   .main-content { padding: 15px; }
   .header h2 { font-size: 18px; }
   .summary-section { padding: 15px; }
@@ -129,7 +129,7 @@ body { background-color: #f5f7fa; color: #333; font-size: 14px; line-height: 1.4
 <body>
 <div class="container">
     <!-- Sidebar -->
-    <div class="sidebar hidden" id="sidebar">
+    <div class="sidebar" id="sidebar">
         <div class="logo"><h1>HỆ THỐNG BẦU CỬ</h1></div>
         <ul class="nav-links">
             <li><a href="thongtin.html"><i>ℹ️</i> Thông tin</a></li>
@@ -223,7 +223,7 @@ body { background-color: #f5f7fa; color: #333; font-size: 14px; line-height: 1.4
 const firebaseConfig={apiKey:"AIzaSyAt-OooTscmthbJXNcvy80RgPDA9T46-0w",authDomain:"kiemphieu-45823.firebaseapp.com",databaseURL:"https://kiemphieu-45823-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"kiemphieu-45823",storageBucket:"kiemphieu-45823.firebasestorage.app",messagingSenderId:"908329514571",appId:"1:908329514571:web:16b43df5b795e4de06bfce"};
 firebase.initializeApp(firebaseConfig);
 const db=firebase.database(),auth=firebase.auth();let currentUser=null;
-//function toggleMenu(){document.getElementById('sidebar').classList.toggle('hidden');}
+function toggleMenu(){document.getElementById('sidebar').classList.toggle('hidden');}
 function getUserPath(p=''){if(!currentUser||!currentUser.uid)throw new Error('User not authenticated');return`users/${currentUser.uid}${p?'/'+p:''}`;}
 function calculatePercent(v,t){return t===0?0:((v/t)*100).toFixed(1);}
 function updateConnectionStatus(connected){const e=document.getElementById('connectionStatus'),i=e.querySelector('.status-indicator'),t=e.querySelector('span:last-child');if(connected){i.className='status-indicator status-online';t.textContent='Đang kết nối real-time';}else{i.className='status-indicator status-offline';t.textContent='Mất kết nối';}}
