@@ -869,8 +869,9 @@
                         <span>Số đã chọn: <strong id="selectedCount">0</strong></span>
                         <span>Phiếu hiện tại: <strong id="currentPhieuDisplay">1</strong></span>
                     </div>
-                    //xuất excel
+                    <!-- xuất excel -->
                     <button class="btn btn-success" style="float:right;" onclick="exportPhieuToExcel()">📥 Xuất Excel</button>
+                    <button class="btn btn-warning" onclick="sendExcelByGmail()">📧 Gửi Gmail</button>
                     <button id="btnResetSelection" class="btn btn-warning">Bỏ chọn tất cả</button>
                 </div>
             </div>
@@ -1682,7 +1683,45 @@
     saveAs(new Blob([buffer]), `KIEM_TRA_TUNG_PHIEU_${new Date().toISOString().slice(0,10)}.xlsx`);
     alert("✅ Xuất file Excel thành công!");
 }
+        // Gởi mail
+        async function sendExcelByGmail() {
+    if (phieuDetails.length === 0) {
+        alert('Chưa có dữ liệu để gửi!');
+        return;
+    }
 
+    // Xuất file Excel tạm thời
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("KIỂM TRA TỪNG PHIẾU");
+    worksheet.addRow(["Phiếu số", "Đọc phiếu", "Trạng thái", "Tổng"]);
+    phieuDetails.forEach(p => {
+        worksheet.addRow([
+            p.phieuSo,
+            p.selectedStt.sort((a, b) => a - b).join(' '),
+            p.trangThai,
+            candidates.length - p.selectedIds.length
+        ]);
+    });
+
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const fileName = `KIEM_TRA_TUNG_PHIEU_${new Date().toISOString().slice(0,10)}.xlsx`;
+
+    // Tạo URL tạm cho file
+    const url = URL.createObjectURL(blob);
+
+    // Lấy email người gửi từ thông tin đã lưu (ví dụ từ localStorage hoặc Firebase)
+    const userEmail = localStorage.getItem('userEmail') || 'yourmail@gmail.com';
+
+    // Mở Gmail với người nhận & nội dung sẵn
+    const subject = encodeURIComponent("Bảng kiểm tra từng phiếu");
+    const body = encodeURIComponent(`Xin chào,\n\nĐính kèm là bảng kiểm tra từng phiếu.\n\nTrân trọng,\n${userEmail}`);
+
+    // Mở cửa sổ Gmail (file không tự đính kèm, nhưng bạn có thể kéo file vào)
+    window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=thanh941980@gmail.com&su=${subject}&body=${body}`, '_blank');
+
+    alert("💡 File Excel đã được tạo — cửa sổ Gmail sẽ mở để bạn gửi đi.");
+}
 
         // Khởi tạo ứng dụng
         async function initApp() {
