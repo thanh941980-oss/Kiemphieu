@@ -863,6 +863,8 @@
                         <span>Số đã chọn: <strong id="selectedCount">0</strong></span>
                         <span>Phiếu hiện tại: <strong id="currentPhieuDisplay">1</strong></span>
                     </div>
+                    <button class="btn btn-success" onclick="downloadExcelFile()">📊 Xuất Excel</button>
+                    <button class="btn btn-warning" onclick="openGmail()">📧 Mở Gmail</button>
                     <button id="btnResetSelection" class="btn btn-warning">Bỏ chọn tất cả</button>
                 </div>
             </div>
@@ -943,8 +945,7 @@
             <div class="phieu-details">
                 <h3>KIỂM TRA TỪNG PHIẾU</h3>
                 <div style="display:flex; justify-content: flex-end; gap:10px; margin-bottom:10px;">
-                    <button class="btn btn-success" onclick="downloadExcelFile()">📊 Xuất Excel</button>
-                    <button class="btn btn-warning" onclick="openGmail()">📧 Mở Gmail</button>
+                    
                 </div>
                 <div class="phieu-table-container" id="phieuTableContainer">
                     <!-- Bảng kiểm tra từng phiếu sẽ được tạo ở đây -->
